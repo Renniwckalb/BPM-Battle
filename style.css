@@ -69,13 +69,13 @@ canvas {
 .hearts {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: clamp(4px, 1.5vw, 10px);
     margin-bottom: 8px;
 }
 
 .heart {
-    width: 75px;
-    height: 75px;
+    width: clamp(15px, 6vw, 40px);
+    height: clamp(15px, 6vw, 40px);
     display: block;
 }
 

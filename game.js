@@ -23,17 +23,42 @@ let localActionReady = false;
 let remoteActionReady = false;
 
 // --- CRÉATION DES GRILLES ET JOUEURS ---
-let myCellSize = canvas.width / 5;
-let oppCellSize = canvas.width / 7;
-let myGridX = (canvas.width - (myCellSize * 3)) / 2;
-let oppGridX = (canvas.width - (oppCellSize * 3)) / 2;
-let myGridY = canvas.height - (myCellSize * 3) - ((canvas.height/100) * 15);
-let oppGridY = canvas.height - ((canvas.height/100) * 90);
-
-let gridPlayer1 = new Grid(myGridX, myGridY, myCellSize, "#4CAF50");
-let gridPlayer2 = new Grid(oppGridX, oppGridY, oppCellSize, "#F44336");
+// --- CRÉATION DES GRILLES ET JOUEURS ---
+// On crée les objets avec des valeurs temporaires (0)
+let gridPlayer1 = new Grid(0, 0, 0, "#4CAF50");
+let gridPlayer2 = new Grid(0, 0, 0, "#F44336");
 let p1 = new Player(gridPlayer1, 1, 1, "#2196F3");
 let p2 = new Player(gridPlayer2, 1, 1, "#FF9800");
+
+// --- FONCTION RESPONSIVE POUR LE CANVAS ---
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // On prend la plus petite dimension entre la largeur et la hauteur
+    // Ça évite que le jeu soit coupé sur un écran de PC très large
+    let maxSize = Math.min(canvas.width, canvas.height); 
+
+    // Recalcul des tailles des cases
+    let myCellSize = maxSize / 4.5;
+    let oppCellSize = maxSize / 6;
+
+    // Mise à jour de la grille du Joueur 1 (En bas)
+    gridPlayer1.cellSize = myCellSize;
+    gridPlayer1.x = (canvas.width - (myCellSize * 3)) / 2;
+    gridPlayer1.y = canvas.height - (myCellSize * 3) - (canvas.height * 0.15);
+
+    // Mise à jour de la grille de l'Adversaire (En haut)
+    gridPlayer2.cellSize = oppCellSize;
+    gridPlayer2.x = (canvas.width - (oppCellSize * 3)) / 2;
+    gridPlayer2.y = canvas.height * 0.10;
+}
+
+// On écoute le redimensionnement de l'écran (ex: rotation du téléphone)
+window.addEventListener("resize", resizeCanvas);
+
+// On lance le calcul une première fois au démarrage
+resizeCanvas();
 
 // --- ELEMENTS DU DOM ---
 const mainMenu = document.getElementById("main-menu");
