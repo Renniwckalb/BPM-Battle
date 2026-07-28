@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1e1e">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <title>BPM Battle</title>
+</head>
+<body>
+    <!-- Le Terrain de Jeu -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- STATS ADVERSAIRE (En haut à droite) -->
+    <div id="stats-p2" class="stats-container opponent-stats">
+        <div class="hearts">
+            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+        </div>
+        <div class="energy-text">Énergie: <span id="energy-p2">0</span></div>
+    </div>
+
+    <!-- STATS JOUEUR 1 (En bas à droite) -->
+    <div id="stats-p1" class="stats-container player-stats">
+        <div class="hearts">
+            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+        </div>
+        <div class="energy-text">Énergie: <span id="energy-p1">0</span></div>
+    </div>
+
+    <!-- BOUTONS D'ACTION (En bas) -->
+    <div id="ui-container">
+        <button class="btn-action" data-action="mouvement">Move</button>
+        <button class="btn-action" data-action="recharge">Recharge</button>
+        <button class="btn-action" data-action="attaque_normale">Attack</button>
+        <button class="btn-action" data-action="attaque_colonne">Special</button>
+    </div>
+
+    <!-- ÉCRAN TITRE (Menu Principal) -->
+    <div id="main-menu" class="screen-overlay">
+        <h1>BPM Battle</h1>
+        <div class="menu-actions">
+            <!-- Mode Solo -->
+            <button id="btn-ai" class="btn-menu btn-purple">Jouer contre l'IA</button>
+            
+            <!-- Créer (Hôte) -->
+            <button id="btn-host" class="btn-menu btn-green">Créer une partie</button>
+            <p id="room-code-display" class="room-info" style="display:none;"></p>
+
+            <div class="menu-divider">--- OU ---</div>
+
+            <!-- Rejoindre (Client) -->
+            <div class="join-container">
+                <input type="text" id="input-join-code" class="input-code" placeholder="Code (ex: 1234)">
+                <button id="btn-join" class="btn-menu btn-blue">Rejoindre</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÉCRAN DE FIN -->
+    <div id="end-screen" class="screen-overlay" style="display: none;">
+        <h1 id="end-message">Victoire !</h1>
+        <button id="btn-restart" class="btn-menu btn-green">Rejouer</button>
+    </div>
+
+    <!-- LIBRAIRIES ET SCRIPTS -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script type="module" src="game.js"></script>
+    <!-- Script pour activer le Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker enregistré !'))
+                    .catch(err => console.error('Erreur Service Worker :', err));
+            });
+        }
+    </script>
+</body>
+</html>

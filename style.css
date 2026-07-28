@@ -1,0 +1,177 @@
+/* --- BASE DU JEU --- */
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+canvas {
+    display: block;
+}
+
+/* --- INTERFACE DE COMBAT (HUD) --- */
+#ui-container {
+    position: absolute;
+    bottom: 2%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 10px;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+.btn-action {
+    background-color: #333;
+    color: white;
+    border: 2px solid #555;
+    padding: 10px 5px;
+    border-radius: 8px;
+    font-size: 50px;
+    font-weight: bold;
+    flex: 1;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.btn-action.actif {
+    background-color: #4CAF50;
+    border-color: white;
+}
+
+/* Style pour les boutons bloqués */
+.btn-action.disabled {
+    background-color: #555;
+    color: #888;
+    border-color: #444;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* --- STATISTIQUES --- */
+.stats-container {
+    position: absolute;
+    right: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.opponent-stats { top: 10%; }
+.player-stats { bottom: 15%; }
+
+.hearts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.heart {
+    width: 75px;
+    height: 75px;
+    display: block;
+}
+
+/* --- OVERLAYS POUR LES MENUS --- */
+.screen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 30, 30, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.screen-overlay h1 {
+    font-size: 100px;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 320px;
+    align-items: center;
+}
+
+.btn-menu {
+    width: 100%;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    font-size: 50px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s, filter 0.2s;
+}
+
+.btn-menu:active { transform: scale(0.95); }
+.btn-menu:hover { filter: brightness(1.1); }
+
+.btn-purple { background-color: #9C27B0; }
+.btn-green  { background-color: #4CAF50; }
+.btn-blue   { background-color: #2196F3; }
+
+.menu-divider {
+    margin: 10px 0;
+    font-size: 20px;
+    color: #888;
+    letter-spacing: 3px;
+}
+
+.room-info {
+    font-size: 25px;
+    color: #4CAF50;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.join-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.input-code {
+    padding: 20px;
+    font-size: 40px;
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid #555;
+    background-color: #333;
+    color: white;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.input-code::placeholder { color: #888; }
+.input-code:focus {
+    border-color: #2196F3;
+    outline: none;
+}
