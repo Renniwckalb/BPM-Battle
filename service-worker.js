@@ -1,6 +1,6 @@
-const CACHE_NAME = 'bpm-battle-v1.1';
+const CACHE_NAME = 'bpm-battle-v1.1.1';
 
-// Liste de tous les fichiers de ton jeu à sauvegarder sur le téléphone
+// Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [
     './',
     './index.html',
@@ -11,17 +11,34 @@ const FILES_TO_CACHE = [
     './manifest.json'
 ];
 
-// Installation : on met les fichiers en cache
+// 1. INSTALLATION : on met les nouveaux fichiers en cache
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Fichiers mis en cache avec succès');
+            console.log('Nouveaux fichiers mis en cache');
             return cache.addAll(FILES_TO_CACHE);
         })
     );
 });
 
-// Lecture : on sert les fichiers depuis le cache si on est hors ligne
+// 2. ACTIVATION : on supprime les ANCIENNES versions du cache (C'est la partie qui manquait !)
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((listeDesCaches) => {
+            return Promise.all(
+                listeDesCaches.map((nomDuCache) => {
+                    // Si le cache ne correspond pas au nom actuel, on le supprime
+                    if (nomDuCache !== CACHE_NAME) {
+                        console.log('Ancien cache supprimé :', nomDuCache);
+                        return caches.delete(nomDuCache);
+                    }
+                })
+            );
+        })
+    );
+});
+
+// 3. LECTURE : on sert les fichiers
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
