@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bpm-battle-v1';
+const CACHE_NAME = 'bpm-battle-v1.1';
 
 // Liste de tous les fichiers de ton jeu à sauvegarder sur le téléphone
 const FILES_TO_CACHE = [
