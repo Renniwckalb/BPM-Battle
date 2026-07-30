@@ -125,6 +125,21 @@ canvas {
     transition: transform 0.1s, filter 0.2s;
 }
 
+/* --- BOUTONS DE L'ÉCRAN DE FIN --- */
+.btn-end{
+    width: 100%;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    font-size: clamp(16px, 4vw, 22px);
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s, filter 0.2s;
+    max-width: 320px;
+}
+
 .btn-menu:active { transform: scale(0.95); }
 .btn-menu:hover { filter: brightness(1.1); }
 

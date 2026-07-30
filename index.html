@@ -64,7 +64,11 @@
     <!-- ÉCRAN DE FIN -->
     <div id="end-screen" class="screen-overlay" style="display: none;">
         <h1 id="end-message">Victoire !</h1>
-        <button id="btn-restart" class="btn-menu btn-green">Rejouer</button>
+        <p id="rematch-waiting-message" style="display: none;">En attente de l'autre joueur...</p>
+        <div id="end-buttons" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <button id="btn-restart" class="btn-end btn-green">Rejouer</button>
+            <button id="btn-menu-principal" class="btn-end btn-blue">Menu Principal</button>
+        </div>
     </div>
 
     <!-- LIBRAIRIES ET SCRIPTS -->

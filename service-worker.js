@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bpm-battle-v1.1.3';
+const CACHE_NAME = 'bpm-battle-v1.1.4';
 
 // Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [
@@ -40,9 +40,16 @@ self.addEventListener('activate', (event) => {
 
 // 3. LECTURE : on sert les fichiers
 self.addEventListener('fetch', (event) => {
+    // On ignore les requêtes qui ne sont pas standard (ex: extensions Chrome)
+    if (!event.request.url.startsWith('http')) return;
+
     event.respondWith(
         caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+            // On retourne le cache s'il existe. 
+            // Sinon, on tente de télécharger sur le réseau, et on "attrape" (catch) l'erreur silencieusement si on est hors ligne.
+            return response || fetch(event.request).catch(() => {
+                console.log("Ressource réseau indisponible (mode hors-ligne actif) :", event.request.url);
+            });
         })
     );
 });

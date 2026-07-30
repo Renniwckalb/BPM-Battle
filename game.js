@@ -21,8 +21,9 @@ let conn = null;
 let myRole = null; 
 let localActionReady = false;
 let remoteActionReady = false;
+let localRematchReady = false;
+let remoteRematchReady = false;
 
-// --- CRÉATION DES GRILLES ET JOUEURS ---
 // --- CRÉATION DES GRILLES ET JOUEURS ---
 // On crée les objets avec des valeurs temporaires (0)
 let gridPlayer1 = new Grid(0, 0, 0, "#4CAF50");
@@ -34,24 +35,31 @@ let p2 = new Player(gridPlayer2, 1, 1, "#FF9800");
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
+    // On calcule la taille de case max pour que ça rentre en largeur ET en hauteur.
+    // En largeur (3 cases) : on divise par 3.5 pour garder une marge sur les côtés.
+    // En hauteur : on divise par 8 pour laisser la place aux 2 grilles (6 cases) + boutons + stats.
+    let maxCellWidth = canvas.width / 3.6;
+    let maxCellHeight = canvas.height / 7.5; 
 
-    // On prend la plus petite dimension entre la largeur et la hauteur
-    // Ça évite que le jeu soit coupé sur un écran de PC très large
-    let maxSize = Math.min(canvas.width, canvas.height); 
+    // On prend la plus petite valeur pour être sûr que ça ne déborde JAMAIS
+    let baseCellSize = Math.min(maxCellWidth, maxCellHeight);
 
-    // Recalcul des tailles des cases
-    let myCellSize = maxSize / 4.5;
-    let oppCellSize = maxSize / 6;
+    let bottomCellSize = baseCellSize;
+    let topCellSize = baseCellSize * 0.75; // L'adversaire est 25% plus petit pour l'effet de profondeur
 
-    // Mise à jour de la grille du Joueur 1 (En bas)
-    gridPlayer1.cellSize = myCellSize;
-    gridPlayer1.x = (canvas.width - (myCellSize * 3)) / 2;
-    gridPlayer1.y = canvas.height - (myCellSize * 3) - (canvas.height * 0.15);
+    let myGrid = (myRole === "p2") ? gridPlayer2 : gridPlayer1;
+    let oppGrid = (myRole === "p2") ? gridPlayer1 : gridPlayer2;
 
-    // Mise à jour de la grille de l'Adversaire (En haut)
-    gridPlayer2.cellSize = oppCellSize;
-    gridPlayer2.x = (canvas.width - (oppCellSize * 3)) / 2;
-    gridPlayer2.y = canvas.height * 0.10;
+    // Mise à jour de NOTRE grille (En bas, plus grande)
+    myGrid.cellSize = bottomCellSize;
+    myGrid.x = (canvas.width - (bottomCellSize * 3)) / 2;
+    myGrid.y = canvas.height - (bottomCellSize * 3) - 100; 
+
+    // Mise à jour de la grille ADVERSE (En haut, plus petite)
+    oppGrid.cellSize = topCellSize;
+    oppGrid.x = (canvas.width - (topCellSize * 3)) / 2;
+    oppGrid.y = 70;
 }
 
 // On écoute le redimensionnement de l'écran (ex: rotation du téléphone)
@@ -73,6 +81,9 @@ const btnJoin = document.getElementById("btn-join");
 const codeDisplay = document.getElementById("room-code-display");
 const inputJoin = document.getElementById("input-join-code");
 
+const btnMenuPrincipal = document.getElementById("btn-menu-principal");
+const rematchWaitingMessage = document.getElementById("rematch-waiting-message");
+const endButtons = document.getElementById("end-buttons");
 // --- GESTION DU MENU ---
 btnAI.addEventListener("click", () => {
     gameMode = "ai";
@@ -114,30 +125,95 @@ btnJoin.addEventListener("click", () => {
 });
 
 btnRestart.addEventListener("click", () => {
-    resetGame();
-    endScreen.style.display = "none";
-    
-    if (gameMode === "pvp") {
-        // En PvP, on attend que l'autre soit prêt ou on relance direct
-        gameState = "playing"; 
-    } else {
-        gameState = "playing";
+    if (gameMode === "ai") {
+        doRestartGame();
+    } else if (gameMode === "pvp") {
+        localRematchReady = true;
+        conn.send({ type: "rematch" }); // Prévient l'adversaire
+        
+        // Affiche le message d'attente
+        endButtons.style.display = "none";
+        rematchWaitingMessage.style.display = "block";
+        
+        if (remoteRematchReady) {
+            doRestartGame();
+        }
     }
 });
+
+btnMenuPrincipal.addEventListener("click", () => {
+    if (gameMode === "pvp" && conn) {
+        conn.send({ type: "menu" }); // Prévient l'adversaire
+    }
+    returnToMainMenu();
+});
+
+function doRestartGame() {
+    resetGame();
+    endScreen.style.display = "none";
+    localRematchReady = false;
+    remoteRematchReady = false;
+    gameState = "playing";
+}
+
+function returnToMainMenu() {
+    resetGame();
+    // On ferme les connexions réseau
+    if (conn) conn.close();
+    if (peer) peer.destroy();
+    peer = null;
+    conn = null;
+    
+    // Remise à zéro de l'interface
+    endScreen.style.display = "none";
+    mainMenu.style.display = "flex";
+    
+    btnHost.style.display = "block";
+    btnAI.style.display = "block";
+    codeDisplay.style.display = "none";
+    inputJoin.value = "";
+    
+    localRematchReady = false;
+    remoteRematchReady = false;
+    gameState = "menu";
+    gameMode = null;
+}
 
 function startGame(role) {
     myRole = role;
     mainMenu.style.display = "none";
     gameState = "playing";
     console.log("Connecté en tant que : " + myRole);
+
+    if (myRole === "p2") {
+        document.getElementById("stats-p2").className = "stats-container player-stats";
+        document.getElementById("stats-p1").className = "stats-container opponent-stats";
+    } else {
+        document.getElementById("stats-p1").className = "stats-container player-stats";
+        document.getElementById("stats-p2").className = "stats-container opponent-stats";
+    }
+    // On recalcule immédiatement la position des grilles maintenant qu'on connaît notre rôle !
+    resizeCanvas();
 }
 
 function setupNetworkListener() {
     conn.on('data', (data) => {
-        if (myRole === "p1") p2Action = data; 
-        if (myRole === "p2") p1Action = data;
-        remoteActionReady = true;
-        checkBothReady();
+        // L'adversaire veut rejouer
+        if (data.type === "rematch") {
+            remoteRematchReady = true;
+            if (localRematchReady) doRestartGame();
+        } 
+        // L'adversaire retourne au menu
+        else if (data.type === "menu") {
+            returnToMainMenu();
+        } 
+        // Actions de combat classiques
+        else {
+            if (myRole === "p1") p2Action = data; 
+            if (myRole === "p2") p1Action = data;
+            remoteActionReady = true;
+            checkBothReady();
+        }
     });
 }
 
@@ -156,8 +232,19 @@ boutons.forEach(bouton => {
 });
 
 function updateUI() {
-    document.getElementById("energy-p1").innerText = p1.energy;
-    document.getElementById("energy-p2").innerText = p2.energy;
+    if (myRole === "p2") {
+        // Je suis le Joueur 2 : J'affiche mon énergie et je cache celle du Joueur 1
+        document.getElementById("energy-p2").innerText = p2.energy;
+        document.getElementById("energy-p2").parentElement.hidden = false;
+
+        document.getElementById("energy-p1").parentElement.hidden = true;
+    } else {
+        // Je suis le Joueur 1 (ou mode IA) : J'affiche mon énergie et je cache celle du Joueur 2
+        document.getElementById("energy-p1").innerText = p1.energy;
+        document.getElementById("energy-p1").parentElement.hidden = false;
+
+        document.getElementById("energy-p2").parentElement.hidden = true;
+    }
 
     const p1Hearts = document.querySelectorAll("#stats-p1 .heart");
     p1Hearts.forEach((heart, index) => {
@@ -368,6 +455,10 @@ function resetGame() {
 function gameOver() {
     gameState = "end";
     endScreen.style.display = "flex";
+    
+    // On réinitialise l'affichage des boutons de fin
+    endButtons.style.display = "flex";
+    rematchWaitingMessage.style.display = "none";
 }
 
 // --- LA BOUCLE DE JEU ---
