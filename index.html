@@ -18,6 +18,7 @@
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <span class="extra-hp" style="display: none;">+0</span>
         </div>
         <div class="energy-text">Énergie: <span id="energy-p2">0</span></div>
     </div>
@@ -28,11 +29,12 @@
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <span class="extra-hp" style="display: none;">+0</span>
         </div>
         <div class="energy-text">Énergie: <span id="energy-p1">0</span></div>
     </div>
 
-    <!-- BOUTONS D'ACTION (En bas) -->
+    <!-- BOUTONS D'ACTION -->
     <div id="ui-container">
         <button class="btn-action" data-action="mouvement">Move</button>
         <button class="btn-action" data-action="recharge">Recharge</button>
@@ -40,24 +42,42 @@
         <button class="btn-action" data-action="attaque_colonne">Special</button>
     </div>
 
-    <!-- ÉCRAN TITRE (Menu Principal) -->
+    <!-- ÉCRAN TITRE -->
     <div id="main-menu" class="screen-overlay">
         <h1>BPM Battle</h1>
-        <div class="menu-actions">
-            <!-- Mode Solo -->
-            <button id="btn-ai" class="btn-menu btn-purple">Jouer contre l'IA</button>
-            
-            <!-- Créer (Hôte) -->
-            <button id="btn-host" class="btn-menu btn-green">Créer une partie</button>
-            <p id="room-code-display" class="room-info" style="display:none;"></p>
-
+        
+        <!-- Menu de base -->
+        <div id="menu-base" class="menu-actions">
+            <button id="btn-host-menu" class="btn-menu btn-green">Créer une partie</button>
             <div class="menu-divider">--- OU ---</div>
-
-            <!-- Rejoindre (Client) -->
             <div class="join-container">
                 <input type="text" id="input-join-code" class="input-code" placeholder="Code (ex: 1234)">
                 <button id="btn-join" class="btn-menu btn-blue">Rejoindre</button>
             </div>
+        </div>
+
+        <!-- Menu Paramètres de l'Hôte -->
+        <div id="menu-settings" class="menu-actions" style="display: none;">
+            <h2 style="margin: 0 0 15px 0;">Règles du jeu</h2>
+            
+            <div class="setting-group">
+                <label>Points de vie :</label>
+                <input type="number" id="setting-hp" class="input-code" value="3" min="1" max="10">
+            </div>
+            <div class="setting-group">
+                <label>Coût Attaque :</label>
+                <input type="number" id="setting-atk" class="input-code" value="1" min="0" max="5">
+            </div>
+            <div class="setting-group">
+                <label>Coût Spécial :</label>
+                <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
+            </div>
+
+            <button id="btn-ai" class="btn-menu btn-purple" style="margin-top: 10px;">Jouer contre l'IA</button>
+            <button id="btn-host-start" class="btn-menu btn-green">Générer le code PvP</button>
+            <button id="btn-back-menu" class="btn-menu btn-blue">Retour</button>
+            
+            <p id="room-code-display" class="room-info" style="display:none;"></p>
         </div>
     </div>
 
@@ -74,7 +94,6 @@
     <!-- LIBRAIRIES ET SCRIPTS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="game.js"></script>
-    <!-- Script pour activer le Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

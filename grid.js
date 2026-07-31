@@ -11,15 +11,13 @@ export default class Grid {
         this.selectedRow = -1;
     }
 
-    // La méthode qui dessine la grille à l'écran
+    // Dessine la grille à l'écran
     draw(ctx) {
-        ctx.strokeStyle = this.color; 
-        ctx.lineWidth = 3;            
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 3;
 
-        // On fait une boucle pour dessiner les 9 cases (3 lignes x 3 colonnes)
-        for (let r = 0; r < this.rows; r++) {
-            for (let c = 0; c < this.cols; c++) {
-                // Position exacte de chaque petite case
+        for (let r = 0;r < this.rows;r++) {
+            for (let c = 0;c < this.cols;c++) {
                 let caseX = this.x + (c * this.cellSize);
                 let caseY = this.y + (r * this.cellSize);
 
@@ -27,12 +25,12 @@ export default class Grid {
                     ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
                     ctx.fillRect(caseX, caseY, this.cellSize, this.cellSize);
                 }
-                // On dessine le contour de la case
                 ctx.strokeRect(caseX, caseY, this.cellSize, this.cellSize);
             }
         }
     }
 
+    // Détecte la case séléctionner
     getClickedCell(clickX, clickY) {
         let width = this.cols * this.cellSize;
         let height = this.rows * this.cellSize;

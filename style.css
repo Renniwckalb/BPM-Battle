@@ -63,8 +63,8 @@ canvas {
     font-weight: bold;
 }
 
-.opponent-stats { top: 10%; }
-.player-stats { bottom: 15%; }
+.opponent-stats { top: 10%;}
+.player-stats { bottom: 15%;}
 
 .hearts {
     display: flex;
@@ -86,7 +86,7 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(30, 30, 30, 0.95);
+    background-color: rgba(30, 30, 30, 1);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -126,7 +126,7 @@ canvas {
 }
 
 /* --- BOUTONS DE L'ÉCRAN DE FIN --- */
-.btn-end{
+.btn-end {
     width: 100%;
     color: white;
     border: none;
@@ -140,12 +140,12 @@ canvas {
     max-width: 320px;
 }
 
-.btn-menu:active { transform: scale(0.95); }
-.btn-menu:hover { filter: brightness(1.1); }
+.btn-menu:active { transform: scale(0.95);}
+.btn-menu:hover { filter: brightness(1.1);}
 
-.btn-purple { background-color: #9C27B0; }
-.btn-green  { background-color: #4CAF50; }
-.btn-blue   { background-color: #2196F3; }
+.btn-purple { background-color: #9C27B0;}
+.btn-green  { background-color: #4CAF50;}
+.btn-blue   { background-color: #2196F3;}
 
 .menu-divider {
     margin: 10px 0;
@@ -163,6 +163,14 @@ canvas {
     border-radius: 8px;
     width: 100%;
     box-sizing: border-box;
+}
+
+.extra-hp {
+    color: #FFEB3B;/* Jaune doré */
+    font-size: clamp(16px, 5vw, 24px);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    text-align: center;
+    margin-top: 5px;
 }
 
 .join-container {
@@ -185,8 +193,24 @@ canvas {
     transition: border-color 0.2s;
 }
 
-.input-code::placeholder { color: #888; }
+.input-code::placeholder { color: #888;}
 .input-code:focus {
     border-color: #2196F3;
     outline: none;
+}
+
+/* --- PARAMÈTRES DE LA SALLE --- */
+.setting-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: clamp(14px, 4vw, 18px);
+}
+
+.setting-group .input-code {
+    width: 60px;
+    padding: 10px;
+    margin: 0;
 }
