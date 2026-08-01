@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bpm-battle-v1.1.5';
+const CACHE_NAME = 'bpm-battle-v1.1.6';
 
 // Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [
@@ -19,6 +19,7 @@ const FILES_TO_CACHE = [
 
 // INSTALLATION
 self.addEventListener('install', (event) => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('Nouveaux fichiers mis en cache');
@@ -29,6 +30,8 @@ self.addEventListener('install', (event) => {
 
 // ACTIVATION
 self.addEventListener('activate', (event) => {
+    event.waitUntil(clients.claim());
+
     event.waitUntil(
         caches.keys().then((listeDesCaches) => {
             return Promise.all(

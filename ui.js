@@ -72,7 +72,7 @@ export function updateHUD(myRole, p1, p2, isResolving) {
 // Affiche écran de fin
 export function showGameOver(myRole, p1, p2) {
     DOM.endScreen.style.display = "flex";
-    DOM.endButtons.style.display = "flex";
+    DOM.btnRestart.style.display = "block";
     DOM.rematchWaitingMessage.style.display = "none";
     
     if (p1.hp <= 0 && p2.hp <= 0) {

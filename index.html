@@ -94,14 +94,16 @@
     <!-- LIBRAIRIES ET SCRIPTS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="game.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
+    <!--
+        -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./service-worker.js')
                     .then(reg => console.log('Service Worker enregistré !'))
                     .catch(err => console.error('Erreur Service Worker :', err));
-            });
-        }
-    </script>
+                });
+            }
+        </script>
 </body>
 </html>

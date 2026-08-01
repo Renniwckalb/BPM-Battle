@@ -77,7 +77,7 @@ UI.DOM.btnRestart.addEventListener("click", () => {
     } else if (engine.gameMode === "pvp") {
         engine.localRematchReady = true;
         Network.sendData({ type: "rematch" });
-        UI.DOM.endButtons.style.display = "none";
+        UI.DOM.btnRestart.style.display = "none";
         UI.DOM.rematchWaitingMessage.style.display = "block";
         if (engine.remoteRematchReady) engine.doRestartGame();
     }
@@ -85,6 +85,12 @@ UI.DOM.btnRestart.addEventListener("click", () => {
 
 // Retour menu principal
 UI.DOM.btnMenuPrincipal.addEventListener("click", () => {
-    if (engine.gameMode === "pvp") Network.sendData({ type: "menu" });
-    engine.returnToMainMenu();
+    if (engine.gameMode === "pvp") {
+        Network.sendData({ type: "menu" });
+        setTimeout(() => {
+            engine.returnToMainMenu();
+        }, 100);
+    } else {
+        engine.returnToMainMenu();
+    }
 });
