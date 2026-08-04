@@ -25,16 +25,14 @@ export function executeAction(attaquant, defenseur, grilleAttaquant, grilleDefen
     if (action.type === "attaque_normale") {
         // Déduction de l'énergie dynamique
         attaquant.energy -= GameConfig.COST_NORMAL_ATTACK;
-        grilleDefenseur.selectedCol = action.col;
-        grilleDefenseur.selectedRow = action.row;
+        grilleDefenseur.flashCell(action.col, action.row);
         if (defenseur.col === action.col && defenseur.row === action.row) takeDamage(defenseur);
     }
     
     if (action.type === "attaque_colonne") {
         // Déduction de l'énergie dynamique
         attaquant.energy -= GameConfig.COST_SPECIAL_ATTACK;
-        grilleDefenseur.selectedCol = action.col;
-        grilleDefenseur.selectedRow = -1;
+        grilleDefenseur.flashCell(action.col);
         if (defenseur.col === action.col) takeDamage(defenseur);
     }
 }

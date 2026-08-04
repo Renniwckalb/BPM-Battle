@@ -5,6 +5,10 @@ export default class Player {
         this.grid = grid;
         this.col = col;
         this.row = row;
+
+        this.visualCol = col;
+        this.visualRow = row;
+
         this.color = color;
         
         this.hp = GameConfig.MAX_HP;
@@ -17,10 +21,13 @@ export default class Player {
         this.row = row;
     }
 
-    // Se dessine au centre de sa case actuelle
+    // Se dessine
     draw(ctx) {
-        let centerX = this.grid.x + (this.col * this.grid.cellSize) + (this.grid.cellSize / 2);
-        let centerY = this.grid.y + (this.row * this.grid.cellSize) + (this.grid.cellSize / 2);
+        this.visualCol += (this.col - this.visualCol) * 0.15;
+        this.visualRow += (this.row - this.visualRow) * 0.15;
+
+        let centerX = this.grid.x + (this.visualCol * this.grid.cellSize) + (this.grid.cellSize / 2);
+        let centerY = this.grid.y + (this.visualRow * this.grid.cellSize) + (this.grid.cellSize / 2);
 
         let radius = this.grid.cellSize * 0.4;
 
