@@ -3,7 +3,7 @@ import * as Network from './network.js';
 import GameEngine from './engine.js';
 import { setupControls } from './input.js';
 import { GameConfig, updateConfig } from './config.js';
-import { setLanguage, getText } from './lang.js';
+import { setLanguage, getText, flags } from './lang.js';
 
 // Initialisation
 const engine = new GameEngine();
@@ -35,26 +35,20 @@ UI.DOM.btnBackMenu.addEventListener("click", () => {
 
 // --- GESTION DE LA LANGUE ---
 
-// 1. Ouvrir/Fermer la liste des langues quand on clique sur le drapeau
+// Ouvrir/Fermer la liste des langues quand on clique sur le drapeau
 UI.DOM.btnLang.addEventListener("click", () => {
     const menu = UI.DOM.langMenu;
     menu.style.display = menu.style.display === "none" ? "flex" : "none";
 });
 
-// 2. Choisir une langue dans la liste
+// Choisir une langue dans la liste
 UI.DOM.langOptions.forEach(btn => {
     btn.addEventListener("click", (e) => {
-        // On récupère "fr" ou "en" depuis le data-lang
         const selectedLang = e.target.getAttribute("data-lang");
         setLanguage(selectedLang);
-        
-        // Met à jour l'emoji du bouton principal
-        UI.DOM.btnLang.innerText = selectedLang === "fr" ? "🇫🇷" : "🇬🇧";
-        
-        // Cache le menu déroulant
+        UI.DOM.btnLang.innerText = flags[selectedLang];
         UI.DOM.langMenu.style.display = "none";
         
-        // Met à jour le texte du code s'il est affiché
         if (UI.DOM.codeDisplay.style.display === "block") {
             const currentCode = UI.DOM.codeDisplay.innerText.split(":")[1].trim();
             UI.DOM.codeDisplay.innerText = getText("code_display") + currentCode;
@@ -62,13 +56,14 @@ UI.DOM.langOptions.forEach(btn => {
     });
 });
 
-// 3. (Bonus) Fermer le menu si le joueur clique ailleurs sur l'écran
+// Fermer le menu si le joueur clique ailleurs sur l'écran
 document.addEventListener("click", (e) => {
     if (!e.target.closest("#lang-container")) {
         if (UI.DOM.langMenu) UI.DOM.langMenu.style.display = "none";
     }
 });
 
+// --- GESTION PARTIE ---
 // Lancer une partie
 UI.DOM.btnHostStart.addEventListener("click", () => {
     updateConfig({

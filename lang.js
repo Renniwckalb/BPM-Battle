@@ -47,29 +47,58 @@ export const translations = {
         code_display: "Code: ",
         win: "VICTORY!",
         lose: "DEFEAT..."
+    },
+    zh: {
+        btn_ai: "与AI对战",
+        btn_host: "创建游戏",
+        divider: "--- 或 ---",
+        placeholder_join: "房间号 (例: 1234)",
+        btn_join: "加入",
+        rules_title: "游戏规则",
+        label_hp: "生命值：",
+        label_atk: "攻击消耗：",
+        label_spe: "特殊攻击消耗：",
+        btn_host_start: "生成对战房间号",
+        btn_back: "返回",
+        energy: "能量：",
+        action_move: "移动",
+        action_charge: "充能",
+        action_attack: "攻击",
+        action_special: "特殊攻击",
+        waiting_rematch: "等待对手...",
+        btn_rematch: "再来一局",
+        btn_main_menu: "主菜单",
+        code_display: "房间号：",
+        win: "胜利！",
+        lose: "失败..."
     }
+};
+
+export const flags = {
+    fr: "🇫🇷",
+    en: "🇬🇧",
+    zh: "🇨🇳"
 };
 
 export let currentLang = "fr";
 
-// Fonction pour basculer entre FR et EN
+// Fonction pour changer de langue
 export function toggleLanguage() {
-    currentLang = currentLang === "fr" ? "en" : "fr";
+    currentLang = flags[currentLang];
     updateAllTexts();
     return currentLang;
 }
 
-// Fonction pour récupérer un texte dynamique précis (ex: Victoire/Défaite)
+// Fonction pour récupérer un texte dynamique
 export function getText(key) {
     return translations[currentLang][key] || key;
 }
 
-// Fonction magique qui parcourt le HTML et traduit tout
+// Fonction qui traduit tout
 export function updateAllTexts() {
     document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
         if (translations[currentLang][key]) {
-            // Si c'est un input, on traduit le placeholder, sinon le texte
             if (el.tagName === "INPUT" && el.placeholder) {
                 el.placeholder = translations[currentLang][key];
             } else {
@@ -79,6 +108,7 @@ export function updateAllTexts() {
     });
 }
 
+// Choix d'une langue
 export function setLanguage(lang) {
     currentLang = lang;
     updateAllTexts();
