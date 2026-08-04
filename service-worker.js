@@ -14,7 +14,8 @@ const FILES_TO_CACHE = [
     './engine.js',
     './input.js',
     './config.js',
-    './manifest.json'
+    './manifest.json',
+    './lang.js'
 ];
 
 // INSTALLATION

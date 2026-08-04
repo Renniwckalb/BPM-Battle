@@ -3,11 +3,24 @@ import * as UI from './ui.js';
 
 export function setupControls(engine) {
     // Choix de l'action
-    UI.DOM.boutons.forEach(b => b.addEventListener("click", (e) => {
-        UI.resetActionButtons();
-        e.target.classList.add("actif");
-        engine.setAction(e.target.getAttribute("data-action"));
-    }));
+    UI.DOM.boutons.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            // Empêche de cliquer si le bouton est déjà désactivé
+            if (btn.classList.contains("disabled")) return; 
+
+            const action = e.target.getAttribute("data-action");
+            
+            // 1. On donne l'action au moteur de jeu
+            engine.setAction(e.target.getAttribute("data-action"));
+            
+            // 2. On met le bouton en surbrillance (optionnel, si tu veux garder "actif")
+            UI.resetActionButtons();
+            btn.classList.add("actif");
+            
+            // 3. ON VERROUILLE TOUTE L'INTERFACE IMMÉDIATEMENT
+            UI.lockAllActions();
+        });
+    });
 
     // Clic sur la grille de jeu
     window.addEventListener("pointerdown", (event) => {

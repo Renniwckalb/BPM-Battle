@@ -12,7 +12,7 @@
     <!-- Le Terrain de Jeu -->
     <canvas id="gameCanvas"></canvas>
 
-    <!-- STATS ADVERSAIRE (En haut à droite) -->
+    <!-- STATS ADVERSAIRE -->
     <div id="stats-p2" class="stats-container opponent-stats">
         <div class="hearts">
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
@@ -20,10 +20,10 @@
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
             <span class="extra-hp" style="display: none;">+0</span>
         </div>
-        <div class="energy-text">Énergie: <span id="energy-p2">0</span></div>
+        <div class="energy-text"><span data-i18n="energy">Énergie: </span><span id="energy-p2">0</span></div>
     </div>
 
-    <!-- STATS JOUEUR 1 (En bas à droite) -->
+    <!-- STATS JOUEUR -->
     <div id="stats-p1" class="stats-container player-stats">
         <div class="hearts">
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
@@ -31,66 +31,73 @@
             <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
             <span class="extra-hp" style="display: none;">+0</span>
         </div>
-        <div class="energy-text">Énergie: <span id="energy-p1">0</span></div>
+        <div class="energy-text"><span data-i18n="energy">Énergie: </span><span id="energy-p1">0</span></div>
     </div>
 
     <!-- BOUTONS D'ACTION -->
     <div id="ui-container">
-        <button class="btn-action" data-action="mouvement">Move</button>
-        <button class="btn-action" data-action="recharge">Recharge</button>
-        <button class="btn-action" data-action="attaque_normale">Attack</button>
-        <button class="btn-action" data-action="attaque_colonne">Special</button>
+        <button class="btn-action" data-action="mouvement" data-i18n="action_move">Déplacement</button>
+        <button class="btn-action" data-action="recharge" data-i18n="action_charge">Recharge</button>
+        <button class="btn-action" data-action="attaque_normale" data-i18n="action_attack">Attaque</button>
+        <button class="btn-action" data-action="attaque_colonne" data-i18n="action_special">Spécial</button>
     </div>
 
     <!-- ÉCRAN TITRE -->
     <div id="main-menu" class="screen-overlay">
         <h1>BPM Battle</h1>
         
-        <!-- Menu de base -->
+        <!-- DANS LE MENU PRINCIPAL -->
         <div id="menu-base" class="menu-actions">
-            <button id="btn-host-menu" class="btn-menu btn-green">Créer une partie</button>
-            <div class="menu-divider">--- OU ---</div>
-            <div class="join-container">
-                <input type="text" id="input-join-code" class="input-code" placeholder="Code (ex: 1234)">
-                <button id="btn-join" class="btn-menu btn-blue">Rejoindre</button>
-            </div>
+            <button id="btn-host-menu" class="btn-menu btn-green" data-i18n="btn_host">Créer une partie</button>
+            <div class="menu-divider" data-i18n="divider">--- OU ---</div>
+            <input type="text" id="input-join-code" class="input-code" data-i18n="placeholder_join" placeholder="Code (ex: 1234)">
+            <button id="btn-join" class="btn-menu btn-blue" data-i18n="btn_join">Rejoindre</button>
         </div>
 
         <!-- Menu Paramètres de l'Hôte -->
         <div id="menu-settings" class="menu-actions" style="display: none;">
-            <h2 style="margin: 0 0 15px 0;">Règles du jeu</h2>
+            <h2 style="margin: 0 0 15px 0;" data-i18n="rules_title">Règles du jeu</h2>
             
             <div class="setting-group">
-                <label>Points de vie :</label>
+                <label data-i18n="label_hp">Points de vie :</label>
                 <input type="number" id="setting-hp" class="input-code" value="3" min="1" max="10">
             </div>
             <div class="setting-group">
-                <label>Coût Attaque :</label>
+                <label data-i18n="label_atk">Coût Attaque :</label>
                 <input type="number" id="setting-atk" class="input-code" value="1" min="0" max="5">
             </div>
             <div class="setting-group">
-                <label>Coût Spécial :</label>
+                <label data-i18n="label_spe">Coût Spécial :</label>
                 <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
             </div>
 
-            <button id="btn-ai" class="btn-menu btn-purple" style="margin-top: 10px;">Jouer contre l'IA</button>
-            <button id="btn-host-start" class="btn-menu btn-green">Générer le code PvP</button>
-            <button id="btn-back-menu" class="btn-menu btn-blue">Retour</button>
+            <button id="btn-ai" class="btn-menu btn-purple" style="margin-top: 10px;" data-i18n="btn_ai">Jouer contre l'IA</button>
+            <button id="btn-host-start" class="btn-menu btn-green" data-i18n="btn_host_start">Générer le code PvP</button>
+            <button id="btn-back-menu" class="btn-menu btn-blue" data-i18n="btn_back">Retour</button>
             
             <p id="room-code-display" class="room-info" style="display:none;"></p>
+        </div>
+
+        <!-- MENU DE LANGUES -->
+        <div id="lang-container">
+            <div id="lang-menu" style="display: none;">
+                <button class="lang-option" data-lang="fr">🇫🇷 Français</button>
+                <button class="lang-option" data-lang="en">🇬🇧 English</button>
+            </div>
+            <button id="btn-lang" class="lang-toggle">🇫🇷</button>
         </div>
     </div>
 
     <!-- ÉCRAN DE FIN -->
     <div id="end-screen" class="screen-overlay" style="display: none;">
         <h1 id="end-message">Victoire !</h1>
-        <p id="rematch-waiting-message" style="display: none;">En attente de l'autre joueur...</p>
+        <p id="rematch-waiting-message" style="display: none;" data-i18n="waiting_rematch">En attente de l'autre joueur...</p>
         <div id="end-buttons" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <button id="btn-restart" class="btn-end btn-green">Rejouer</button>
-            <button id="btn-menu-principal" class="btn-end btn-blue">Menu Principal</button>
+            <button id="btn-restart" class="btn-menu btn-green" data-i18n="btn_rematch">Rejouer</button>
+            <button id="btn-menu-principal" class="btn-menu btn-blue" data-i18n="btn_main_menu">Menu Principal</button>
         </div>
     </div>
-
+    
     <!-- LIBRAIRIES ET SCRIPTS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="game.js"></script>

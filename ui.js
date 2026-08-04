@@ -1,4 +1,5 @@
 import { GameConfig } from './config.js';
+import { getText } from './lang.js';
 // --- GESTION DE L'INTERFACE UTILISATEUR (HTML/CSS) ---
 
 // Récupération de tous les éléments du DOM
@@ -23,7 +24,10 @@ export const DOM = {
     btnJoin: document.getElementById("btn-join"),
     codeDisplay: document.getElementById("room-code-display"),
     inputJoin: document.getElementById("input-join-code"),
-    boutons: document.querySelectorAll(".btn-action")
+    boutons: document.querySelectorAll(".btn-action"),
+    langMenu: document.getElementById("lang-menu"),
+    langOptions: document.querySelectorAll(".lang-option"),
+    btnLang: document.getElementById("btn-lang")
 };
 
 // Fonction interne pour gérer un joueur spécifique
@@ -58,32 +62,45 @@ export function updateHUD(myRole, p1, p2, isResolving) {
     updatePlayerHearts("p1", p1.hp);
     updatePlayerHearts("p2", p2.hp);
 
+    const btnMove = document.querySelector('[data-action="mouvement"]');
+    const btnRecharge = document.querySelector('[data-action="recharge"]');
     const btnAttack = document.querySelector('[data-action="attaque_normale"]');
     const btnSpecial = document.querySelector('[data-action="attaque_colonne"]');
     let myEnergy = (myRole === "p2") ? p2.energy : p1.energy;
 
-    if (myEnergy < GameConfig.COST_NORMAL_ATTACK || isResolving) btnAttack.classList.add("disabled");
-    else btnAttack.classList.remove("disabled");
+    if (isResolving) {
+        lockAllActions();
+    } else {
+        btnMove.classList.remove("disabled");
+        btnRecharge.classList.remove("disabled");
 
-    if (myEnergy < GameConfig.COST_SPECIAL_ATTACK || isResolving) btnSpecial.classList.add("disabled");
-    else btnSpecial.classList.remove("disabled");
+        if (myEnergy < GameConfig.COST_NORMAL_ATTACK) btnAttack.classList.add("disabled");
+        else btnAttack.classList.remove("disabled");
+
+        if (myEnergy < GameConfig.COST_SPECIAL_ATTACK) btnSpecial.classList.add("disabled");
+        else btnSpecial.classList.remove("disabled");
+    }
+}
+
+// Fonction pour verrouiller tous les boutons d'un coup
+export function lockAllActions() {
+    DOM.boutons.forEach(b => b.classList.add("disabled"));
+}
+
+// Actualise l'état des boutons d'actions
+export function resetActionButtons() {
+    DOM.boutons.forEach(b => b.classList.remove("actif"));
 }
 
 // Affiche écran de fin
 export function showGameOver(myRole, p1, p2) {
     DOM.endScreen.style.display = "flex";
-    DOM.btnRestart.style.display = "block";
-    DOM.rematchWaitingMessage.style.display = "none";
     
-    if (p1.hp <= 0 && p2.hp <= 0) {
-        DOM.endMessage.innerText = "Égalité !";
-        DOM.endMessage.style.color = "white";
-    } else if (p1.hp <= 0) {
-        DOM.endMessage.innerText = (myRole === "p1") ? "Défaite..." : "Victoire !";
-        DOM.endMessage.style.color = (myRole === "p1") ? "#F44336" : "#4CAF50";
-    } else if (p2.hp <= 0) {
-        DOM.endMessage.innerText = (myRole === "p1") ? "Victoire !" : "Défaite...";
-        DOM.endMessage.style.color = (myRole === "p1") ? "#4CAF50" : "#F44336";
+    // Utilisation des traductions dynamiques pour le message de fin !
+    if (myRole === "p1") {
+        DOM.endMessage.innerText = (p1.hp > 0) ? getText("win") : getText("lose");
+    } else {
+        DOM.endMessage.innerText = (p2.hp > 0) ? getText("win") : getText("lose");
     }
 }
 
@@ -110,9 +127,4 @@ export function prepareStartGame(myRole) {
         document.getElementById("stats-p1").className = "stats-container player-stats";
         document.getElementById("stats-p2").className = "stats-container opponent-stats";
     }
-}
-
-// Actualise l'état des bouttons d'actions
-export function resetActionButtons() {
-    DOM.boutons.forEach(b => b.classList.remove("actif"));
 }
