@@ -95,12 +95,15 @@ export function resetActionButtons() {
 // Affiche écran de fin
 export function showGameOver(myRole, p1, p2) {
     DOM.endScreen.style.display = "flex";
-    
-    // Utilisation des traductions dynamiques pour le message de fin !
-    if (myRole === "p1") {
-        DOM.endMessage.innerText = (p1.hp > 0) ? getText("win") : getText("lose");
-    } else {
-        DOM.endMessage.innerText = (p2.hp > 0) ? getText("win") : getText("lose");
+    if(p1.hp <= 0 && p2.hp <= 0){
+        DOM.endMessage.innerHTML = getText("draw");
+    }
+    else {
+        if (myRole === "p1") {
+            DOM.endMessage.innerText = (p1.hp > 0) ? getText("win") : getText("lose");
+        } else {
+            DOM.endMessage.innerText = (p2.hp > 0) ? getText("win") : getText("lose");
+        }
     }
 }
 

@@ -22,7 +22,8 @@ export const translations = {
         btn_main_menu: "Menu principal",
         code_display: "Code : ",
         win: "VICTOIRE !",
-        lose: "DÉFAITE..."
+        lose: "DÉFAITE...",
+        draw: "ÉGALITÉ !"
     },
     en: {
         btn_ai: "Play vs AI",
@@ -46,7 +47,8 @@ export const translations = {
         btn_main_menu: "Main Menu",
         code_display: "Code: ",
         win: "VICTORY!",
-        lose: "DEFEAT..."
+        lose: "DEFEAT...",
+        draw: "DRAW!"
     },
     zh: {
         btn_ai: "与AI对战",
@@ -70,7 +72,8 @@ export const translations = {
         btn_main_menu: "主菜单",
         code_display: "房间号：",
         win: "胜利！",
-        lose: "失败..."
+        lose: "失败...",
+        draw: "平局！"
     }
 };
 
