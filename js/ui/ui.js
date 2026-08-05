@@ -4,30 +4,44 @@ import { getText } from '../ui/lang.js';
 
 // Récupération de tous les éléments du DOM
 export const DOM = {
+    // Écran titre
     mainMenu: document.getElementById("main-menu"),
     menuBase: document.getElementById("menu-base"),
     menuSettings: document.getElementById("menu-settings"),
+    btnAI: document.getElementById("btn-ai"),
+    btnHost: document.getElementById("btn-host"),
+    btnJoin: document.getElementById("btn-join"),
+    codeDisplay: document.getElementById("room-code-display"),
+    inputJoin: document.getElementById("input-join-code"),
+
+    // Menu de création de partie
     btnHostMenu: document.getElementById("btn-host-menu"),
     btnHostStart: document.getElementById("btn-host-start"),
     btnBackMenu: document.getElementById("btn-back-menu"),
     settingHp: document.getElementById("setting-hp"),
     settingAtk: document.getElementById("setting-atk"),
     settingSpe: document.getElementById("setting-spe"),
+
+    // Ecran de fin
     endScreen: document.getElementById("end-screen"),
     endMessage: document.getElementById("end-message"),
     btnRestart: document.getElementById("btn-restart"),
     btnMenuPrincipal: document.getElementById("btn-menu-principal"),
     rematchWaitingMessage: document.getElementById("rematch-waiting-message"),
     endButtons: document.getElementById("end-buttons"),
-    btnAI: document.getElementById("btn-ai"),
-    btnHost: document.getElementById("btn-host"),
-    btnJoin: document.getElementById("btn-join"),
-    codeDisplay: document.getElementById("room-code-display"),
-    inputJoin: document.getElementById("input-join-code"),
+    
+    // Écran de combat
     boutons: document.querySelectorAll(".btn-action"),
+
+    // Menu de langues
     langMenu: document.getElementById("lang-menu"),
     langOptions: document.querySelectorAll(".lang-option"),
-    btnLang: document.getElementById("btn-lang")
+    btnLang: document.getElementById("btn-lang"),
+
+    // Écran de tutoriel
+    btnTutorial: document.getElementById("btn-tutorial"),
+    tutorialBox: document.getElementById("tutorial-box"),
+    tutorialMessage: document.getElementById("tutorial-message")
 };
 
 // Fonction interne pour gérer un joueur spécifique
@@ -118,6 +132,8 @@ export function showMainMenu() {
     DOM.btnAI.style.display = "block";
     DOM.btnBackMenu.style.display = "block";
     DOM.inputJoin.value = "";
+    DOM.tutorialBox.style.display = "none";
+    updateTutorialStep(0, 0);
 }
 
 // Prépare les éléments pour la début de partie
@@ -129,5 +145,32 @@ export function prepareStartGame(myRole) {
     } else {
         document.getElementById("stats-p1").className = "stats-container player-stats";
         document.getElementById("stats-p2").className = "stats-container opponent-stats";
+    }
+}
+
+// Met à jour le tutoriel et les surbrillances des boutons
+export function updateTutorialStep(stepNumber, p1Energy = 0) {
+    if (stepNumber > 0 && stepNumber <= 5) {
+        DOM.tutorialMessage.innerText = getText(`tut_step${stepNumber}`);
+    }
+
+    DOM.boutons.forEach(btn => btn.classList.remove("btn-tutorial-highlight"));
+
+    // Surbrillance des boutons selon l'étape du tutoriel
+    if (stepNumber === 1) {
+        document.querySelector('[data-action="mouvement"]').classList.add("btn-tutorial-highlight");
+    } 
+    else if (stepNumber === 2) {
+        document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
+    } 
+    else if (stepNumber === 3) {
+        document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
+    } 
+    else if (stepNumber === 4) {
+        if (p1Energy < 3) {
+            document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
+        } else {
+            document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
+        }
     }
 }

@@ -46,15 +46,27 @@
     <div id="main-menu" class="screen-overlay">
         <h1>BPM Battle</h1>
         
-        <!-- DANS LE MENU PRINCIPAL -->
+        <!-- MENU PRINCIPAL -->
         <div id="menu-base" class="menu-actions">
             <button id="btn-host-menu" class="btn-menu btn-green" data-i18n="btn_host">Créer une partie</button>
             <div class="menu-divider" data-i18n="divider">--- OU ---</div>
             <input type="text" id="input-join-code" class="input-code" data-i18n="placeholder_join" placeholder="Code (ex: 1234)">
             <button id="btn-join" class="btn-menu btn-blue" data-i18n="btn_join">Rejoindre</button>
+            
+            <button id="btn-tutorial" class="btn-menu btn-purple" data-i18n="btn_tutorial">Tutoriel</button>
+
+            <!-- MENU DE LANGUES -->
+            <div id="lang-container">
+                <div id="lang-menu" style="display: none;">
+                    <button class="lang-option" data-lang="fr">🇫🇷 Français</button>
+                    <button class="lang-option" data-lang="en">🇬🇧 English</button>
+                    <button class="lang-option" data-lang="zh">🇨🇳 中文</button>
+                </div>
+                <button id="btn-lang" class="lang-toggle">🇫🇷</button>
+            </div>
         </div>
 
-        <!-- Menu Paramètres de l'Hôte -->
+        <!-- MENU DE CRÉATION DE PARTIE -->
         <div id="menu-settings" class="menu-actions" style="display: none;">
             <h2 style="margin: 0 0 15px 0;" data-i18n="rules_title">Règles du jeu</h2>
             
@@ -77,16 +89,6 @@
             
             <p id="room-code-display" class="room-info" style="display:none;"></p>
         </div>
-
-        <!-- MENU DE LANGUES -->
-        <div id="lang-container">
-            <div id="lang-menu" style="display: none;">
-                <button class="lang-option" data-lang="fr">🇫🇷 Français</button>
-                <button class="lang-option" data-lang="en">🇬🇧 English</button>
-                <button class="lang-option" data-lang="zh">🇨🇳 中文</button>
-            </div>
-            <button id="btn-lang" class="lang-toggle">🇫🇷</button>
-        </div>
     </div>
 
     <!-- ÉCRAN DE FIN -->
@@ -99,6 +101,11 @@
         </div>
     </div>
     
+    <!-- ÉCRAN DE TUTORIEL -->
+     <div id="tutorial-box" class="tutorial-box" style="display: none;">
+        <p id="tutorial-message">Texte du tuto</p>
+    </div>
+
     <!-- LIBRAIRIES ET SCRIPTS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="js/game.js"></script>

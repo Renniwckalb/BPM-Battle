@@ -272,3 +272,39 @@ canvas {
     padding: 10px;
     margin: 0;
 }
+
+/* --- BOÎTE DU TUTORIEL --- */
+.tutorial-box {
+    position: absolute;
+    top: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #4CAF50;
+    border: 3px solid #4CAF50;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: clamp(16px, 4vw, 20px);
+    font-weight: bold;
+    text-align: center;
+    z-index: 50;
+    width: 80%;
+    max-width: 450px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    pointer-events: none;
+}
+
+/* --- ANIMATION TUTORIEL --- */
+@keyframes pulseHighlight {
+    0% { box-shadow: 0 0 0px #FFEB3B; border-color: #FFEB3B; }
+    50% { box-shadow: 0 0 15px #FFEB3B; border-color: #FFF; }
+    100% { box-shadow: 0 0 0px #FFEB3B; border-color: #FFEB3B; }
+}
+
+/* Classe ajoutée dynamiquement aux boutons */
+.btn-tutorial-highlight {
+    animation: pulseHighlight 1.5s infinite;
+    border-color: #FFEB3B !important;
+    color: #FFEB3B !important;
+    z-index: 20;
+}

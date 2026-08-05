@@ -31,10 +31,14 @@ export default class GameEngine {
         this.p1 = new Player(this.gridPlayer1, 1, 1, "#2196F3");
         this.p2 = new Player(this.gridPlayer2, 1, 1, "#FF9800");
 
-        // Écouteur pour la taille de l'écran
+        // La taille de l'écran
         window.addEventListener("resize", () => this.resizeCanvas());
         this.resizeCanvas();
 
+        // Tutoriel
+        this.tutorialStep = 0;
+
+        // Boucle de jeu
         this.gameLoop = this.gameLoop.bind(this);
         requestAnimationFrame(this.gameLoop);
     }
@@ -61,6 +65,12 @@ export default class GameEngine {
     startGame(mode, role) {
         this.gameMode = mode;
         this.myRole = role;
+        if (mode === "tutorial") {
+            this.tutorialStep = 1;
+            this.p2.hp = 99; // Mannequin invincible
+            UI.DOM.tutorialBox.style.display = "block";
+            UI.updateTutorialStep(this.tutorialStep, this.p1.energy);
+        }
         UI.prepareStartGame(this.myRole);
         this.gameState = "playing";
         this.resizeCanvas();
@@ -155,9 +165,9 @@ export default class GameEngine {
         this.actionActuelle = null;
         UI.resetActionButtons();
         
-        if (this.gameMode === "ai") { 
+       if (this.gameMode === "ai" || this.gameMode === "tutorial") { 
             this.p1Action = myActionChoice;
-            this.p2Action = Combat.generateAIPick(this.p1, this.p2);
+            this.p2Action = (this.gameMode === "ai") ? Combat.generateAIPick(this.p1, this.p2) : { type: "recharge" };
             this.resolveTurn();
         } else {
             if (this.myRole === "p1") this.p1Action = myActionChoice;
@@ -220,6 +230,24 @@ export default class GameEngine {
                     this.gridPlayer2.selectedCol = -1;
                     this.gridPlayer2.selectedRow = -1;
                     
+                    if (this.gameMode === "tutorial") {
+                        let advanced = false;
+                        if (this.tutorialStep === 1 && this.p1Action.type === "mouvement") advanced = true;
+                        if (this.tutorialStep === 2 && this.p1Action.type === "recharge") advanced = true;
+                        if (this.tutorialStep === 3 && this.p1Action.type === "attaque_normale") advanced = true;
+                        if (this.tutorialStep === 4 && this.p1Action.type === "attaque_colonne") advanced = true;
+
+                        if (advanced) {
+                            this.tutorialStep++;
+                            UI.updateTutorialStep(this.tutorialStep);
+                            
+                            // Fin du tutoriel
+                            if (this.tutorialStep === 5) {
+                                setTimeout(() => this.returnToMainMenu(), 3000);
+                            }
+                        }
+                        UI.updateTutorialStep(this.tutorialStep, this.p1.energy);
+                    }
                     if (this.p1.hp > 0 && this.p2.hp > 0) {
                         this.isResolving = false;
                         this.p1Action = null;

@@ -126,3 +126,9 @@ UI.DOM.btnMenuPrincipal.addEventListener("click", () => {
         engine.returnToMainMenu();
     }
 });
+
+// Lancer le tutoriel
+UI.DOM.btnTutorial.addEventListener("click", () => {
+    engine.resetGame();
+    engine.startGame("tutorial", "p1");
+});
