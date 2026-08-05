@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bpm-battle-v1.1.7.2';
+const CACHE_NAME = 'bpm-battle-v1.1.7.3';
 
 // Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [
@@ -10,22 +10,25 @@ const FILES_TO_CACHE = [
     './js/game.js',
     
     // Core
-    './js/core/engine.js',
     './js/core/config.js',
+    './js/core/engine.js',
     
     // Entities
-    './js/entities/player.js',
     './js/entities/grid.js',
+    './js/entities/player.js',
     
 
     // Systems
-    './js/systems/combat.js',
-    './js/systems/input.js',
-    './js/systems/network.js',
+    './js/system/combat.js',
+    './js/system/input.js',
+    './js/system/network.js',
     
     // UI
     './js/ui/ui.js',
     './js/ui/lang.js',
+
+    // Librairies externes
+    'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js'
 ];
 
 // INSTALLATION
