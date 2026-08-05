@@ -1,8 +1,8 @@
-import Grid from './grid.js';
-import Player from './player.js';
-import * as Combat from './combat.js';
-import * as UI from './ui.js';
-import * as Network from './network.js';
+import Grid from '../entities/grid.js';
+import Player from '../entities/player.js';
+import * as Combat from '../system/combat.js';
+import * as UI from '../ui/ui.js';
+import * as Network from '../system/network.js';
 import { GameConfig, updateConfig } from './config.js';
 
 export default class GameEngine {

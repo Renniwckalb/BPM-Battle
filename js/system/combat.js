@@ -1,4 +1,4 @@
-import { GameConfig } from './config.js';
+import { GameConfig } from '../core/config.js';
 
 export function generateAIPick(p1, p2) {
     let randomPick = Math.random();

@@ -1,5 +1,5 @@
-import { GameConfig } from './config.js';
-import * as UI from './ui.js';
+import { GameConfig } from '../core/config.js';
+import * as UI from '../ui/ui.js';
 
 export function setupControls(engine) {
     // Choix de l'action

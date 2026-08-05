@@ -1,4 +1,4 @@
-import { GameConfig } from './config.js';
+import { GameConfig } from '../core/config.js';
 
 export default class Player {
     constructor(grid, col, row, color) {

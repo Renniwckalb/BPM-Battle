@@ -1,9 +1,9 @@
-import * as UI from './ui.js';
-import * as Network from './network.js';
-import GameEngine from './engine.js';
-import { setupControls } from './input.js';
-import { GameConfig, updateConfig } from './config.js';
-import { setLanguage, getText, flags } from './lang.js';
+import * as UI from './ui/ui.js';
+import * as Network from './system/network.js';
+import GameEngine from './core/engine.js';
+import { setupControls } from './system/input.js';
+import { GameConfig, updateConfig } from './core/config.js';
+import { setLanguage, getText, flags } from './ui/lang.js';
 
 // Initialisation
 const engine = new GameEngine();

@@ -5,17 +5,29 @@ const FILES_TO_CACHE = [
     './',
     './index.html',
     './style.css',
-    './game.js',
-    './grid.js',
-    './player.js',
-    './combat.js',
-    './ui.js',
-    './network.js',
-    './engine.js',
-    './input.js',
-    './config.js',
     './manifest.json',
-    './lang.js'
+    
+    './js/game.js',
+    
+    // Core
+    './js/core/engine.js',
+    './js/core/config.js',
+    
+    // Entities
+    './js/entities/player.js',
+    './js/entities/grid.js',
+    
+    // Systems
+    './js/systems/combat.js',
+    './js/systems/input.js',
+    './js/systems/network.js',
+    
+    // UI
+    './js/ui/ui.js',
+    './js/ui/lang.js',
+    
+    // Librairies externes
+    'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js'
 ];
 
 // INSTALLATION
