@@ -5,25 +5,32 @@ export function setupControls(engine) {
     // Choix de l'action
     UI.DOM.boutons.forEach(btn => {
         btn.addEventListener("click", (e) => {
+            if (engine.gameMode === "tutorial" && engine.tutorialStep < 9) {
+                engine.advanceTutorial();
+                return; 
+            }
+
             // Empêche de cliquer si le bouton est déjà désactivé
             if (btn.classList.contains("disabled")) return; 
 
             const action = e.target.getAttribute("data-action");
-            
-            // 1. On donne l'action au moteur de jeu
+
             engine.setAction(e.target.getAttribute("data-action"));
-            
-            // 2. On met le bouton en surbrillance (optionnel, si tu veux garder "actif")
+
             UI.resetActionButtons();
             btn.classList.add("actif");
-            
-            // 3. ON VERROUILLE TOUTE L'INTERFACE IMMÉDIATEMENT
+
             UI.lockAllActions();
         });
     });
 
     // Clic sur la grille de jeu
     window.addEventListener("pointerdown", (event) => {
+        if (engine.gameMode === "tutorial" && engine.tutorialStep < 9) {
+            engine.advanceTutorial();
+            return;
+        }
+
         if (engine.gameState !== "playing" || engine.isResolving || !engine.actionActuelle) return;
         if (event.target.closest('#ui-container')) return;
 

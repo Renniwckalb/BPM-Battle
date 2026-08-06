@@ -148,29 +148,39 @@ export function prepareStartGame(myRole) {
     }
 }
 
-// Met à jour le tutoriel et les surbrillances des boutons
-export function updateTutorialStep(stepNumber, p1Energy = 0) {
-    if (stepNumber > 0 && stepNumber <= 5) {
-        DOM.tutorialMessage.innerText = getText(`tut_step${stepNumber}`);
+// Gère le texte et la surbrillance dynamique
+export function updateTutorialStep(stepNumber, p1Energy = 0, isFail = false) {
+    // Mise à jour du texte
+    if (stepNumber > 0 && stepNumber <= 15) {
+        let textKey = isFail ? `tut_fail_${stepNumber}` : `tut_${stepNumber}`;
+        DOM.tutorialMessage.innerText = getText(textKey);
     }
 
+    // Nettoyage TOTAL de toutes les surbrillances
+    document.querySelectorAll('.highlight-ui').forEach(el => el.classList.remove("highlight-ui"));
     DOM.boutons.forEach(btn => btn.classList.remove("btn-tutorial-highlight"));
 
-    // Surbrillance des boutons selon l'étape du tutoriel
-    if (stepNumber === 1) {
+    // Allumage sélectif selon l'étape
+    if (stepNumber === 5) { // Coeurs
+        document.querySelectorAll('.hearts').forEach(el => el.classList.add("highlight-ui"));
+    } 
+    else if (stepNumber === 6) { // Energie
+        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+    } 
+    else if (stepNumber === 7) { // Boutons
+        DOM.boutons.forEach(btn => btn.classList.add("btn-tutorial-highlight"));
+    } 
+    else if (stepNumber === 9) { // Pratique : Déplacement
         document.querySelector('[data-action="mouvement"]').classList.add("btn-tutorial-highlight");
     } 
-    else if (stepNumber === 2) {
+    else if (stepNumber === 10 || stepNumber === 12) { // Pratique : Recharge
         document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
     } 
-    else if (stepNumber === 3) {
+    else if (stepNumber === 11 || stepNumber === 13) { // Pratique : Attaque Normale
         document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
     } 
-    else if (stepNumber === 4) {
-        if (p1Energy < 3) {
-            document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
-        } else {
-            document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
-        }
+    else if (stepNumber === 14) { // Pratique : Attaque Spéciale
+        if (p1Energy < 3) document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
+        else document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
     }
 }

@@ -32,7 +32,7 @@ export function executeAction(attaquant, defenseur, grilleAttaquant, grilleDefen
     if (action.type === "attaque_colonne") {
         // Déduction de l'énergie dynamique
         attaquant.energy -= GameConfig.COST_SPECIAL_ATTACK;
-        grilleDefenseur.flashCell(action.col);
+        grilleDefenseur.flashColumn(action.col);
         if (defenseur.col === action.col) takeDamage(defenseur);
     }
 }

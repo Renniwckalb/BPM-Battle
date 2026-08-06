@@ -308,3 +308,17 @@ canvas {
     color: #FFEB3B !important;
     z-index: 20;
 }
+
+/* --- SURBRILLANCE DES ÉLÉMENTS UI (TUTORIEL) --- */
+@keyframes uiHighlight {
+    0% { filter: drop-shadow(0 0 0px rgba(255, 235, 59, 0)); box-shadow: 0 0 0px 4px rgba(255, 235, 59, 0); }
+    50% { filter: drop-shadow(0 0 10px rgba(255, 235, 59, 1)); box-shadow: 0 0 15px 4px rgba(255, 235, 59, 1); background: rgba(255, 235, 59, 0.2); }
+    100% { filter: drop-shadow(0 0 0px rgba(255, 235, 59, 0)); box-shadow: 0 0 0px 4px rgba(255, 235, 59, 0); }
+}
+
+.highlight-ui {
+    animation: uiHighlight 1.5s infinite;
+    border-radius: 8px;
+    z-index: 100;
+    padding: 5px;
+}
