@@ -180,8 +180,8 @@ export default class GameEngine {
             if (this.tutorialStep === 11 && myActionChoice.type === "attaque_normale") {
                 if (myActionChoice.col === this.p2.col && myActionChoice.row === this.p2.row) {
                     this.tutorialValidTarget = true;
-                    let dodgeCol = (myActionChoice.col === 0) ? 2 : 0; 
-                    let dodgeRow = (myActionChoice.row === 0) ? 2 : 0;
+                    let dodgeCol = 2; 
+                    let dodgeRow = 2;
                     this.p2Action = { type: "mouvement", col: dodgeCol, row: dodgeRow };
                 } else {
                     this.p2Action = { type: "recharge" }; 
