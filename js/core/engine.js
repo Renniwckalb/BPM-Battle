@@ -3,6 +3,7 @@ import Player from '../entities/player.js';
 import * as Combat from '../system/combat.js';
 import * as UI from '../ui/ui.js';
 import * as Network from '../system/network.js';
+import TutorialManager from '../systems/tutorial.js';
 import { GameConfig, updateConfig } from './config.js';
 
 export default class GameEngine {
@@ -36,9 +37,11 @@ export default class GameEngine {
         this.resizeCanvas();
 
         // Tutoriel
-        this.tutorialStep = 0;
+/*        this.tutorialStep = 0;
         this.tutorialFail = false;
         this.tutorialValidTarget = false;
+*/
+        this.tutorial = new TutorialManager(this);
 
         // Boucle de jeu
         this.gameLoop = this.gameLoop.bind(this);
@@ -68,11 +71,7 @@ export default class GameEngine {
         this.gameMode = mode;
         this.myRole = role;
         if (mode === "tutorial") {
-            this.tutorialStep = 1;
-            this.tutorialFail = false;
-            this.p2.hp = 99;
-            UI.DOM.tutorialBox.style.display = "block";
-            UI.updateTutorialStep(this.tutorialStep, this.p1.energy);
+            this.tutorial.start();
         }
         UI.prepareStartGame(this.myRole);
         this.gameState = "playing";
@@ -174,22 +173,7 @@ export default class GameEngine {
             this.resolveTurn();
         }
         else if (this.gameMode === "tutorial") { 
-            this.p1Action = myActionChoice;
-            this.tutorialValidTarget = false;
-            
-            if (this.tutorialStep === 11 && myActionChoice.type === "attaque_normale") {
-                if (myActionChoice.col === this.p2.col && myActionChoice.row === this.p2.row) {
-                    this.tutorialValidTarget = true;
-                    let dodgeCol = 2; 
-                    let dodgeRow = 2;
-                    this.p2Action = { type: "mouvement", col: dodgeCol, row: dodgeRow };
-                } else {
-                    this.p2Action = { type: "recharge" }; 
-                }
-            } else {
-                this.p2Action = { type: "recharge" }; 
-            }
-            
+            this.tutorial.interceptAction(myActionChoice);
             this.resolveTurn();
         }
         else {
@@ -231,15 +215,7 @@ export default class GameEngine {
 
     // Avancer le tutoriel
     advanceTutorial() {
-        if (this.tutorialStep < 8) {
-            this.tutorialStep++;
-            UI.updateTutorialStep(this.tutorialStep, this.p1.energy, false);
-        } else if (this.tutorialStep === 8) {
-            this.tutorialStep++;
-            this.actionActuelle = null;
-            UI.resetActionButtons();
-            UI.updateTutorialStep(this.tutorialStep, this.p1.energy, false);
-        }
+        if (this.tutorial) this.tutorial.advanceClick();
     }
 
     // Execute les actions choisis par les joueurs
@@ -265,72 +241,8 @@ export default class GameEngine {
                     
                     this.gridPlayer2.selectedCol = -1;
                     this.gridPlayer2.selectedRow = -1;
-                    
-                    if (this.gameMode === "tutorial" && this.tutorialStep >= 9) {
-                        let previousFail = this.tutorialFail; 
-                        this.tutorialFail = false; 
-
-                        if (this.tutorialStep === 9) {
-                            if (this.p1Action.type === "mouvement") this.tutorialStep++;
-                            else this.tutorialFail = true;
-                        }
-                        else if (this.tutorialStep === 10) {
-                            if (this.p1Action.type === "recharge") this.tutorialStep++;
-                            else this.tutorialFail = true;
-                        }
-                        else if (this.tutorialStep === 11) {
-                            if (this.p1Action.type === "attaque_normale") {
-                                if (this.tutorialValidTarget) {
-                                    this.tutorialStep++;
-                                } else {
-                                    this.tutorialFail = true;
-                                    this.p1.energy++;
-                                }
-                            }
-                            else this.tutorialFail = true;
-                        }
-                        else if (this.tutorialStep === 12) {
-                            if (this.p1Action.type === "recharge") this.tutorialStep++; 
-                            else this.tutorialFail = true;
-                        }
-                        else if (this.tutorialStep === 13) {
-                            if (this.p1Action.type === "attaque_normale") {
-                                if (this.p1Action.col === this.p2.col && this.p1Action.row === this.p2.row) {
-                                    this.tutorialStep++;
-                                } else {
-                                    this.tutorialFail = true;
-                                    this.p1.energy++;
-                                }
-                            }
-                            else this.tutorialFail = true;
-                        }
-                        else if (this.tutorialStep === 14) {
-                            if (this.p1Action.type === "attaque_colonne") {
-                                if (this.p1Action.col === this.p2.col) {
-                                    this.tutorialFail = false; 
-                                    this.tutorialStep = 15;    
-                                    
-                                    setTimeout(() => {
-                                        if(typeof this.returnToMainMenu === "function") {
-                                            this.returnToMainMenu();
-                                        } else {
-                                            UI.showMainMenu(); 
-                                        }
-                                    }, 4000); 
-                                } else {
-                                    this.tutorialFail = true;
-                                    this.p1.energy += 3;
-                                }
-                            } 
-                            else if (this.p1Action.type === "recharge") {
-                                this.tutorialFail = previousFail; 
-                            }
-                            else {
-                                this.tutorialFail = true;
-                            }
-                        }
-                        
-                        UI.updateTutorialStep(this.tutorialStep, this.p1.energy, this.tutorialFail);
+                    if (this.gameMode === "tutorial") {
+                        this.tutorial.verifyTurn();
                     }
                     if (this.p1.hp > 0 && this.p2.hp > 0) {
                         this.isResolving = false;
@@ -360,25 +272,8 @@ export default class GameEngine {
         this.p2.draw(this.ctx);
 
         // Surbrillance Tutoriel sur le Canvas
-        if (this.gameMode === "tutorial" && this.tutorialStep >= 2 && this.tutorialStep <= 4) {
-            this.ctx.save();
-            this.ctx.strokeStyle = "#FFEB3B";
-            this.ctx.lineWidth = 6;
-            this.ctx.setLineDash([15, 10]);
-            this.ctx.lineDashOffset = -(Date.now() / 100); 
-            
-            if (this.tutorialStep === 2) { // Joueur
-                let px = this.gridPlayer1.x + (this.p1.visualCol * this.gridPlayer1.cellSize) + (this.gridPlayer1.cellSize / 2);
-                let py = this.gridPlayer1.y + (this.p1.visualRow * this.gridPlayer1.cellSize) + (this.gridPlayer1.cellSize / 2);
-                this.ctx.beginPath(); this.ctx.arc(px, py, this.gridPlayer1.cellSize * 0.6, 0, Math.PI * 2); this.ctx.stroke();
-            } else if (this.tutorialStep === 3) { // Grille
-                this.ctx.strokeRect(this.gridPlayer1.x - 5, this.gridPlayer1.y - 5, (this.gridPlayer1.cols * this.gridPlayer1.cellSize) + 10, (this.gridPlayer1.rows * this.gridPlayer1.cellSize) + 10);
-            } else if (this.tutorialStep === 4) { // Adversaire
-                let px = this.gridPlayer2.x + (this.p2.visualCol * this.gridPlayer2.cellSize) + (this.gridPlayer2.cellSize / 2);
-                let py = this.gridPlayer2.y + (this.p2.visualRow * this.gridPlayer2.cellSize) + (this.gridPlayer2.cellSize / 2);
-                this.ctx.beginPath(); this.ctx.arc(px, py, this.gridPlayer2.cellSize * 0.6, 0, Math.PI * 2); this.ctx.stroke();
-            }
-            this.ctx.restore();
+        if (this.gameMode === "tutorial") {
+            this.tutorial.drawHighlight(this.ctx);
         }
         
         UI.updateHUD(this.myRole, this.p1, this.p2, this.isResolving);

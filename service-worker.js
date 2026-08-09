@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bpm-battle-v1.1.8.2';
+const CACHE_NAME = 'bpm-battle-v1.1.8.3';
 
 // Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [
@@ -22,6 +22,7 @@ const FILES_TO_CACHE = [
     './js/system/combat.js',
     './js/system/input.js',
     './js/system/network.js',
+    './js/systems/tutorial.js',
     
     // UI
     './js/ui/ui.js',
