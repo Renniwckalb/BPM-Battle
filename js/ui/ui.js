@@ -177,10 +177,12 @@ export function updateTutorialStep(stepNumber, p1Energy = 0, isFail = false) {
         document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
     } 
     else if (stepNumber === 11 || stepNumber === 13) { // Pratique : Attaque Normale
+        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
         document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
     } 
     else if (stepNumber === 14) { // Pratique : Attaque Spéciale
         if (p1Energy < 3) document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
         else document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
+        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
     }
 }
