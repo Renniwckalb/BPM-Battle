@@ -268,7 +268,7 @@ canvas {
 }
 
 .setting-group .input-code {
-    width: 60px;
+    width: 90px;
     padding: 10px;
     margin: 0;
 }
@@ -301,7 +301,6 @@ canvas {
     100% { box-shadow: 0 0 0px #FFEB3B; border-color: #FFEB3B; }
 }
 
-/* Classe ajoutée dynamiquement aux boutons */
 .btn-tutorial-highlight {
     animation: pulseHighlight 1.5s infinite;
     border-color: #FFEB3B !important;
@@ -309,7 +308,7 @@ canvas {
     z-index: 20;
 }
 
-/* --- SURBRILLANCE DES ÉLÉMENTS UI (TUTORIEL) --- */
+/* --- SURBRILLANCE DES ÉLÉMENTS UI  --- */
 @keyframes uiHighlight {
     0% { filter: drop-shadow(0 0 0px rgba(255, 235, 59, 0)); box-shadow: 0 0 0px 4px rgba(255, 235, 59, 0); }
     50% { filter: drop-shadow(0 0 10px rgba(255, 235, 59, 1)); box-shadow: 0 0 15px 4px rgba(255, 235, 59, 1); background: rgba(255, 235, 59, 0.2); }
@@ -321,4 +320,47 @@ canvas {
     border-radius: 8px;
     z-index: 100;
     padding: 5px;
+}
+
+/* --- MENU SETTINGS ET BPM --- */
+
+#bpm-advanced-settings {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#menu-settings {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    overflow: hidden;
+    padding-bottom: 0; 
+}
+
+.settings-scroll-area {
+    flex: 1;
+    overflow-y: auto; 
+    overflow-x: hidden;
+    padding-right: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.settings-buttons-area {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-shrink: 0;
+    width: 100%;
+    align-items: center;
+}
+
+.settings-scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+.settings-scroll-area::-webkit-scrollbar-thumb {
+    background: #888; 
+    border-radius: 10px;
 }

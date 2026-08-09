@@ -54,7 +54,12 @@ export const translations = {
         tut_fail_13: "Raté ! Il faut l'attaquer de nouveau en utilisant ATTAQUE.",
         tut_14: "Touché ! Maintenant, RECHARGE jusqu'à 3 d'énergie et lance une attaque SPÉCIALE.",
         tut_fail_14: "Concentre-toi ! Il faut l'attaquer de nouveau en utilisant une attaque SPÉCIAL !",
-        tut_15: "Félicitations, tu maîtrises les bases ! Retour au menu..."
+        tut_15: "Félicitations, tu maîtrises les bases ! Retour au menu...",
+
+        // Mode BPM
+        label_bpm_mode: "Mode Rythme (BPM) :",
+        label_bpm_tempo: "Vitesse (ms) :",
+        label_bpm_queue: "Taille de la pile :"
     },
     en: {
         // Ecran Titre
@@ -108,7 +113,12 @@ export const translations = {
         tut_fail_13: "Missed! You need to attack them again using ATTACK.",
         tut_14: "Hit! Now, RECHARGE up to 3 energy and launch a SPECIAL attack.",
         tut_fail_14: "Focus! You need to attack them again using a SPECIAL attack!",
-        tut_15: "Congratulations, you've mastered the basics! Returning to menu..."
+        tut_15: "Congratulations, you've mastered the basics! Returning to menu...",
+
+        // Mode BPM
+        label_bpm_mode: "Rhythm Mode (BPM):",
+        label_bpm_tempo: "Speed (ms):",
+        label_bpm_queue: "Queue Size:"
     },
     zh: {
         // Ecran Titre
@@ -164,7 +174,12 @@ export const translations = {
         tut_fail_13: "未命中！你需要再次使用攻击来打击他。",
         tut_14: "命中了！现在充能到3点能量，然后发动特殊攻击。",
         tut_fail_14: "集中注意力！你需要再次使用特殊攻击来打击他！",
-        tut_15: "恭喜，你已经掌握了基础操作！返回菜单..."
+        tut_15: "恭喜，你已经掌握了基础操作！返回菜单...",
+
+        // Mode BPM
+        label_bpm_mode: "节奏模式 (BPM)：",
+        label_bpm_tempo: "速度 (毫秒)：",
+        label_bpm_queue: "队列大小："
     }
 };
 

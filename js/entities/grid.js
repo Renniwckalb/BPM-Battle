@@ -61,6 +61,116 @@ export default class Grid {
         }
     }
 
+    // Dessin de la pi
+    drawHideQueue(ctx, queue, queueSize, playerColor, side) {
+        if (!queue) return;
+
+        let queueBoxSize = Math.min(30, this.cellSize * 0.8);
+        let queueSpacing = 5;
+
+        // On calcule X dynamiquement : à gauche ou à droite de la grille
+        let queueX = (side === "left") 
+            ? this.x - queueBoxSize - 15 
+            : this.x + (this.cols * this.cellSize) + 15;
+        let queueY = this.y;
+
+        for (let i = 0; i < queueSize; i++) {
+            let act = queue[i];
+            let boxY = queueY + (i * (queueBoxSize + queueSpacing));
+            
+            // Fond de la case
+            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+            ctx.fillRect(queueX, boxY, queueBoxSize, queueBoxSize);
+            ctx.strokeStyle = "#555";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(queueX, boxY, queueBoxSize, queueBoxSize);
+
+            // Dessin de l'attaque
+            if (act) {
+                if (act.type === "attaque_normale") {
+                    ctx.fillStyle = playerColor;
+                    ctx.beginPath();
+                    ctx.arc(queueX + queueBoxSize/2, boxY + queueBoxSize/2, queueBoxSize/3, 0, Math.PI*2);
+                    ctx.fill();
+                } 
+                else if (act.type === "attaque_colonne") {
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(queueX + 4, boxY + 4, queueBoxSize - 8, queueBoxSize - 8);
+                }
+            }
+        }
+    }
+
+    // Dessin de la pile BPM
+    drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0) {
+        if (!queue) return;
+
+        // Calcul des dimensions pour la mini-grille
+        let miniCellSize = Math.max(10, this.cellSize / 4);
+        let miniGridWidth = this.cols * miniCellSize;
+        let miniGridHeight = this.rows * miniCellSize;
+        let queueSpacing = 15;
+        
+        // Hauteur totale occupée par une case dans la file
+        let slotHeight = miniGridHeight + queueSpacing;
+        
+        // Position X (À gauche pour J1, à droite pour J2)
+        let queueX = (side === "left") 
+            ? this.x - miniGridWidth - 20 
+            : this.x + (this.cols * this.cellSize) + 20;
+        let queueY = this.y;
+
+        // Boucle sur la file d'attente
+        for (let i = 0; i < queueSize; i++) {
+            let act = queue[i];
+            let boxY = queueY + ((i + slideAnim) * slotHeight);
+
+            // Effet fondu
+            let alpha = 1.0;
+            if (slideAnim > 0 && i === queueSize - 1) {
+                alpha = 1.0 - slideAnim; // Passe de 0 (invisible) à 1 (visible) pendant l'animation
+            }
+            ctx.globalAlpha = alpha;
+
+            // Dessin de chaque case de la mini-grille
+            for (let r = 0; r < this.rows; r++) {
+                for (let c = 0; c < this.cols; c++) {
+                    let cellX = queueX + (c * miniCellSize);
+                    let cellY = boxY + (r * miniCellSize);
+
+                    // Fond sombre de base pour chaque petite case
+                    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                    ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                    
+                    // Bordure de la petite case
+                    ctx.strokeStyle = "#555";
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(cellX, cellY, miniCellSize, miniCellSize);
+
+                    // Si une attaque est prévue, on allume la/les bonne(s) case(s) !
+                    if (act) {
+                        // Attaque normale : cible une case précise
+                        if (act.type === "attaque_normale" && act.col === c && act.row === r) {
+                            ctx.fillStyle = playerColor;
+                            ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                        } 
+                        // Attaque spéciale : cible toute une colonne
+                        else if (act.type === "attaque_colonne" && act.col === c) {
+                            ctx.fillStyle = "red";
+                            ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                        }
+                    }
+                }
+            }
+
+            // Bordure globale autour de la mini-grille entière pour faire propre
+            ctx.strokeStyle = "#FFF";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(queueX, boxY, miniGridWidth, miniGridHeight);
+            ctx.globalAlpha = 1.0;
+        }
+    }
+
     // Détecte la case sélectionnée
     getClickedCell(clickX, clickY) {
         let width = this.cols * this.cellSize;

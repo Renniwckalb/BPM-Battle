@@ -41,7 +41,11 @@ export const DOM = {
     // Écran de tutoriel
     btnTutorial: document.getElementById("btn-tutorial"),
     tutorialBox: document.getElementById("tutorial-box"),
-    tutorialMessage: document.getElementById("tutorial-message")
+    tutorialMessage: document.getElementById("tutorial-message"),
+
+    // Menu BPM
+    bpmCheckbox: document.getElementById("setting-bpm-mode"),
+    bpmSettings: document.getElementById("bpm-advanced-settings")
 };
 
 // Fonction interne pour gérer un joueur spécifique

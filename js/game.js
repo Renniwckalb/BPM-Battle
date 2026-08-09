@@ -1,7 +1,7 @@
 import * as UI from './ui/ui.js';
-import * as Network from './system/network.js';
+import * as Network from './systems/network.js';
 import GameEngine from './core/engine.js';
-import { setupControls } from './system/input.js';
+import { setupControls } from './systems/input.js';
 import { GameConfig, updateConfig } from './core/config.js';
 import { setLanguage, getText, flags } from './ui/lang.js';
 
@@ -14,7 +14,10 @@ UI.DOM.btnAI.addEventListener("click", () => {
     updateConfig({
         MAX_HP: parseInt(UI.DOM.settingHp.value),
         COST_NORMAL_ATTACK: parseInt(UI.DOM.settingAtk.value),
-        COST_SPECIAL_ATTACK: parseInt(UI.DOM.settingSpe.value)
+        COST_SPECIAL_ATTACK: parseInt(UI.DOM.settingSpe.value),
+        MODE_BPM: document.getElementById("setting-bpm-mode").checked,
+        BPM_TEMPO: parseInt(document.getElementById("setting-bpm-tempo").value),
+        BPM_QUEUE_SIZE: parseInt(document.getElementById("setting-bpm-queue").value)
     });
     
     engine.resetGame();
@@ -131,4 +134,9 @@ UI.DOM.btnMenuPrincipal.addEventListener("click", () => {
 UI.DOM.btnTutorial.addEventListener("click", () => {
     engine.resetGame();
     engine.startGame("tutorial", "p1");
+});
+
+// Cache le menu BPM
+UI.DOM.bpmCheckbox.addEventListener("change", (e) => {
+    UI.DOM.bpmSettings.style.display = e.target.checked ? "block" : "none";
 });

@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#1e1e1e">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:,">
     <title>BPM Battle</title>
 </head>
 <body>
@@ -68,26 +69,56 @@
 
         <!-- MENU DE CRÉATION DE PARTIE -->
         <div id="menu-settings" class="menu-actions" style="display: none;">
-            <h2 style="margin: 0 0 15px 0;" data-i18n="rules_title">Règles du jeu</h2>
             
-            <div class="setting-group">
-                <label data-i18n="label_hp">Points de vie :</label>
-                <input type="number" id="setting-hp" class="input-code" value="3" min="1" max="10">
-            </div>
-            <div class="setting-group">
-                <label data-i18n="label_atk">Coût Attaque :</label>
-                <input type="number" id="setting-atk" class="input-code" value="1" min="0" max="5">
-            </div>
-            <div class="setting-group">
-                <label data-i18n="label_spe">Coût Spécial :</label>
-                <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
+            <!-- ZONE PARAMÈTRES -->
+            <div class="settings-scroll-area">
+                <h2 style="margin: 0 0 15px 0;" data-i18n="rules_title">Règles du jeu</h2>
+                
+                <!-- Paramètres de base -->
+                <div class="setting-group">
+                    <label data-i18n="label_hp">Points de vie :</label>
+                    <input type="number" id="setting-hp" class="input-code" value="3" min="1" max="10">
+                </div>
+                <div class="setting-group">
+                    <label data-i18n="label_atk">Coût Attaque :</label>
+                    <input type="number" id="setting-atk" class="input-code" value="1" min="0" max="5">
+                </div>
+                <div class="setting-group">
+                    <label data-i18n="label_spe">Coût Spécial :</label>
+                    <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
+                </div>
+
+                <!-- SECTION BPM  -->
+                <hr style="width: 100%; border-color: #555; margin: 10px 0;">
+                
+                <div class="setting-group">
+                    <label data-i18n="label_bpm_mode">Mode Rythme (BPM) :</label>
+                    <input type="checkbox" id="setting-bpm-mode" style="width: 25px; height: 25px;">
+                </div>
+                
+                <!-- Paramètres BPM -->
+                <div id="bpm-advanced-settings" style="display: none;">
+                    <div class="setting-group">
+                        <label data-i18n="label_bpm_tempo">Vitesse (ms) :</label>
+                        <input type="number" id="setting-bpm-tempo" class="input-code" value="1000" min="300" max="3000" step="100">
+                    </div>
+                    <div class="setting-group">
+                        <label data-i18n="label_bpm_queue">Taille de la pile :</label>
+                        <input type="number" id="setting-bpm-queue" class="input-code" value="2" min="1" max="5">
+                    </div>
+                </div>
+                <hr style="width: 100%; border-color: #555; margin: 10px 0;">
             </div>
 
-            <button id="btn-ai" class="btn-menu btn-purple" style="margin-top: 10px;" data-i18n="btn_ai">Jouer contre l'IA</button>
-            <button id="btn-host-start" class="btn-menu btn-green" data-i18n="btn_host_start">Générer le code PvP</button>
-            <button id="btn-back-menu" class="btn-menu btn-blue" data-i18n="btn_back">Retour</button>
+            <!-- ZONE BOUTONS -->
+            <div class="settings-buttons-area">
+                <button id="btn-ai" class="btn-menu btn-purple" data-i18n="btn_ai">Jouer contre l'IA</button>
+                <button id="btn-host-start" class="btn-menu btn-green" data-i18n="btn_host_start">Générer le code PvP</button>
+                <button id="btn-back-menu" class="btn-menu btn-blue" data-i18n="btn_back">Retour</button>
+                
+                <p id="room-code-display" class="room-info" style="display:none;"></p>
+            </div>
             
-            <p id="room-code-display" class="room-info" style="display:none;"></p>
         </div>
     </div>
 
