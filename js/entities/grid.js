@@ -102,7 +102,7 @@ export default class Grid {
     }
 
     // Dessin de la pile BPM
-    drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0) {
+    drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0, direction = "up") {
         if (!queue) return;
 
         // Calcul des dimensions pour la mini-grille
@@ -123,12 +123,14 @@ export default class Grid {
         // Boucle sur la file d'attente
         for (let i = 0; i < queueSize; i++) {
             let act = queue[i];
-            let boxY = queueY + ((i + slideAnim) * slotHeight);
+            let displayIndex = (direction === "down") ? (queueSize - 1 - i) : i;
+            let boxY = queueY + ((displayIndex + (direction === "down" ? -slideAnim : slideAnim)) * slotHeight);
 
             // Effet fondu
             let alpha = 1.0;
             if (slideAnim > 0 && i === queueSize - 1) {
-                alpha = 1.0 - slideAnim; // Passe de 0 (invisible) à 1 (visible) pendant l'animation
+                if (direction === "down" && i === 0) alpha = slideAnim;
+                else if (direction === "up" && i === queueSize - 1) alpha = 1.0 - slideAnim;
             }
             ctx.globalAlpha = alpha;
 

@@ -72,7 +72,11 @@ UI.DOM.btnHostStart.addEventListener("click", () => {
     updateConfig({
         MAX_HP: parseInt(UI.DOM.settingHp.value),
         COST_NORMAL_ATTACK: parseInt(UI.DOM.settingAtk.value),
-        COST_SPECIAL_ATTACK: parseInt(UI.DOM.settingSpe.value)
+        COST_SPECIAL_ATTACK: parseInt(UI.DOM.settingSpe.value),
+
+        MODE_BPM: document.getElementById("setting-bpm-mode").checked,
+        BPM_TEMPO: parseInt(document.getElementById("setting-bpm-tempo").value),
+        BPM_QUEUE_SIZE: parseInt(document.getElementById("setting-bpm-queue").value)
     });
 
     Network.hostGame(

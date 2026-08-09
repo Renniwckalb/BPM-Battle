@@ -184,7 +184,7 @@ export default class GameEngine {
                 this.currentP2Action = Combat.generateAIPick(this.p1, this.p2);
             }
             
-            if (this.gameMode === "network") {
+            if (this.gameMode === "pvp") {
                 Network.sendData(myActionChoice);
             }
             return;
@@ -219,16 +219,15 @@ export default class GameEngine {
             this.returnToMainMenu();
         } 
         else {
+            // Réception pour le mode BPM
             if (GameConfig.MODE_BPM) {
-
-                if (this.myRole === "p1") this.currentP1Action = myActionChoice;
-                else this.currentP2Action = myActionChoice;
-
-                if (this.gameMode === "network") {
-                Network.sendData(myActionChoice);
+                // On lit "data" (l'action reçue) et on l'assigne à l'ADVERSAIRE
+                if (this.myRole === "p1") this.currentP2Action = data;
+                if (this.myRole === "p2") this.currentP1Action = data;
+                
+                return; // On arrête ici, le métronome se chargera de la résolution
             }
-            return;
-            }
+            // Réception pour le mode Classique
             else {
                 if (this.myRole === "p1") this.p2Action = data;
                 if (this.myRole === "p2") this.p1Action = data;
@@ -352,9 +351,12 @@ export default class GameEngine {
             this.queueSlideAnim = 0; // On l'arrête complètement pour éviter les calculs inutiles
         }
 
+        let p1Direction = (this.myRole === "p2") ? "up" : "down";
+        let p2Direction = (this.myRole === "p2") ? "down" : "up";
+
         // On envoie la valeur d'animation (queueSlideAnim) aux grilles
-        this.gridPlayer1.drawQueue(ctx, this.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p1.color, "left", this.queueSlideAnim);
-        this.gridPlayer2.drawQueue(ctx, this.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p2.color, "right", this.queueSlideAnim);
+        this.gridPlayer1.drawQueue(ctx, this.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p2.color, "left", this.queueSlideAnim, p1Direction);
+        this.gridPlayer2.drawQueue(ctx, this.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p1.color, "right", this.queueSlideAnim, p2Direction);
     }
 
     startBpmLoop() {
