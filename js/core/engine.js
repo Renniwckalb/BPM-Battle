@@ -184,8 +184,10 @@ export default class GameEngine {
                 this.currentP2Action = Combat.generateAIPick(this.p1, this.p2);
             }
             
+            // MULTIJOUEUR 
             if (this.gameMode === "pvp") {
-                Network.sendData(myActionChoice);
+                Network.sendData({ type: "bpm_action", action: myActionChoice });
+                this.localActionReady = true;
             }
             return;
         }
@@ -221,11 +223,17 @@ export default class GameEngine {
         else {
             // Réception pour le mode BPM
             if (GameConfig.MODE_BPM) {
-                // On lit "data" (l'action reçue) et on l'assigne à l'ADVERSAIRE
-                if (this.myRole === "p1") this.currentP2Action = data;
-                if (this.myRole === "p2") this.currentP1Action = data;
-                
-                return; // On arrête ici, le métronome se chargera de la résolution
+                if (data.type === "bpm_action") {
+                    if (this.myRole === "p1") {
+                        this.currentP2Action = data.action;
+                        this.remoteActionReady = true;
+                    }
+                    if (this.myRole === "p2") {
+                        this.currentP1Action = data.action;
+                        this.remoteActionReady = true;
+                    }
+                }
+                return;
             }
             // Réception pour le mode Classique
             else {
@@ -386,6 +394,12 @@ export default class GameEngine {
         } else {
             this.audio.playBoom();
             this.bpmBeat = 0;
+            
+            if (this.gameMode === "pvp" && GameConfig.MODE_BPM) {
+                if (!this.currentP1Action) this.currentP1Action = { type: "none" };
+                if (!this.currentP2Action) this.currentP2Action = { type: "none" };
+            }
+
             this.resolveBpmTurn();
         }
     }
@@ -404,6 +418,9 @@ export default class GameEngine {
         this.currentP1Action = null;
         this.currentP2Action = null;
 
+        this.localActionReady = false;
+        this.remoteActionReady = false;
+        
         if (p1Act.type === "recharge") this.p1.energy++;
         if (p2Act.type === "recharge") this.p2.energy++;
 
