@@ -183,12 +183,6 @@ export default class GameEngine {
             if (this.gameMode === "ai") {
                 this.currentP2Action = Combat.generateAIPick(this.p1, this.p2);
             }
-            
-            // MULTIJOUEUR 
-            if (this.gameMode === "pvp") {
-                Network.sendData({ type: "bpm_action", action: myActionChoice });
-                this.localActionReady = true;
-            }
             return;
         }
 
@@ -224,14 +218,12 @@ export default class GameEngine {
             // Réception pour le mode BPM
             if (GameConfig.MODE_BPM) {
                 if (data.type === "bpm_action") {
-                    if (this.myRole === "p1") {
-                        this.currentP2Action = data.action;
-                        this.remoteActionReady = true;
-                    }
-                    if (this.myRole === "p2") {
-                        this.currentP1Action = data.action;
-                        this.remoteActionReady = true;
-                    }
+                    if (this.myRole === "p1") this.currentP2Action = data.action;
+                    if (this.myRole === "p2") this.currentP1Action = data.action;
+                    
+                    // On indique que l'adversaire a envoyé son action pour ce Boom
+                    this.remoteActionReady = true;
+                    this.checkBpmReady();
                 }
                 return;
             }
@@ -244,10 +236,16 @@ export default class GameEngine {
             }
         }
     }
-
     // Verfie si les 2 joueurs ont validés leurs actions
     checkBothReady() {
         if (this.localActionReady && this.remoteActionReady) this.resolveTurn();
+    }
+
+    // Verifie si les 2 joueurs ont validés leurs actions en mode BPM
+    checkBpmReady() {
+        if (this.localActionReady && this.remoteActionReady) {
+            this.resolveBpmTurn();
+        }
     }
 
     // Avancer le tutoriel
@@ -396,11 +394,23 @@ export default class GameEngine {
             this.bpmBeat = 0;
             
             if (this.gameMode === "pvp" && GameConfig.MODE_BPM) {
+                // On récupère l'action du joueur local (ou "none" si rien n'a été choisi)
+                let myAction = (this.myRole === "p1") ? this.currentP1Action : this.currentP2Action;
+                if (!myAction) myAction = { type: "none" };
+
+                // On l'assigne fermement pour ce cycle
+                if (this.myRole === "p1") this.currentP1Action = myAction;
+                if (this.myRole === "p2") this.currentP2Action = myAction;
+
+                Network.sendData({ type: "bpm_action", action: myAction });
+                this.localActionReady = true;
+                this.checkBpmReady();
+            } else {
+                // Mode IA : Résolution immédiate
                 if (!this.currentP1Action) this.currentP1Action = { type: "none" };
                 if (!this.currentP2Action) this.currentP2Action = { type: "none" };
+                this.resolveBpmTurn();
             }
-
-            this.resolveBpmTurn();
         }
     }
 
