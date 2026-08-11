@@ -5,7 +5,7 @@ export function setupControls(engine) {
     // Choix de l'action
     UI.DOM.boutons.forEach(btn => {
         btn.addEventListener("click", (e) => {
-            if (engine.gameMode === "tutorial" && engine.tutorialStep < 9) {
+            if (engine.gameMode === "tutorial" && engine.tutorial.step < 9) {
                 engine.advanceTutorial();
                 return; 
             }
@@ -26,7 +26,7 @@ export function setupControls(engine) {
 
     // Clic sur la grille de jeu
     window.addEventListener("pointerdown", (event) => {
-        if (engine.gameMode === "tutorial" && engine.tutorialStep < 9) {
+        if (engine.gameMode === "tutorial" && engine.tutorial.step < 9) {
             engine.advanceTutorial();
             return;
         }

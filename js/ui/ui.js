@@ -116,6 +116,9 @@ export function resetActionButtons() {
 // Affiche écran de fin
 export function showGameOver(myRole, p1, p2) {
     DOM.endScreen.style.display = "flex";
+    DOM.btnRestart.style.display = "block"; 
+    DOM.rematchWaitingMessage.style.display = "none";
+    
     if(p1.hp <= 0 && p2.hp <= 0){
         DOM.endMessage.innerHTML = getText("draw");
     }

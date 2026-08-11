@@ -39,8 +39,8 @@ export default class TutorialManager {
         if (this.step === 11 && myActionChoice.type === "attaque_normale") {
             if (myActionChoice.col === this.engine.p2.col && myActionChoice.row === this.engine.p2.row) {
                 this.validTarget = true; 
-                let dodgeCol = (myActionChoice.col === 0) ? 2 : 0; 
-                let dodgeRow = (myActionChoice.row === 0) ? 2 : 0;
+                let dodgeCol = 2; 
+                let dodgeRow = 2;
                 this.engine.p2Action = { type: "mouvement", col: dodgeCol, row: dodgeRow };
             } else {
                 this.engine.p2Action = { type: "recharge" }; 

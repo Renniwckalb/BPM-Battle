@@ -178,7 +178,7 @@ export default class GameEngine {
         
         if (this.gameMode === "tutorial") { 
             this.tutorial.interceptAction(myActionChoice);
-            this.resolveTurn(myActionChoice, { type: "none" });
+            this.resolveTurn(myActionChoice, this.p2Action);
             return;
         }
         
@@ -492,6 +492,7 @@ export default class GameEngine {
             
             if (this.p1.hp <= 0 || this.p2.hp <= 0) {
                 this.stopBpmLoop();
+                this.gameState = "end";
                 UI.showGameOver(this.myRole, this.p1, this.p2);
             } else {
                 UI.resetActionButtons();
