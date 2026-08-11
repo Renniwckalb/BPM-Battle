@@ -64,11 +64,11 @@ export default class GameEngine {
         let myGrid = (this.myRole === "p2") ? this.gridPlayer2 : this.gridPlayer1;
         let oppGrid = (this.myRole === "p2") ? this.gridPlayer1 : this.gridPlayer2;
 
-        myGrid.cellSize = baseCellSize;
+        myGrid.cellSize = baseCellSize * 0.90;
         myGrid.x = (this.canvas.width - (baseCellSize * 3)) / 2;
         myGrid.y = this.canvas.height - (baseCellSize * 3) - 100;
 
-        oppGrid.cellSize = baseCellSize * 0.75;
+        oppGrid.cellSize = baseCellSize * 0.65;
         oppGrid.x = (this.canvas.width - (oppGrid.cellSize * 3)) / 2;
         oppGrid.y = 70;
     }

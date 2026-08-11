@@ -61,11 +61,11 @@ export default class Grid {
         }
     }
 
-    // Dessin de la pi
+    // Dessin de la pile
     drawHideQueue(ctx, queue, queueSize, playerColor, side) {
         if (!queue) return;
 
-        let queueBoxSize = Math.min(30, this.cellSize * 0.8);
+        let queueBoxSize = Math.min(30, this.cellSize * 0.7);
         let queueSpacing = 5;
 
         // On calcule X dynamiquement : à gauche ou à droite de la grille
