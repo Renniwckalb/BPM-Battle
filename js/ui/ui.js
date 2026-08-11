@@ -45,7 +45,10 @@ export const DOM = {
 
     // Menu BPM
     bpmCheckbox: document.getElementById("setting-bpm-mode"),
-    bpmSettings: document.getElementById("bpm-advanced-settings")
+    bpmSettings: document.getElementById("bpm-advanced-settings"),
+    bpmQueueSize: document.getElementById("setting-bpm-queue"),
+    bpmCheckbox: document.getElementById("setting-bpm-mode"),
+    bpmTempo: document.getElementById("setting-bpm-tempo")
 };
 
 // Fonction interne pour gérer un joueur spécifique

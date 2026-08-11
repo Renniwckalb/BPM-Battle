@@ -10,14 +10,27 @@ const engine = new GameEngine();
 setupControls(engine);
 
 // Gestion du Menu Principal
-UI.DOM.btnAI.addEventListener("click", () => { 
+UI.DOM.btnAI.addEventListener("click", () => {
+    // Récupération des paramètres de jeu depuis l'interface utilisateur
+    let MaxHpInput = parseInt(UI.DOM.settingHp.value);
+    let clampedMaxHp = Math.max(1, Math.min(10, MaxHpInput));
+    let atkInput = parseInt(UI.DOM.settingAtk.value);
+    let clampedAtk = Math.max(0, Math.min(5, atkInput));
+    let speInput = parseInt(UI.DOM.settingSpe.value);
+    let clampedSpe = Math.max(0, Math.min(10, speInput));
+    
+    let queueSizeInput = parseInt(UI.DOM.bpmQueueSize.value);
+    let clampedQueueSize = Math.max(0, Math.min(4, queueSizeInput));
+    let tempoInput = parseInt(UI.DOM.bpmTempo.value);
+    let clampedTempo = Math.max(300, Math.min(3000, tempoInput));
+
     updateConfig({
-        MAX_HP: parseInt(UI.DOM.settingHp.value),
-        COST_NORMAL_ATTACK: parseInt(UI.DOM.settingAtk.value),
-        COST_SPECIAL_ATTACK: parseInt(UI.DOM.settingSpe.value),
-        MODE_BPM: document.getElementById("setting-bpm-mode").checked,
-        BPM_TEMPO: parseInt(document.getElementById("setting-bpm-tempo").value),
-        BPM_QUEUE_SIZE: parseInt(document.getElementById("setting-bpm-queue").value)
+        MAX_HP: clampedMaxHp,
+        COST_NORMAL_ATTACK: clampedAtk,
+        COST_SPECIAL_ATTACK: clampedSpe,
+        MODE_BPM: UI.DOM.bpmCheckbox.checked,
+        BPM_TEMPO: clampedTempo,
+        BPM_QUEUE_SIZE: clampedQueueSize
     });
     
     engine.resetGame();
@@ -70,13 +83,13 @@ document.addEventListener("click", (e) => {
 // Lancer une partie
 UI.DOM.btnHostStart.addEventListener("click", () => {
     updateConfig({
-        MAX_HP: parseInt(UI.DOM.settingHp.value),
-        COST_NORMAL_ATTACK: parseInt(UI.DOM.settingAtk.value),
-        COST_SPECIAL_ATTACK: parseInt(UI.DOM.settingSpe.value),
+        MAX_HP: clampedMaxHp,
+        COST_NORMAL_ATTACK: clampedAtk,
+        COST_SPECIAL_ATTACK: clampedSpe,
 
-        MODE_BPM: document.getElementById("setting-bpm-mode").checked,
-        BPM_TEMPO: parseInt(document.getElementById("setting-bpm-tempo").value),
-        BPM_QUEUE_SIZE: parseInt(document.getElementById("setting-bpm-queue").value)
+        MODE_BPM: UI.DOM.bpmCheckbox.checked,
+        BPM_TEMPO: clampedTempo,
+        BPM_QUEUE_SIZE: clampedQueueSize
     });
 
     Network.hostGame(

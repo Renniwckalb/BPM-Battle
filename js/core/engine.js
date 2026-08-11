@@ -61,7 +61,7 @@ export default class GameEngine {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         
-        let baseCellSize = Math.min(this.canvas.width / 3.6, this.canvas.height / 7.5);
+        let baseCellSize = Math.min(this.canvas.width / 5.5, this.canvas.height / 7.5);
         let myGrid = (this.myRole === "p2") ? this.gridPlayer2 : this.gridPlayer1;
         let oppGrid = (this.myRole === "p2") ? this.gridPlayer1 : this.gridPlayer2;
 
@@ -185,10 +185,6 @@ export default class GameEngine {
         if (GameConfig.MODE_BPM) {
             if (this.myRole === "p1") this.currentP1Action = myActionChoice;
             else this.currentP2Action = myActionChoice;
-
-            if (this.gameMode === "ai") {
-                this.currentP2Action = Combat.generateAIPick(this.p1, this.p2);
-            }
             return;
         }
 
@@ -368,7 +364,7 @@ export default class GameEngine {
         let p2Direction = (this.myRole === "p2") ? "down" : "up";
 
         this.gridPlayer1.drawQueue(ctx, this.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p2.color, "left", this.queueSlideAnim, p1Direction);
-        this.gridPlayer2.drawQueue(ctx, this.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p1.color, "right", this.queueSlideAnim, p2Direction);
+        this.gridPlayer2.drawQueue(ctx, this.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p1.color, "left", this.queueSlideAnim, p2Direction);
     }
 
     // Démarre la boucle BPM qui gère le rythme du jeu et les actions des joueurs
@@ -429,7 +425,7 @@ export default class GameEngine {
     resolveBpmTurn() {
         this.isResolving = true;
 
-        if (this.gameMode === "ai" && !this.currentP2Action) {
+        if (this.gameMode === "ai") {
             this.currentP2Action = Combat.generateAIPick(this.p1, this.p2);
         }
 
@@ -453,11 +449,19 @@ export default class GameEngine {
         if (p2QueuedAttack && p2QueuedAttack.type === "attaque_normale") this.p2.energy -= GameConfig.COST_NORMAL_ATTACK;
         if (p2QueuedAttack && p2QueuedAttack.type === "attaque_colonne") this.p2.energy -= GameConfig.COST_SPECIAL_ATTACK;
 
-        let p1IncomingAttack = this.p1ActionQueue.shift();
-        let p2IncomingAttack = this.p2ActionQueue.shift();
+        let p1IncomingAttack = null;
+        let p2IncomingAttack = null;
         
-        this.p1ActionQueue.push(p1QueuedAttack);
-        this.p2ActionQueue.push(p2QueuedAttack);
+        if (GameConfig.BPM_QUEUE_SIZE === 0) {
+            p1IncomingAttack = p1QueuedAttack;
+            p2IncomingAttack = p2QueuedAttack;
+        } else {
+            p1IncomingAttack = this.p1ActionQueue.shift();
+            p2IncomingAttack = this.p2ActionQueue.shift();
+
+            this.p1ActionQueue.push(p1QueuedAttack);
+            this.p2ActionQueue.push(p2QueuedAttack);
+        }
 
         this.queueSlideAnim = 1.0;
 

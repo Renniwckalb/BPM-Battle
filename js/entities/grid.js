@@ -66,13 +66,31 @@ export default class Grid {
         if (!queue) return;
 
         let queueBoxSize = Math.min(30, this.cellSize * 0.7);
-        let queueSpacing = 5;
+        let queueSpacing = 10   ;
 
         // On calcule X dynamiquement : à gauche ou à droite de la grille
+        let maxAvailableHeight = ctx.canvas.height * 0.40; 
+        let maxSlotHeight = maxAvailableHeight / queueSize;
+        let dynamicCellSize = (maxSlotHeight - queueSpacing) / this.rows;
+        
+        let miniCellSize = Math.max(8, Math.min(dynamicCellSize, this.cellSize / 3));
+        
+        let miniGridWidth = this.cols * miniCellSize;
+        let miniGridHeight = this.rows * miniCellSize;
+        let slotHeight = miniGridHeight + queueSpacing;
+        let totalQueueHeight = queueSize * slotHeight;
+
+        // Rapprocher les files de la grille principale
         let queueX = (side === "left") 
             ? this.x - queueBoxSize - 15 
             : this.x + (this.cols * this.cellSize) + 15;
-        let queueY = this.y;
+        let queueY;
+        // On centre la file entre les deux grilles
+        if (direction === "down") {
+            queueY = this.y - totalQueueHeight - 10;
+        } else {
+            queueY = this.y + (this.rows * this.cellSize) + 20;
+        }
 
         for (let i = 0; i < queueSize; i++) {
             let act = queue[i];
@@ -103,18 +121,28 @@ export default class Grid {
 
     // Dessin de la pile BPM
     drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0, direction = "up") {
-        if (!queue) return;
+        if (!queue || queueSize === 0) return;
 
-        // Calcul des dimensions pour la mini-grille
-        let miniCellSize = Math.max(10, this.cellSize / 4);
+        let queueSpacing = 15;
+        let maxAvailableHeight = ctx.canvas.height * 0.8;
+        
+        // Hauteur maximale autorisée pour une seule mini-grille (incluant l'espacement)
+        let maxSlotHeight = maxAvailableHeight / queueSize;
+        let maxMiniGridHeight = maxSlotHeight - queueSpacing;
+        
+        // Déduction de la taille de cellule dynamique
+        let dynamicCellSize = maxMiniGridHeight / this.rows;
+        
+        // On garde ton calcul initial comme plafond (pour ne pas avoir de grilles géantes si queueSize = 1)
+        let miniCellSize = Math.min(dynamicCellSize, this.cellSize / 4);
+        miniCellSize = Math.max(10, miniCellSize);
+        
         let miniGridWidth = this.cols * miniCellSize;
         let miniGridHeight = this.rows * miniCellSize;
-        let queueSpacing = 15;
         
-        // Hauteur totale occupée par une case dans la file
+        // Hauteur finale d'un bloc de la file
         let slotHeight = miniGridHeight + queueSpacing;
         
-        // Position X (À gauche pour J1, à droite pour J2)
         let queueX = (side === "left") 
             ? this.x - miniGridWidth - 20 
             : this.x + (this.cols * this.cellSize) + 20;
