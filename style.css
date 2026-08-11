@@ -198,7 +198,7 @@ canvas {
 #version-text {
     position: absolute;
     bottom: 10px;
-    right: 15px;
+    left: 15px;
     color: rgba(255, 255, 255, 0.6);
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;

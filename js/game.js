@@ -9,20 +9,25 @@ import { setLanguage, getText, flags } from './ui/lang.js';
 const engine = new GameEngine();
 setupControls(engine);
 
-// Gestion du Menu Principal
-UI.DOM.btnAI.addEventListener("click", () => {
-    // Récupération des paramètres de jeu depuis l'interface utilisateur
+let clampedMaxHp, clampedAtk, clampedSpe, clampedQueueSize, clampedTempo;
+// Récupère les paramètres de jeu depuis l'interface utilisateur
+export function getSettingsFromUI() {
     let MaxHpInput = parseInt(UI.DOM.settingHp.value);
-    let clampedMaxHp = Math.max(1, Math.min(10, MaxHpInput));
+    clampedMaxHp = Math.max(1, Math.min(10, MaxHpInput));
     let atkInput = parseInt(UI.DOM.settingAtk.value);
-    let clampedAtk = Math.max(0, Math.min(5, atkInput));
+    clampedAtk = Math.max(0, Math.min(5, atkInput));
     let speInput = parseInt(UI.DOM.settingSpe.value);
-    let clampedSpe = Math.max(0, Math.min(10, speInput));
+    clampedSpe = Math.max(0, Math.min(10, speInput));
     
     let queueSizeInput = parseInt(UI.DOM.bpmQueueSize.value);
-    let clampedQueueSize = Math.max(0, Math.min(4, queueSizeInput));
+    clampedQueueSize = Math.max(0, Math.min(4, queueSizeInput));
     let tempoInput = parseInt(UI.DOM.bpmTempo.value);
-    let clampedTempo = Math.max(300, Math.min(3000, tempoInput));
+    clampedTempo = Math.max(300, Math.min(3000, tempoInput));
+}
+
+// Gestion du Menu Principal
+UI.DOM.btnAI.addEventListener("click", () => {
+    getSettingsFromUI();
 
     updateConfig({
         MAX_HP: clampedMaxHp,
@@ -82,6 +87,8 @@ document.addEventListener("click", (e) => {
 // --- GESTION PARTIE ---
 // Lancer une partie
 UI.DOM.btnHostStart.addEventListener("click", () => {
+    getSettingsFromUI();
+    
     updateConfig({
         MAX_HP: clampedMaxHp,
         COST_NORMAL_ATTACK: clampedAtk,
