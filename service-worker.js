@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bpm-battle-v1.2.5';
+const CACHE_NAME = 'bpm-battle-v1.2.6';
 
 // Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [

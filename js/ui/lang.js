@@ -104,6 +104,8 @@ export const translations = {
         tut_7: "Finally, these are your actions. You will choose one each turn.",
         tut_8: "A turn goes like this: choose an action, then click on the grid.",
         tut_9: "Let's try! Click on MOVE then on a green cell.",
+        tut_10: "Perfect! Now, click on RECHARGE then on your grid.",
+        tut_fail_10: "Missed. Select RECHARGE and click anywhere on your grid.",
         tut_fail_9: "Not quite. Select MOVE then click on your grid.",
         tut_11: "Great! You have energy. Click on ATTACK then on the opponent!",
         tut_fail_11: "Target missed! Select ATTACK and click on the opponent's cell.",
