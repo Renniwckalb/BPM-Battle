@@ -9,8 +9,9 @@ export default class TutorialManager {
     }
 
     // Lance le tutoriel
-    start() {
-        this.step = 1;
+    start(mode) {
+        this.mode = mode;
+        this.step = (mode === "tutorial_bpm") ? 20 : 1; // Démarre à 20 pour le BPM
         this.fail = false;
         this.engine.p2.hp = 99; // Mannequin invincible
         UI.DOM.tutorialBox.style.display = "block";
@@ -19,14 +20,27 @@ export default class TutorialManager {
 
     // Fait avancer les textes lors de la présentation visuelle (clics)
     advanceClick() {
-        if (this.step < 8) {
-            this.step++;
-            UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
-        } else if (this.step === 8) {
-            this.step++;
-            this.engine.actionActuelle = null;
-            UI.resetActionButtons();
-            UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
+        if (this.mode === "tutorial_bpm") {
+            if (this.step < 21) {
+                this.step++;
+                UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
+            } else if (this.step === 21) {
+                this.step++;
+                this.engine.actionActuelle = null;
+                UI.resetActionButtons();
+                UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
+            }
+        } else {
+            // Tuto classique
+            if (this.step < 8) {
+                this.step++;
+                UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
+            } else if (this.step === 8) {
+                this.step++;
+                this.engine.actionActuelle = null;
+                UI.resetActionButtons();
+                UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
+            }
         }
     }
 
@@ -34,8 +48,18 @@ export default class TutorialManager {
     interceptAction(myActionChoice) {
         this.engine.p1Action = myActionChoice;
         this.validTarget = false;
+    
+        if (this.mode === "tutorial_bpm") {
+            if (this.step === 24 && myActionChoice.type === "attaque_normale") {
+                if (myActionChoice.col === this.engine.p2.col && myActionChoice.row === this.engine.p2.row) {
+                    this.validTarget = true;
+                }
+            }
+            this.engine.p2Action = { type: "recharge" }; 
+            return;
+        }
         
-        // L'IA ESQUIVE SPÉCIFIQUEMENT À L'ÉTAPE 11
+        // L'ia esquive à l'etape 11
         if (this.step === 11 && myActionChoice.type === "attaque_normale") {
             if (myActionChoice.col === this.engine.p2.col && myActionChoice.row === this.engine.p2.row) {
                 this.validTarget = true; 
@@ -52,15 +76,55 @@ export default class TutorialManager {
 
     // Vérifie si l'action du joueur était la bonne (après la résolution)
     verifyTurn() {
-        if (this.step < 9) return;
-
-        let previousFail = this.fail; 
-        this.fail = false; 
-        
+        let previousFail = this.fail;
+        this.fail = false;
         let p1Action = this.engine.p1Action;
         let p1 = this.engine.p1;
         let p2 = this.engine.p2;
 
+        // Tutorial BPM
+        if (this.mode === "tutorial_bpm") {
+            if (this.step < 22) return;
+        
+            if (this.step === 22) {
+                if (p1Action.type === "mouvement") this.step++;
+                else this.fail = true;
+            }
+            else if (this.step === 23) {
+                if (p1Action.type === "recharge") this.step++;
+                else this.fail = true;
+            }
+            else if (this.step === 24) {
+                if (p1Action.type === "attaque_normale") {
+                    if (this.validTarget) {
+                        this.step = 25;
+                        this.fail = false;
+                    } else { 
+                        this.fail = true; 
+                        p1.energy++; 
+                    } 
+                } else {
+                    this.fail = true;
+                }
+            }
+            else if (this.step === 25) {
+                if (p2.hp < 99) {
+                    window.highlightBpmQueue = false;
+                    this.step = 26;
+                    setTimeout(() => {
+                        if(typeof this.engine.returnToMainMenu === "function") this.engine.returnToMainMenu();
+                        else UI.showMainMenu();
+                    }, 3000); 
+                }
+            }
+            else {
+                this.fail = true;
+            }
+            UI.updateTutorialStep(this.step, p1.energy, this.fail);
+            return;
+        }
+
+        // Tutorial Classique
         if (this.step === 9) {
             if (p1Action.type === "mouvement") this.step++;
             else this.fail = true;

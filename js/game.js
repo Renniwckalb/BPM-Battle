@@ -54,6 +54,31 @@ UI.DOM.btnBackMenu.addEventListener("click", () => {
     UI.DOM.menuBase.style.display = "flex";
 });
 
+// Le bouton tutoriel de l'ecran d'acceuil
+UI.DOM.btnTutorial.addEventListener("click", () => {
+    UI.DOM.menuBase.style.display = "none";
+    UI.DOM.menuTutorial.style.display = "flex";
+});
+
+// Le bouton retour du sous-menu tutoriel
+UI.DOM.btnBackTut.addEventListener("click", () => {
+    UI.DOM.menuTutorial.style.display = "none";
+    UI.DOM.menuBase.style.display = "flex";
+});
+
+// Lancement du tutoriel de base
+UI.DOM.btnTutBase.addEventListener("click", () => {
+    engine.resetGame();
+    engine.startGame("tutorial", "p1");
+});
+
+// Lancement du tutoriel BPM
+UI.DOM.btnTutBpm.addEventListener("click", () => {
+    updateConfig({ MODE_BPM: true, BPM_TEMPO: 1000, BPM_QUEUE_SIZE: 2 });
+    engine.resetGame();
+    engine.startGame("tutorial_bpm", "p1");
+});
+
 // --- GESTION DE LA LANGUE ---
 
 // Ouvrir/Fermer la liste des langues quand on clique sur le drapeau
@@ -152,12 +177,6 @@ UI.DOM.btnMenuPrincipal.addEventListener("click", () => {
     } else {
         engine.returnToMainMenu();
     }
-});
-
-// Lancer le tutoriel
-UI.DOM.btnTutorial.addEventListener("click", () => {
-    engine.resetGame();
-    engine.startGame("tutorial", "p1");
 });
 
 // Cache le menu BPM

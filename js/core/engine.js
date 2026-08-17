@@ -18,7 +18,7 @@ export default class GameEngine {
         this.actionActuelle = null;
         this.isResolving = false;
         
-        // --- SYNCHRONISATION DÉTERMINISTE (TICK-BASED) ---
+        // --- SYNCHRONISATION DÉTERMINISTE ---
         this.currentTick = 0;
         this.p1BufferedActions = new Map(); // Stocke les actions indexées par numéro de tick
         this.p2BufferedActions = new Map();
@@ -66,12 +66,12 @@ export default class GameEngine {
         let oppGrid = (this.myRole === "p2") ? this.gridPlayer1 : this.gridPlayer2;
 
         myGrid.cellSize = baseCellSize * 0.90;
-        myGrid.x = (this.canvas.width - (baseCellSize * 3)) / 2;
-        myGrid.y = this.canvas.height - (baseCellSize * 3) - 100;
+        myGrid.x = (this.canvas.width - (myGrid.cellSize * 3)) / 2;
+        myGrid.y = this.canvas.height - (myGrid.cellSize * 3) - 80;
 
         oppGrid.cellSize = baseCellSize * 0.65;
         oppGrid.x = (this.canvas.width - (oppGrid.cellSize * 3)) / 2;
-        oppGrid.y = 70;
+        oppGrid.y = Math.max(140, this.canvas.height * 0.15);
     }
 
     // Démarre le jeu avec le mode et le rôle spécifiés
@@ -85,12 +85,14 @@ export default class GameEngine {
         this.p1BufferedActions.clear();
         this.p2BufferedActions.clear();
 
-        if (mode === "tutorial") {
-            this.tutorial.start();
+        if (mode.startsWith("tutorial")) {
+            this.tutorial.start(mode);
         }
-        if (GameConfig.MODE_BPM && mode !== "tutorial") {
+        
+        if ((GameConfig.MODE_BPM && mode !== "tutorial") || mode === "tutorial_bpm") {
             this.startBpmLoop();
         }
+
         UI.prepareStartGame(this.myRole);
         this.gameState = "playing";
         this.resizeCanvas();
@@ -179,6 +181,13 @@ export default class GameEngine {
         if (this.gameMode === "tutorial") { 
             this.tutorial.interceptAction(myActionChoice);
             this.resolveTurn(myActionChoice, this.p2Action);
+            return;
+        }
+
+        if (this.gameMode === "tutorial_bpm") {
+            this.tutorial.interceptAction(myActionChoice);
+            this.currentP1Action = myActionChoice;
+            this.currentP2Action = this.p2Action;
             return;
         }
         
@@ -365,6 +374,42 @@ export default class GameEngine {
 
         this.gridPlayer1.drawQueue(ctx, this.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p2.color, "left", this.queueSlideAnim, p1Direction);
         this.gridPlayer2.drawQueue(ctx, this.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p1.color, "left", this.queueSlideAnim, p2Direction);
+        if (window.highlightBpmQueue) {
+            ctx.save();
+            ctx.strokeStyle = "#FFEB3B";
+            ctx.lineWidth = 4;
+            ctx.globalAlpha = 0.4 + Math.abs(Math.sin(Date.now() / 200)) * 0.6; // Clignotement
+
+            let targetGrid = this.gridPlayer2; 
+            
+            // Meme calcul que DrawQueue
+            let queueSpacing = 15;
+            let maxAvailableHeight = ctx.canvas.height * 0.8;
+            
+            let maxSlotHeight = maxAvailableHeight / GameConfig.BPM_QUEUE_SIZE;
+            let maxMiniGridHeight = maxSlotHeight - queueSpacing;
+            let dynamicCellSize = maxMiniGridHeight / targetGrid.rows;
+            
+            let miniCellSize = Math.min(dynamicCellSize, targetGrid.cellSize / 4);
+            miniCellSize = Math.max(10, miniCellSize);
+            
+            let miniGridWidth = targetGrid.cols * miniCellSize;
+            let miniGridHeight = targetGrid.rows * miniCellSize;
+            let slotHeight = miniGridHeight + queueSpacing;
+
+            // X de depart
+            let qX = targetGrid.x - miniGridWidth - 20;
+            
+            // Y de départ
+            let qY = targetGrid.y;
+            
+            // La hauteur totale occupée du premier au dernier slot de la boucle
+            let totalHighlightHeight = (GameConfig.BPM_QUEUE_SIZE - 1) * slotHeight + miniGridHeight;
+            
+            // On dessine le rectangle avec 5px de marge pour englober proprement les bordures blanches
+            ctx.strokeRect(qX - 5, qY - 5, miniGridWidth + 10, totalHighlightHeight + 10);
+            ctx.restore();
+        }
     }
 
     // Démarre la boucle BPM qui gère le rythme du jeu et les actions des joueurs
@@ -489,6 +534,10 @@ export default class GameEngine {
             this.gridPlayer1.attackedCells = [];
             this.gridPlayer2.attackedCells = [];
             this.isResolving = false;
+
+            if (this.gameMode === "tutorial_bpm") {
+                this.tutorial.verifyTurn();
+            }
             
             if (this.p1.hp <= 0 || this.p2.hp <= 0) {
                 this.stopBpmLoop();

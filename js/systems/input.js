@@ -5,30 +5,35 @@ export function setupControls(engine) {
     // Choix de l'action
     UI.DOM.boutons.forEach(btn => {
         btn.addEventListener("click", (e) => {
-            if (engine.gameMode === "tutorial" && engine.tutorial.step < 9) {
-                engine.advanceTutorial();
-                return; 
+            // Sécurité
+            if (engine.gameMode && engine.gameMode.startsWith("tutorial")) {
+                let tut = engine.tutorial;
+                if ((tut.mode === "tutorial" && tut.step < 9) || (tut.mode === "tutorial_bpm" && tut.step < 22)) {
+                    engine.advanceTutorial();
+                    return; 
+                }
             }
-
+            
             // Empêche de cliquer si le bouton est déjà désactivé
             if (btn.classList.contains("disabled")) return; 
 
             const action = e.target.getAttribute("data-action");
-
-            engine.setAction(e.target.getAttribute("data-action"));
+            engine.setAction(action);
 
             UI.resetActionButtons();
             btn.classList.add("actif");
-
             UI.lockAllActions();
         });
     });
 
-    // Clic sur la grille de jeu
+    // Clic sur l'écran
     window.addEventListener("pointerdown", (event) => {
-        if (engine.gameMode === "tutorial" && engine.tutorial.step < 9) {
-            engine.advanceTutorial();
-            return;
+        if (engine.gameMode && engine.gameMode.startsWith("tutorial")) {
+            let tut = engine.tutorial;
+            if ((tut.mode === "tutorial" && tut.step < 9) || (tut.mode === "tutorial_bpm" && tut.step < 22)) {
+                engine.advanceTutorial();
+                return;
+            }
         }
 
         if (engine.gameState !== "playing" || engine.isResolving || !engine.actionActuelle) return;

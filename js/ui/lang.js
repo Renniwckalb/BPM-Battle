@@ -34,6 +34,11 @@ export const translations = {
 
         // Ecran de tutoriel
         btn_tutorial: "Tutoriel",
+        tutorial_title: "Choix du Tutoriel",
+        btn_tut_base: "Les bases du jeu",
+        btn_tut_bpm: "Mode BPM",
+
+        // Tutoriel sur les bases
         tut_1: "Bienvenue dans le tutoriel ! Découvrons ensemble les bases du jeu. (Clique pour continuer)",
         tut_2: "Voici ton avatar (la boule bleue). Tu le contrôles ! (Clique pour continuer)",
         tut_3: "Voici ta grille de jeu. C'est la zone où tu peux te déplacer.",
@@ -55,6 +60,17 @@ export const translations = {
         tut_14: "Touché ! Maintenant, RECHARGE jusqu'à 3 d'énergie et lance une attaque SPÉCIALE.",
         tut_fail_14: "Concentre-toi ! Il faut l'attaquer de nouveau en utilisant une attaque SPÉCIAL !",
         tut_15: "Félicitations, tu maîtrises les bases ! Retour au menu...",
+
+        // Tutoriel Mode BPM
+        tut_20: "Bienvenue dans le mode Rythme (BPM) ! (Clique)",
+        tut_21: "Écoute le son : Tic, Tic, BOOM (Vert). Tes actions se valident uniquement au BOOM ! (Clique)",
+        tut_22: "Essaie de te DÉPLACER. L'action s'exécutera au prochain BOOM.",
+        tut_fail_22: "Sélectionne DÉPLACEMENT et clique sur la grille.",
+        tut_23: "Parfait ! Maintenant, fais une RECHARGE.",
+        tut_fail_23: "Sélectionne RECHARGE et clique sur la grille.",
+        tut_24: "En mode BPM, tes attaques sont retardées. Lance une ATTAQUE et observe la file d'attente !",
+        tut_fail_24: "Sélectionne ATTAQUE et clique sur l'adversaire.",
+        tut_25: "Génial ! L'attaque va glisser jusqu'à frapper. Tu maîtrises le mode BPM ! Retour au menu...",
 
         // Mode BPM
         label_bpm_mode: "Mode Rythme (BPM) :",
@@ -93,8 +109,13 @@ export const translations = {
         lose: "DEFEAT...",
         draw: "DRAW!",
 
-        // Ecran de tutoriel
+        // Ecran Tutoriel
         btn_tutorial: "Tutorial",
+        tutorial_title: "Select Tutorial",
+        btn_tut_base: "Game Basics",
+        btn_tut_bpm: "BPM Mode",
+
+        // Tutoriel sur les bases
         tut_1: "Welcome to the tutorial! Let's learn the basics together. (Click to continue)",
         tut_2: "This is your avatar (the blue ball). You control it! (Click to continue)",
         tut_3: "This is your grid. This is where you can move.",
@@ -117,6 +138,17 @@ export const translations = {
         tut_fail_14: "Focus! You need to attack them again using a SPECIAL attack!",
         tut_15: "Congratulations, you've mastered the basics! Returning to menu...",
 
+        // Tutoriel Mode BPM
+        tut_20: "Welcome to Rhythm Mode (BPM)! (Click to continue)",
+        tut_21: "Listen to the sound: Tick, Tick, BOOM (Green). Your actions execute only on the BOOM! (Click to continue)",
+        tut_22: "Try to MOVE. The action will execute on the next BOOM.",
+        tut_fail_22: "Select MOVE and click on your grid.",
+        tut_23: "Perfect! Now, RECHARGE your energy.",
+        tut_fail_23: "Select RECHARGE and click anywhere on your grid.",
+        tut_24: "In BPM mode, attacks are delayed. Launch an ATTACK and watch the queue!",
+        tut_fail_24: "Select ATTACK and click on the opponent's cell.",
+        tut_25: "Awesome! The attack will slide down until it hits. You mastered BPM Mode! Returning to menu...",
+        
         // Mode BPM
         label_bpm_mode: "Rhythm Mode (BPM):",
         label_bpm_tempo: "Speed (ms):",
@@ -156,6 +188,11 @@ export const translations = {
 
         // Ecran de tutoriel
         btn_tutorial: "教程",
+        tutorial_title: "选择教程",
+        btn_tut_base: "游戏基础",
+        btn_tut_bpm: "BPM 模式",
+
+        // Tutoriel sur les bases
         tut_1: "欢迎来到教程！让我们一起学习基础知识。（点击继续）",
         tut_2: "这是你的化身（蓝色圆球）。由你控制！(点击继续)",
         tut_3: "这是你的网格。这是你可以移动的区域。",
@@ -178,6 +215,17 @@ export const translations = {
         tut_fail_14: "集中注意力！你需要再次使用特殊攻击来打击他！",
         tut_15: "恭喜，你已经掌握了基础操作！返回菜单...",
 
+        // Tutoriel Mode BPM
+        tut_20: "欢迎来到节奏模式 (BPM)！（点击继续）",
+        tut_21: "听声音：滴，滴，嘭（绿灯）。你的操作只会在“嘭”时执行！（点击继续）",
+        tut_22: "尝试移动。操作将在下一个“嘭”时执行。",
+        tut_fail_22: "选择移动并点击你的网格。",
+        tut_23: "完美！现在，进行充能。",
+        tut_fail_23: "选择充能并点击你网格上的任何位置。",
+        tut_24: "在BPM模式下，攻击会延迟。发动攻击并观察队列！",
+        tut_fail_24: "选择攻击并点击对手所在的网格。",
+        tut_25: "太棒了！攻击会向下滑动直到命中。你已掌握BPM模式！返回菜单...",
+        
         // Mode BPM
         label_bpm_mode: "节奏模式 (BPM)：",
         label_bpm_tempo: "速度 (毫秒)：",

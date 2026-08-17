@@ -43,6 +43,12 @@ export const DOM = {
     tutorialBox: document.getElementById("tutorial-box"),
     tutorialMessage: document.getElementById("tutorial-message"),
 
+    // Menu des tutoriels
+    menuTutorial: document.getElementById("menu-tutorial"),
+    btnTutBase: document.getElementById("btn-tut-base"),
+    btnTutBpm: document.getElementById("btn-tut-bpm"),
+    btnBackTut: document.getElementById("btn-back-tut"),
+
     // Menu BPM
     bpmCheckbox: document.getElementById("setting-bpm-mode"),
     bpmSettings: document.getElementById("bpm-advanced-settings"),
@@ -137,6 +143,7 @@ export function showMainMenu() {
     DOM.mainMenu.style.display = "flex";
     DOM.menuBase.style.display = "flex";
     DOM.menuSettings.style.display = "none";
+    DOM.menuTutorial.style.display = "none";
     DOM.codeDisplay.style.display = "none";
     DOM.btnHostStart.style.display = "block";
     DOM.btnAI.style.display = "block";
@@ -161,7 +168,7 @@ export function prepareStartGame(myRole) {
 // Gère le texte et la surbrillance dynamique
 export function updateTutorialStep(stepNumber, p1Energy = 0, isFail = false) {
     // Mise à jour du texte
-    if (stepNumber > 0 && stepNumber <= 15) {
+    if (stepNumber > 0 && stepNumber <= 15 || (stepNumber >= 20 && stepNumber <= 25)) {
         let textKey = isFail ? `tut_fail_${stepNumber}` : `tut_${stepNumber}`;
         DOM.tutorialMessage.innerText = getText(textKey);
     }
@@ -194,5 +201,22 @@ export function updateTutorialStep(stepNumber, p1Energy = 0, isFail = false) {
         if (p1Energy < 3) document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
         else document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
         document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+    }
+    else if (stepNumber === 22) { // Pratique BPM : Dép
+        document.querySelector('[data-action="mouvement"]').classList.add("btn-tutorial-highlight");
+    }
+    else if (stepNumber === 23) { // Pratique BPM : Recharge
+        document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
+    }
+    else if (stepNumber === 24) { // Pratique BPM : Attaque
+        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+        document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
+        window.highlightBpmQueue = true;
+    } 
+    else if (stepNumber === 25) { // Attente que l'attaque touche ca cible
+        window.highlightBpmQueue = true;
+    } 
+    else {
+        window.highlightBpmQueue = false;
     }
 }

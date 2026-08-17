@@ -120,6 +120,21 @@
             </div>
             
         </div>
+        
+        <!-- MENU DES TUTORIELS -->
+        <div id="menu-tutorial" class="menu-actions" style="display: none;">
+            <h2 style="margin: 0 0 15px 0;" data-i18n="tutorial_title">Tutoriels</h2>
+            
+            <div class="settings-buttons-area">
+                <button id="btn-tut-base" class="btn-menu btn-green" data-i18n="btn_tut_base">Bases du jeu</button>
+                <button id="btn-tut-bpm" class="btn-menu btn-purple" data-i18n="btn_tut_bpm">Mode BPM</button>
+                
+                <hr style="width: 100%; border-color: #555; margin: 10px 0;">
+                
+                <button id="btn-back-tut" class="btn-menu btn-blue" data-i18n="btn_back">Retour</button>
+            </div>
+        </div>
+        
         <div id="version-text">v1.2.5</div>
     </div>
 
@@ -142,7 +157,6 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="js/game.js"></script>
     <!--
-        -->
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
@@ -152,5 +166,6 @@
                 });
             }
         </script>
-</body>
+        -->
+    </body>
 </html>
