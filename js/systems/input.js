@@ -52,7 +52,7 @@ export function setupControls(engine) {
         if (engine.actionActuelle === "mouvement" && clickedMy) {
             myActionChoice = { type: "mouvement", col: clickedMy.col, row: clickedMy.row };
         }
-        if (engine.actionActuelle === "recharge" && clickedMy) {
+        if (engine.actionActuelle === "recharge") {
             myActionChoice = { type: "recharge" };
         }
         if (engine.actionActuelle === "attaque_normale" && me.energy >= GameConfig.COST_NORMAL_ATTACK && clickedOpp) {

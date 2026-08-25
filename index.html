@@ -100,7 +100,7 @@
                 <div id="bpm-advanced-settings" style="display: none;">
                     <div class="setting-group">
                         <label data-i18n="label_bpm_tempo">Vitesse (ms) :</label>
-                        <input type="number" id="setting-bpm-tempo" class="input-code" value="1000" min="300" max="3000" step="100">
+                        <input type="number" id="setting-bpm-tempo" class="input-code" value="750" min="300" max="3000" step="100">
                     </div>
                     <div class="setting-group">
                         <label data-i18n="label_bpm_queue">Taille de la pile :</label>
@@ -157,6 +157,7 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="js/game.js"></script>
     <!--
+    -->
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
@@ -166,6 +167,5 @@
                 });
             }
         </script>
-        -->
     </body>
 </html>

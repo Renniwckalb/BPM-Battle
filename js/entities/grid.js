@@ -61,100 +61,37 @@ export default class Grid {
         }
     }
 
-    // Dessin de la pile
-    drawHideQueue(ctx, queue, queueSize, playerColor, side) {
-        if (!queue) return;
-
-        let queueBoxSize = Math.min(30, this.cellSize * 0.7);
-        let queueSpacing = 10   ;
-
-        // On calcule X dynamiquement : à gauche ou à droite de la grille
-        let maxAvailableHeight = ctx.canvas.height * 0.40; 
-        let maxSlotHeight = maxAvailableHeight / queueSize;
-        let dynamicCellSize = (maxSlotHeight - queueSpacing) / this.rows;
-        
-        let miniCellSize = Math.max(8, Math.min(dynamicCellSize, this.cellSize / 3));
-        
-        let miniGridWidth = this.cols * miniCellSize;
-        let miniGridHeight = this.rows * miniCellSize;
-        let slotHeight = miniGridHeight + queueSpacing;
-        let totalQueueHeight = queueSize * slotHeight;
-
-        // Rapprocher les files de la grille principale
-        let queueX = (side === "left") 
-            ? this.x - queueBoxSize - 15 
-            : this.x + (this.cols * this.cellSize) + 15;
-        let queueY;
-        // On centre la file entre les deux grilles
-        if (direction === "down") {
-            queueY = this.y - totalQueueHeight - 10;
-        } else {
-            queueY = this.y + (this.rows * this.cellSize) + 20;
-        }
-
-        for (let i = 0; i < queueSize; i++) {
-            let act = queue[i];
-            let boxY = queueY + (i * (queueBoxSize + queueSpacing));
-            
-            // Fond de la case
-            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-            ctx.fillRect(queueX, boxY, queueBoxSize, queueBoxSize);
-            ctx.strokeStyle = "#555";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(queueX, boxY, queueBoxSize, queueBoxSize);
-
-            // Dessin de l'attaque
-            if (act) {
-                if (act.type === "attaque_normale") {
-                    ctx.fillStyle = playerColor;
-                    ctx.beginPath();
-                    ctx.arc(queueX + queueBoxSize/2, boxY + queueBoxSize/2, queueBoxSize/3, 0, Math.PI*2);
-                    ctx.fill();
-                } 
-                else if (act.type === "attaque_colonne") {
-                    ctx.fillStyle = "red";
-                    ctx.fillRect(queueX + 4, boxY + 4, queueBoxSize - 8, queueBoxSize - 8);
-                }
-            }
-        }
-    }
-
-    // Dessin de la pile BPM
-    drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0, direction = "up") {
+    // Dessin de la pile BPM (Détaillée ou Simplifiée)
+    drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0, direction = "up", showMiniGrid = false) {
         if (!queue || queueSize === 0) return;
 
+        // Tailles et Espacements
         let queueSpacing = 15;
         let maxAvailableHeight = ctx.canvas.height * 0.8;
-        
-        // Hauteur maximale autorisée pour une seule mini-grille (incluant l'espacement)
         let maxSlotHeight = maxAvailableHeight / queueSize;
         let maxMiniGridHeight = maxSlotHeight - queueSpacing;
         
-        // Déduction de la taille de cellule dynamique
         let dynamicCellSize = maxMiniGridHeight / this.rows;
+        let miniCellSize = Math.max(10, Math.min(dynamicCellSize, this.cellSize / 4));
         
-        // On garde ton calcul initial comme plafond (pour ne pas avoir de grilles géantes si queueSize = 1)
-        let miniCellSize = Math.min(dynamicCellSize, this.cellSize / 4);
-        miniCellSize = Math.max(10, miniCellSize);
-        
-        let miniGridWidth = this.cols * miniCellSize;
-        let miniGridHeight = this.rows * miniCellSize;
-        
-        // Hauteur finale d'un bloc de la file
-        let slotHeight = miniGridHeight + queueSpacing;
-        
+        // Dimensions globales d'un "bloc" de la file
+        let boxWidth = this.cols * miniCellSize;
+        let boxHeight = this.rows * miniCellSize;
+        let slotHeight = boxHeight + queueSpacing;
+
+        // POSITIONNEMENT DE BASE 
         let queueX = (side === "left") 
-            ? this.x - miniGridWidth - 20 
+            ? this.x - boxWidth - 20 
             : this.x + (this.cols * this.cellSize) + 20;
         let queueY = this.y;
 
-        // Boucle sur la file d'attente
+        // BOUCLE GLOBALE
         for (let i = 0; i < queueSize; i++) {
             let act = queue[i];
             let displayIndex = (direction === "down") ? (queueSize - 1 - i) : i;
             let boxY = queueY + ((displayIndex + (direction === "down" ? -slideAnim : slideAnim)) * slotHeight);
 
-            // Effet fondu
+            // Gestion de l'opacité (Fondu de l'animation)
             let alpha = 1.0;
             if (slideAnim > 0 && i === queueSize - 1) {
                 if (direction === "down" && i === 0) alpha = slideAnim;
@@ -162,41 +99,62 @@ export default class Grid {
             }
             ctx.globalAlpha = alpha;
 
-            // Dessin de chaque case de la mini-grille
-            for (let r = 0; r < this.rows; r++) {
-                for (let c = 0; c < this.cols; c++) {
-                    let cellX = queueX + (c * miniCellSize);
-                    let cellY = boxY + (r * miniCellSize);
+            // CHOIX DE L'AFFICHAGE VISUEL ---
+            if (showMiniGrid) {
+                // AFFICHAGE DÉTAILLÉ : La mini-grille complète
+                for (let r = 0; r < this.rows; r++) {
+                    for (let c = 0; c < this.cols; c++) {
+                        let cellX = queueX + (c * miniCellSize);
+                        let cellY = boxY + (r * miniCellSize);
 
-                    // Fond sombre de base pour chaque petite case
-                    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-                    ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                    
-                    // Bordure de la petite case
-                    ctx.strokeStyle = "#555";
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(cellX, cellY, miniCellSize, miniCellSize);
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                        ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                        ctx.strokeStyle = "#555";
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(cellX, cellY, miniCellSize, miniCellSize);
 
-                    // Si une attaque est prévue, on allume la/les bonne(s) case(s) !
-                    if (act) {
-                        // Attaque normale : cible une case précise
-                        if (act.type === "attaque_normale" && act.col === c && act.row === r) {
-                            ctx.fillStyle = playerColor;
-                            ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                        } 
-                        // Attaque spéciale : cible toute une colonne
-                        else if (act.type === "attaque_colonne" && act.col === c) {
-                            ctx.fillStyle = "red";
-                            ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                        if (act) {
+                            if (act.type === "attaque_normale" && act.col === c && act.row === r) {
+                                ctx.fillStyle = playerColor;
+                                ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                            } else if (act.type === "attaque_colonne" && act.col === c) {
+                                ctx.fillStyle = "red";
+                                ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                            }
                         }
+                    }
+                }
+                ctx.strokeStyle = "#FFF";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(queueX, boxY, boxWidth, boxHeight);
+                
+            } else {
+                // AFFICHAGE SIMPLIFIÉ : Un seul bloc centré
+                let iconSize = Math.min(boxWidth, boxHeight); // On garde une taille cohérente
+                let offsetX = queueX + (boxWidth - iconSize) / 2;
+                let offsetY = boxY + (boxHeight - iconSize) / 2;
+
+                ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+                ctx.fillRect(offsetX, offsetY, iconSize, iconSize);
+                ctx.strokeStyle = "#555";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(offsetX, offsetY, iconSize, iconSize);
+
+                if (act) {
+                    if (act.type === "attaque_normale") {
+                        ctx.fillStyle = playerColor;
+                        ctx.beginPath();
+                        ctx.arc(offsetX + iconSize/2, offsetY + iconSize/2, iconSize/3, 0, Math.PI*2);
+                        ctx.fill();
+                    } 
+                    else if (act.type === "attaque_colonne") {
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(offsetX + 4, offsetY + 4, iconSize - 8, iconSize - 8);
                     }
                 }
             }
 
-            // Bordure globale autour de la mini-grille entière pour faire propre
-            ctx.strokeStyle = "#FFF";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(queueX, boxY, miniGridWidth, miniGridHeight);
+            // Réinitialisation de l'opacité pour le reste du canevas
             ctx.globalAlpha = 1.0;
         }
     }

@@ -1,5 +1,5 @@
 import { GameConfig } from '../core/config.js';
-import { getText } from '../ui/lang.js';
+import { getText } from './lang.js';
 // --- GESTION DE L'INTERFACE UTILISATEUR (HTML/CSS) ---
 
 // Récupération de tous les éléments du DOM

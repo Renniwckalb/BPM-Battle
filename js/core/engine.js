@@ -2,6 +2,7 @@ import Grid from '../entities/grid.js';
 import Player from '../entities/player.js';
 import * as Combat from '../systems/combat.js';
 import * as UI from '../ui/ui.js';
+import Renderer from './renderer.js';
 import * as Network from '../systems/network.js';
 import TutorialManager from '../systems/tutorial.js';
 import { GameConfig, updateConfig } from './config.js';
@@ -22,22 +23,18 @@ export default class GameEngine {
         this.currentTick = 0;
         this.p1BufferedActions = new Map(); // Stocke les actions indexées par numéro de tick
         this.p2BufferedActions = new Map();
-
+        
         // Réseau
         this.myRole = null;
         this.localRematchReady = false;
         this.remoteRematchReady = false;
-
+        
         // Entités
         this.gridPlayer1 = new Grid(0, 0, 0, "#4CAF50");
         this.gridPlayer2 = new Grid(0, 0, 0, "#F44336");
         this.p1 = new Player(this.gridPlayer1, 1, 1, "#2196F3");
         this.p2 = new Player(this.gridPlayer2, 1, 1, "#FF9800");
-
-        // Écran
-        window.addEventListener("resize", () => this.resizeCanvas());
-        this.resizeCanvas();
-
+        
         // Tutoriel
         this.tutorial = new TutorialManager(this);
         
@@ -50,28 +47,8 @@ export default class GameEngine {
         this.currentP1Action = null;
         this.currentP2Action = null;
         this.queueSlideAnim = 0;
-
-        // Boucle de rendu
-        this.gameLoop = this.gameLoop.bind(this);
-        requestAnimationFrame(this.gameLoop);
-    }
-
-    // Redimensionne le canvas et ajuste les grilles en fonction de la taille de l'écran
-    resizeCanvas() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
         
-        let baseCellSize = Math.min(this.canvas.width / 5.5, this.canvas.height / 7.5);
-        let myGrid = (this.myRole === "p2") ? this.gridPlayer2 : this.gridPlayer1;
-        let oppGrid = (this.myRole === "p2") ? this.gridPlayer1 : this.gridPlayer2;
-
-        myGrid.cellSize = baseCellSize * 0.90;
-        myGrid.x = (this.canvas.width - (myGrid.cellSize * 3)) / 2;
-        myGrid.y = this.canvas.height - (myGrid.cellSize * 3) - 80;
-
-        oppGrid.cellSize = baseCellSize * 0.65;
-        oppGrid.x = (this.canvas.width - (oppGrid.cellSize * 3)) / 2;
-        oppGrid.y = Math.max(140, this.canvas.height * 0.15);
+        this.renderer = new Renderer(this);
     }
 
     // Démarre le jeu avec le mode et le rôle spécifiés
@@ -95,7 +72,7 @@ export default class GameEngine {
 
         UI.prepareStartGame(this.myRole);
         this.gameState = "playing";
-        this.resizeCanvas();
+        this.renderer.resizeCanvas();
     }
 
     // Réinitialise l'état du jeu pour un nouveau départ
@@ -311,105 +288,6 @@ export default class GameEngine {
                 }, 150);
             }, 150);
         }, 150);
-    }
-
-    // Boucle principale du jeu qui gère le rendu et l'affichage des éléments à l'écran
-    gameLoop() {
-        this.ctx.fillStyle = "#1e1e1e";
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.gridPlayer1.draw(this.ctx);
-        this.gridPlayer2.draw(this.ctx);
-        this.p1.draw(this.ctx);
-        this.p2.draw(this.ctx);
-
-        if (this.gameMode === "tutorial") {
-            this.tutorial.drawHighlight(this.ctx);
-        }
-        if (GameConfig.MODE_BPM && this.gameMode !== "tutorial") {
-            this.drawBpmUI(this.ctx);
-        }
-        
-        UI.updateHUD(this.myRole, this.p1, this.p2, this.isResolving);
-        requestAnimationFrame(this.gameLoop);
-    }
-
-    // Dessine l'interface utilisateur du mode BPM, y compris les lumières et les files d'attente d'actions
-    drawBpmUI(ctx) {
-        let lightSize = 15;
-        let spacing = 40;
-        let startX = (this.canvas.width / 2) - spacing;
-        let startY = 40;
-
-        let activeLights = this.bpmBeat === 0 ? 3 : this.bpmBeat;
-
-        for (let i = 0; i < 3; i++) {
-            ctx.beginPath();
-            ctx.arc(startX + (i * spacing), startY, lightSize, 0, Math.PI * 2);
-            ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-            ctx.fill();
-            
-            if (i < activeLights) {
-                ctx.fillStyle = (i === 2) ? "#4CAF50" : "#FFEB3B";
-                ctx.fill();
-                ctx.shadowColor = ctx.fillStyle;
-                ctx.shadowBlur = 10;
-                ctx.fill();
-                ctx.shadowBlur = 0; 
-            }
-
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = "#FFF";
-            ctx.stroke();
-        }
-
-        if (this.queueSlideAnim > 0.01) {
-            this.queueSlideAnim += (0 - this.queueSlideAnim) * 0.15;
-        } else {
-            this.queueSlideAnim = 0;
-        }
-
-        let p1Direction = (this.myRole === "p2") ? "up" : "down";
-        let p2Direction = (this.myRole === "p2") ? "down" : "up";
-
-        this.gridPlayer1.drawQueue(ctx, this.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p2.color, "left", this.queueSlideAnim, p1Direction);
-        this.gridPlayer2.drawQueue(ctx, this.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.p1.color, "left", this.queueSlideAnim, p2Direction);
-        if (window.highlightBpmQueue) {
-            ctx.save();
-            ctx.strokeStyle = "#FFEB3B";
-            ctx.lineWidth = 4;
-            ctx.globalAlpha = 0.4 + Math.abs(Math.sin(Date.now() / 200)) * 0.6; // Clignotement
-
-            let targetGrid = this.gridPlayer2; 
-            
-            // Meme calcul que DrawQueue
-            let queueSpacing = 15;
-            let maxAvailableHeight = ctx.canvas.height * 0.8;
-            
-            let maxSlotHeight = maxAvailableHeight / GameConfig.BPM_QUEUE_SIZE;
-            let maxMiniGridHeight = maxSlotHeight - queueSpacing;
-            let dynamicCellSize = maxMiniGridHeight / targetGrid.rows;
-            
-            let miniCellSize = Math.min(dynamicCellSize, targetGrid.cellSize / 4);
-            miniCellSize = Math.max(10, miniCellSize);
-            
-            let miniGridWidth = targetGrid.cols * miniCellSize;
-            let miniGridHeight = targetGrid.rows * miniCellSize;
-            let slotHeight = miniGridHeight + queueSpacing;
-
-            // X de depart
-            let qX = targetGrid.x - miniGridWidth - 20;
-            
-            // Y de départ
-            let qY = targetGrid.y;
-            
-            // La hauteur totale occupée du premier au dernier slot de la boucle
-            let totalHighlightHeight = (GameConfig.BPM_QUEUE_SIZE - 1) * slotHeight + miniGridHeight;
-            
-            // On dessine le rectangle avec 5px de marge pour englober proprement les bordures blanches
-            ctx.strokeRect(qX - 5, qY - 5, miniGridWidth + 10, totalHighlightHeight + 10);
-            ctx.restore();
-        }
     }
 
     // Démarre la boucle BPM qui gère le rythme du jeu et les actions des joueurs
