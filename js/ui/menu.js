@@ -39,12 +39,22 @@ export function setupMenu(engine) {
     DOM.btnHostMenu.addEventListener("click", () => {
         DOM.menuBase.style.display = "none";
         DOM.menuSettings.style.display = "flex";
+        DOM.rulesContainer.style.display = "block";
+        DOM.btnBackMenu.style.display = "block";
     });
 
     // Retour au menu de base
     DOM.btnBackMenu.addEventListener("click", () => {
         DOM.menuSettings.style.display = "none";
         DOM.menuBase.style.display = "flex";
+        DOM.btnBackMenu.style.display = "none";
+        DOM.btnHostStart.style.display = "block";
+        DOM.btnAI.style.display = "block";
+        DOM.rulesContainer.style.display = "block";
+        if(DOM.codeDisplay){
+            Network.closeNetwork();
+            DOM.codeDisplay.style.display = "none";
+        }
     });
 
     // Bouton tutoriel de l'écran d'accueil
@@ -110,9 +120,10 @@ export function setupMenu(engine) {
             (code) => {
                 DOM.codeDisplay.style.display = "block";
                 DOM.codeDisplay.innerText = getText("code_display") + code;
+                DOM.btnBackMenu.style.display = "block";
                 DOM.btnHostStart.style.display = "none";
                 DOM.btnAI.style.display = "none";
-                DOM.btnBackMenu.style.display = "none";
+                DOM.rulesContainer.style.display = "none";
             },
             () => {
                 Network.sendData({ type: "config", settings: GameConfig });

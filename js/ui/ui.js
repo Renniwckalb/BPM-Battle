@@ -7,14 +7,15 @@ export const DOM = {
     // Écran titre
     mainMenu: document.getElementById("main-menu"),
     menuBase: document.getElementById("menu-base"),
-    menuSettings: document.getElementById("menu-settings"),
     btnAI: document.getElementById("btn-ai"),
     btnHost: document.getElementById("btn-host"),
     btnJoin: document.getElementById("btn-join"),
     codeDisplay: document.getElementById("room-code-display"),
     inputJoin: document.getElementById("input-join-code"),
-
+    
     // Menu de création de partie
+    menuSettings: document.getElementById("menu-settings"),
+    rulesContainer: document.getElementById("rules-container"),
     btnPreset1: document.getElementById("btn-preset-1"),
     btnPreset2: document.getElementById("btn-preset-2"),
     btnCustomRules: document.getElementById("btn-custom-rules"),
