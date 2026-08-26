@@ -2,6 +2,7 @@ import { DOM } from './ui.js';
 import * as Network from '../systems/network.js';
 import { GameConfig, updateConfig } from '../core/config.js';
 import { setLanguage, getText, flags } from './lang.js';
+import { GamePresets } from '../core/preset.js';
 
 /**
  * Récupère et valide l'ensemble des paramètres saisis par l'utilisateur
@@ -159,8 +160,60 @@ export function setupMenu(engine) {
         }
     });
 
-    // Affichage conditionnel des réglages BPM
+    // --- GESTION DES PRÉRÉGLAGES DE RÈGLES ---
+    
+    DOM.btnPreset1.addEventListener("click", () => {
+        applyPresetToUI(GamePresets.classique);
+        DOM.customRulesContainer.style.display = "none";
+        updateMenuSelection('preset1');
+    });
+
+    DOM.btnPreset2.addEventListener("click", () => {
+        applyPresetToUI(GamePresets.bpmRapide);
+        DOM.customRulesContainer.style.display = "none";
+        updateMenuSelection('preset2');
+    });
+
+    // Afficher/Masquer le menu des règles personnalisées
+    DOM.btnCustomRules.addEventListener("click", () => {
+        const isHidden = DOM.customRulesContainer.style.display === "none";
+        DOM.customRulesContainer.style.display = isHidden ? "block" : "none";
+        if (isHidden) {
+            updateMenuSelection('custom');
+        } else {
+            updateMenuSelection('preset1'); 
+        }
+    });
+
+    // Afficher ou masquer les paramètres avancés BPM en fonction de l'état de la checkbox
     DOM.bpmCheckbox.addEventListener("change", (e) => {
         DOM.bpmSettings.style.display = e.target.checked ? "block" : "none";
     });
+
+    // Fonction pour appliquer un preset aux éléments de l'UI
+    function applyPresetToUI(preset) {
+        DOM.settingHp.value = preset.hp;
+        DOM.settingAtk.value = preset.atk;
+        DOM.settingSpe.value = preset.spe;
+        DOM.bpmCheckbox.checked = preset.bpmMode;
+        DOM.bpmTempo.value = preset.bpmTempo;
+        DOM.bpmQueueSize.value = preset.bpmQueue;
+
+        // Déclencher un événement de changement pour mettre à jour l'affichage si nécessaire
+        DOM.bpmCheckbox.dispatchEvent(new Event('change'));
+    }
+
+    // Fonction utilitaire pour gérer l'état visuel des boutons
+    function updateMenuSelection(selectedBtnId) {
+        // On retire la classe 'inactive' de tous les boutons pour les réinitialiser
+        DOM.btnPreset1.classList.remove('inactive');
+        DOM.btnPreset2.classList.remove('inactive');
+        DOM.btnCustomRules.classList.remove('inactive');
+
+        // On grise ceux qui ne sont pas sélectionnés
+        if (selectedBtnId !== 'preset1') DOM.btnPreset1.classList.add('inactive');
+        if (selectedBtnId !== 'preset2') DOM.btnPreset2.classList.add('inactive');
+        if (selectedBtnId !== 'custom') DOM.btnCustomRules.classList.add('inactive');
+    }
 }
+

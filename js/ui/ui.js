@@ -15,6 +15,12 @@ export const DOM = {
     inputJoin: document.getElementById("input-join-code"),
 
     // Menu de création de partie
+    btnPreset1: document.getElementById("btn-preset-1"),
+    btnPreset2: document.getElementById("btn-preset-2"),
+    btnCustomRules: document.getElementById("btn-custom-rules"),
+    customRulesContainer: document.getElementById("custom-rules-container"),
+
+    // Menu des paramètres de partie
     btnHostMenu: document.getElementById("btn-host-menu"),
     btnHostStart: document.getElementById("btn-host-start"),
     btnBackMenu: document.getElementById("btn-back-menu"),

@@ -9,6 +9,9 @@ export const translations = {
         btn_join: "Rejoindre",
 
         // Menu de création de partie
+        btn_preset_1: "Classique",
+        btn_preset_2: "BPM Rapide",
+        btn_custom_rules: "Règles Personnalisées",
         rules_title: "Règles du jeu",
         label_hp: "Points de vie :",
         label_atk: "Coût Attaque :",
@@ -86,6 +89,9 @@ export const translations = {
         btn_join: "Join",
 
         // Menu de création de partie
+        btn_preset_1: "Classic",
+        btn_preset_2: "Fast BPM",
+        btn_custom_rules: "Custom Rules",
         rules_title: "Game Rules",
         label_hp: "Health Points:",
         label_atk: "Attack Cost:",
@@ -163,6 +169,9 @@ export const translations = {
         btn_join: "加入",
 
         // Menu de création de partie
+        btn_preset_1: "经典",
+        btn_preset_2: "快速 BPM",
+        btn_custom_rules: "自定义规则",
         rules_title: "游戏规则",
         label_hp: "生命值：",
         label_atk: "攻击消耗：",

@@ -74,40 +74,48 @@
             <div class="settings-scroll-area">
                 <h2 style="margin: 0 0 15px 0;" data-i18n="rules_title">Règles du jeu</h2>
                 
-                <!-- Paramètres de base -->
-                <div class="setting-group">
-                    <label data-i18n="label_hp">Points de vie :</label>
-                    <input type="number" id="setting-hp" class="input-code" value="3" min="1" max="10">
-                </div>
-                <div class="setting-group">
-                    <label data-i18n="label_atk">Coût Attaque :</label>
-                    <input type="number" id="setting-atk" class="input-code" value="1" min="0" max="5">
-                </div>
-                <div class="setting-group">
-                    <label data-i18n="label_spe">Coût Spécial :</label>
-                    <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
+                <div class="settings-buttons-area" style="margin-bottom: 15px; flex-direction: row; flex-wrap: wrap; justify-content: center;">
+                    <button id="btn-preset-1" class="btn-menu btn-green" style="width: auto; padding: 10px;" data-i18n="btn_preset_1">Classique</button>
+                    <button id="btn-preset-2" class="btn-menu btn-green inactive" style="width: auto; padding: 10px;" data-i18n="btn_preset_2">BPM Rapide</button>
+                    <button id="btn-custom-rules" class="btn-menu btn-green inactive" style="width: 100%; padding: 10px;" data-i18n="btn_custom_rules">Personnaliser</button>
                 </div>
 
-                <!-- SECTION BPM  -->
-                <hr style="width: 100%; border-color: #555; margin: 10px 0;">
-                
-                <div class="setting-group">
-                    <label data-i18n="label_bpm_mode">Mode Rythme (BPM) :</label>
-                    <input type="checkbox" id="setting-bpm-mode" style="width: 25px; height: 25px;">
-                </div>
-                
-                <!-- Paramètres BPM -->
-                <div id="bpm-advanced-settings" style="display: none;">
+                <div id="custom-rules-container" style="display: none; width: 100%;">
+                    <!-- Paramètres de base -->
                     <div class="setting-group">
-                        <label data-i18n="label_bpm_tempo">Vitesse (ms) :</label>
-                        <input type="number" id="setting-bpm-tempo" class="input-code" value="750" min="300" max="3000" step="100">
+                        <label data-i18n="label_hp">Points de vie :</label>
+                        <input type="number" id="setting-hp" class="input-code" value="3" min="1" max="10">
                     </div>
                     <div class="setting-group">
-                        <label data-i18n="label_bpm_queue">Taille de la pile :</label>
-                        <input type="number" id="setting-bpm-queue" class="input-code" value="2" min="0" max="4">
+                        <label data-i18n="label_atk">Coût Attaque :</label>
+                        <input type="number" id="setting-atk" class="input-code" value="1" min="0" max="5">
                     </div>
+                    <div class="setting-group">
+                        <label data-i18n="label_spe">Coût Spécial :</label>
+                        <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
+                    </div>
+                    
+                    <!-- SECTION BPM  -->
+                    <hr style="width: 100%; border-color: #555; margin: 10px 0;">
+                    
+                    <div class="setting-group">
+                        <label data-i18n="label_bpm_mode">Mode Rythme (BPM) :</label>
+                        <input type="checkbox" id="setting-bpm-mode" style="width: 25px; height: 25px;">
+                    </div>
+                    
+                    <!-- Paramètres BPM -->
+                    <div id="bpm-advanced-settings" style="display: none;">
+                        <div class="setting-group">
+                            <label data-i18n="label_bpm_tempo">Vitesse (ms) :</label>
+                            <input type="number" id="setting-bpm-tempo" class="input-code" value="750" min="300" max="3000" step="100">
+                        </div>
+                        <div class="setting-group">
+                            <label data-i18n="label_bpm_queue">Taille de la pile :</label>
+                            <input type="number" id="setting-bpm-queue" class="input-code" value="2" min="0" max="4">
+                        </div>
+                    </div>
+                    <hr style="width: 100%; border-color: #555; margin: 10px 0;">
                 </div>
-                <hr style="width: 100%; border-color: #555; margin: 10px 0;">
             </div>
 
             <!-- ZONE BOUTONS -->

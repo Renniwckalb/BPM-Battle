@@ -1,4 +1,4 @@
-/* --- BASE DU JEU --- */
+/* BASE DU JEU */
 body {
     margin: 0;
     overflow: hidden;
@@ -9,7 +9,7 @@ canvas {
     display: block;
 }
 
-/* --- INTERFACE DE COMBAT (HUD) --- */
+/* INTERFACE DE COMBAT (HUD) */
 #ui-container {
     position: absolute;
     bottom: 2%;
@@ -49,7 +49,15 @@ canvas {
     pointer-events: none;
 }
 
-/* --- STATISTIQUES --- */
+.btn-menu.inactive {
+    background-color: #555 !important;
+    color: #888 !important;
+    opacity: 0.6;
+    box-shadow: none;
+    filter: none;
+}
+
+/* STATISTIQUES */
 .stats-container {
     position: absolute;
     right: 5%;
@@ -79,7 +87,7 @@ canvas {
     display: block;
 }
 
-/* --- OVERLAYS POUR LES MENUS --- */
+/* OVERLAYS POUR LES MENUS */
 .screen-overlay {
     position: absolute;
     top: 0;
@@ -126,7 +134,7 @@ canvas {
     max-width: 320px;
 }
 
-/* --- MENU DES LANGUES --- */
+/* MENU DES LANGUES */
 #lang-container {
     position: fixed;
     bottom: clamp(10px, 3vw, 20px);
@@ -206,7 +214,7 @@ canvas {
     pointer-events: none;
 }
 
-/* --- BOUTONS DE L'ÉCRAN DE FIN --- */
+/* BOUTONS DE L'ÉCRAN DE FIN */
 
 .btn-menu:active { transform: scale(0.95);}
 .btn-menu:hover { filter: brightness(1.1);}
@@ -268,7 +276,7 @@ canvas {
     outline: none;
 }
 
-/* --- PARAMÈTRES DE LA SALLE --- */
+/* PARAMÈTRES DE LA SALLE */
 .setting-group {
     display: flex;
     justify-content: space-between;
@@ -284,7 +292,7 @@ canvas {
     margin: 0;
 }
 
-/* --- BOÎTE DU TUTORIEL --- */
+/* BOÎTE DU TUTORIEL */
 .tutorial-box {
     position: absolute;
     top: 2%;
@@ -305,7 +313,7 @@ canvas {
     pointer-events: none;
 }
 
-/* --- ANIMATION TUTORIEL --- */
+/* ANIMATION TUTORIEL */
 @keyframes pulseHighlight {
     0% { box-shadow: 0 0 0px #FFEB3B; border-color: #FFEB3B; }
     50% { box-shadow: 0 0 15px #FFEB3B; border-color: #FFF; }
@@ -319,7 +327,7 @@ canvas {
     z-index: 20;
 }
 
-/* --- SURBRILLANCE DES ÉLÉMENTS UI  --- */
+/* SURBRILLANCE DES ÉLÉMENTS UI  */
 @keyframes uiHighlight {
     0% { filter: drop-shadow(0 0 0px rgba(255, 235, 59, 0)); box-shadow: 0 0 0px 4px rgba(255, 235, 59, 0); }
     50% { filter: drop-shadow(0 0 10px rgba(255, 235, 59, 1)); box-shadow: 0 0 15px 4px rgba(255, 235, 59, 1); background: rgba(255, 235, 59, 0.2); }
@@ -333,7 +341,7 @@ canvas {
     padding: 5px;
 }
 
-/* --- MENU SETTINGS ET BPM --- */
+/* MENU SETTINGS ET BPM */
 
 #bpm-advanced-settings {
     width: 100%;
