@@ -1,4 +1,6 @@
-const CACHE_NAME = 'bpm-battle-v1.2.10';
+import { GAME_VERSION } from './version.js';
+
+const CACHE_NAME = 'bpm-battle-' + GAME_VERSION;
 
 // Liste de tous les fichiers de ton jeu
 const FILES_TO_CACHE = [
@@ -6,6 +8,7 @@ const FILES_TO_CACHE = [
     './index.html',
     './style.css',
     './manifest.json',
+    './version.js',
     
     './js/game.js',
     

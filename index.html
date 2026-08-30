@@ -151,7 +151,7 @@
             </div>
         </div>
         
-        <div id="version-text">v1.2.10</div>
+        <div id="version-text"></div>
     </div>
 
     <!-- ÉCRAN DE FIN -->
@@ -174,12 +174,19 @@
     <script type="module" src="js/game.js"></script>
     <!--
     -->
-        <script>
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('./service-worker.js')
-                });
-            }
-        </script>
-    </body>
+    <!-- Chargement de la variable globale -->
+    <script src="./version.js"></script>
+    
+    <script>
+        // 1. Mise à jour de l'affichage HTML
+        document.getElementById('version-text').innerText = GAME_VERSION;
+    
+        // 2. Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+            });
+        }
+    </script>
+</body>
 </html>
