@@ -1,3 +1,4 @@
+// Regles de jeu
 export const GamePresets = {
     classique: {
         hp: 3,
@@ -16,3 +17,24 @@ export const GamePresets = {
         bpmQueue: 1
     }
 };
+
+// Map de jeu
+export const LayoutPresets = {
+    classicLayout : [
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1]
+    ],
+    customLayout : [
+        [0, 1, 1, 1, 0],
+        [1, 0, 1, 0, 1],
+        [1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 0],
+        [0, 0, 1, 0, 0]
+    ],
+    squareLayout : generateSquareLayout(5)
+}
+
+export function generateSquareLayout(size){
+    return Array(size).fill().map(() => Array(size).fill(1));
+}

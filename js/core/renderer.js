@@ -19,18 +19,34 @@ export default class Renderer {
     resizeCanvas() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-        
-        let baseCellSize = Math.min(this.canvas.width / 5.5, this.canvas.height / 7.5);
+                 
         let myGrid = (this.engine.myRole === "p2") ? this.engine.gridPlayer2 : this.engine.gridPlayer1;
         let oppGrid = (this.engine.myRole === "p2") ? this.engine.gridPlayer1 : this.engine.gridPlayer2;
 
-        myGrid.cellSize = baseCellSize * 0.90;
-        myGrid.x = (this.canvas.width - (myGrid.cellSize * 3)) / 2;
-        myGrid.y = this.canvas.height - (myGrid.cellSize * 3) - 100;
+        // Calcul dynamique de la taille de base
+        let maxRows = myGrid.rows + oppGrid.rows;
+        let maxCols = Math.max(myGrid.cols, oppGrid.cols);
+        let baseCellSize = Math.min(this.canvas.width / (maxCols + 2.5), this.canvas.height / (maxRows + 1.5));
 
+        // Grille du joueur
+        myGrid.cellSize = baseCellSize * 0.90;
+        myGrid.x = (this.canvas.width - (myGrid.cols * myGrid.cellSize)) / 2;
+        myGrid.y = this.canvas.height - (myGrid.rows * myGrid.cellSize) - 100;
+
+        // Grille de l'adversaire
         oppGrid.cellSize = baseCellSize * 0.65;
-        oppGrid.x = (this.canvas.width - (oppGrid.cellSize * 3)) / 2;
-        oppGrid.y = Math.max(140, this.canvas.height * 0.15);
+        oppGrid.x = (this.canvas.width - (oppGrid.cols * oppGrid.cellSize)) / 2;
+        
+        // Sécurité anti-chevauchement
+        let idealOppY = Math.max(140, this.canvas.height * 0.15);
+        let bottomOfOppGrid = idealOppY + (oppGrid.rows * oppGrid.cellSize);
+        
+        if (bottomOfOppGrid > myGrid.y - 20) {
+            // Si ça se touche, on force un espace de 20px entre les deux grilles
+            oppGrid.y = myGrid.y - (oppGrid.rows * oppGrid.cellSize) - 20; 
+        } else {
+            oppGrid.y = idealOppY;
+        }
     }
 
     gameLoop() {

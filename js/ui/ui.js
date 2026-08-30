@@ -174,56 +174,51 @@ export function prepareStartGame(myRole) {
 
 // Gère le texte et la surbrillance dynamique
 export function updateTutorialStep(stepNumber, p1Energy = 0, isFail = false) {
-    // Mise à jour du texte
-    if (stepNumber > 0 && stepNumber <= 15 || (stepNumber >= 20 && stepNumber <= 25)) {
+    if ((stepNumber > 0 && stepNumber <= 15) || (stepNumber >= 20 && stepNumber <= 25)) {
         let textKey = isFail ? `tut_fail_${stepNumber}` : `tut_${stepNumber}`;
         DOM.tutorialMessage.innerText = getText(textKey);
     }
 
-    // Nettoyage TOTAL de toutes les surbrillances
     document.querySelectorAll('.highlight-ui').forEach(el => el.classList.remove("highlight-ui"));
     DOM.boutons.forEach(btn => btn.classList.remove("btn-tutorial-highlight"));
+    window.highlightBpmQueue = false;
 
-    // Allumage sélectif selon l'étape
-    if (stepNumber === 5) { // Coeurs
-        document.querySelectorAll('.hearts').forEach(el => el.classList.add("highlight-ui"));
-    } 
-    else if (stepNumber === 6) { // Energie
-        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
-    } 
-    else if (stepNumber === 7) { // Boutons
-        DOM.boutons.forEach(btn => btn.classList.add("btn-tutorial-highlight"));
-    } 
-    else if (stepNumber === 9) { // Pratique : Déplacement
-        document.querySelector('[data-action="mouvement"]').classList.add("btn-tutorial-highlight");
-    } 
-    else if (stepNumber === 10 || stepNumber === 12) { // Pratique : Recharge
-        document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
-    } 
-    else if (stepNumber === 11 || stepNumber === 13) { // Pratique : Attaque Normale
-        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
-        document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
-    } 
-    else if (stepNumber === 14) { // Pratique : Attaque Spéciale
-        if (p1Energy < 3) document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
-        else document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
-        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
-    }
-    else if (stepNumber === 22) { // Pratique BPM : Dép
-        document.querySelector('[data-action="mouvement"]').classList.add("btn-tutorial-highlight");
-    }
-    else if (stepNumber === 23) { // Pratique BPM : Recharge
-        document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
-    }
-    else if (stepNumber === 24) { // Pratique BPM : Attaque
-        document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
-        document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
-        window.highlightBpmQueue = true;
-    } 
-    else if (stepNumber === 25) { // Attente que l'attaque touche ca cible
-        window.highlightBpmQueue = true;
-    } 
-    else {
-        window.highlightBpmQueue = false;
+    switch (stepNumber) {
+        case 5:
+            document.querySelectorAll('.hearts').forEach(el => el.classList.add("highlight-ui"));
+            break;
+        case 6:
+            document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+            break;
+        case 7:
+            DOM.boutons.forEach(btn => btn.classList.add("btn-tutorial-highlight"));
+            break;
+        case 9:
+        case 22:
+            document.querySelector('[data-action="mouvement"]').classList.add("btn-tutorial-highlight");
+            break;
+        case 10:
+        case 12:
+        case 23:
+            document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
+            break;
+        case 11:
+        case 13:
+            document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+            document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
+            break;
+        case 14:
+            if (p1Energy < 3) document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
+            else document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
+            document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+            break;
+        case 24:
+            document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
+            document.querySelector('[data-action="attaque_normale"]').classList.add("btn-tutorial-highlight");
+            window.highlightBpmQueue = true;
+            break;
+        case 25:
+            window.highlightBpmQueue = true;
+            break;
     }
 }

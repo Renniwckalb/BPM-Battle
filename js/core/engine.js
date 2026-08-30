@@ -7,6 +7,9 @@ import * as Network from '../systems/network.js';
 import TutorialManager from '../systems/tutorial.js';
 import { GameConfig, updateConfig } from './config.js';
 import AudioManager from '../systems/audio.js';
+import { LayoutPresets } from './preset.js';
+
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export default class GameEngine {
     constructor() {
@@ -30,10 +33,14 @@ export default class GameEngine {
         this.remoteRematchReady = false;
         
         // Entités
-        this.gridPlayer1 = new Grid(0, 0, 0, "#4CAF50");
-        this.gridPlayer2 = new Grid(0, 0, 0, "#F44336");
-        this.p1 = new Player(this.gridPlayer1, 1, 1, "#2196F3");
-        this.p2 = new Player(this.gridPlayer2, 1, 1, "#FF9800");
+        this.gridPlayer1 = new Grid(0, 0, 0, "#4CAF50", LayoutPresets.squareLayout);
+        this.gridPlayer2 = new Grid(0, 0, 0, "#F44336", LayoutPresets.squareLayout);
+
+        let startCol = Math.floor(this.gridPlayer1.cols / 2);
+        let startRow = Math.floor(this.gridPlayer1.rows / 2);
+
+        this.p1 = new Player(this.gridPlayer1, startCol, startRow, "#2196F3");
+        this.p2 = new Player(this.gridPlayer2, startCol, startRow, "#FF9800");
         
         // Tutoriel
         this.tutorial = new TutorialManager(this);
@@ -77,18 +84,24 @@ export default class GameEngine {
 
     // Réinitialise l'état du jeu pour un nouveau départ
     resetGame() {
+        let startCol = Math.floor(this.gridPlayer1.cols / 2);
+        let startRow = Math.floor(this.gridPlayer1.rows / 2);
+
+        // Variables des joueurs
         this.p1.hp = GameConfig.MAX_HP;
         this.p1.energy = 0;
         this.p2.hp = GameConfig.MAX_HP;
         this.p2.energy = 0;
-        this.p1.moveTo(1, 1);
-        this.p2.moveTo(1, 1);
+        this.p1.moveTo(startCol, startRow);
+        this.p2.moveTo(startCol, startRow);
         this.isResolving = false;
         
+        // Variables BPM
         this.currentTick = 0;
         this.p1BufferedActions.clear();
         this.p2BufferedActions.clear();
         
+        // Variables de l'interface
         this.actionActuelle = null;
         this.stopBpmLoop();
         UI.resetActionButtons();
@@ -252,44 +265,41 @@ export default class GameEngine {
     }
 
     // Résout un tour de jeu en exécutant les actions des deux joueurs
-    resolveTurn(p1Action, p2Action) {
+    async resolveTurn(p1Action, p2Action) {
         if (p1Action.type === "mouvement") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
         if (p2Action.type === "mouvement") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
 
-        setTimeout(() => {
-            if (p1Action.type === "recharge") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
-            if (p2Action.type === "recharge") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
+        await wait(150);
 
-            setTimeout(() => {
-                if (p1Action.type === "attaque_normale" || p1Action.type === "attaque_colonne") {
-                    Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
-                }
-                if (p2Action.type === "attaque_normale" || p2Action.type === "attaque_colonne") {
-                    Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
-                }
+        if (p1Action.type === "recharge") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
+        if (p2Action.type === "recharge") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
 
-                setTimeout(() => {
-                    this.gridPlayer1.selectedCol = -1;
-                    this.gridPlayer1.selectedRow = -1;
-                    this.gridPlayer2.selectedCol = -1;
-                    this.gridPlayer2.selectedRow = -1;
+        await wait(150);
+        
+        if (p1Action.type === "attaque_normale" || p1Action.type === "attaque_colonne") {
+            Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
+        }
+        if (p2Action.type === "attaque_normale" || p2Action.type === "attaque_colonne") {
+            Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
+        }
 
-                    if (this.gameMode === "tutorial") {
-                        this.tutorial.verifyTurn();
-                    }
+        await wait(150);
 
-                    if (this.p1.hp > 0 && this.p2.hp > 0) {
-                        this.isResolving = false;
-                        this.currentTick++;
-                    } else {
-                        UI.showGameOver(this.myRole, this.p1, this.p2);
-                        this.gameState = "end";
-                    }
-                }, 150);
-            }, 150);
-        }, 150);
+        this.gridPlayer1.selectedCol = -1;
+        this.gridPlayer1.selectedRow = -1;
+        this.gridPlayer2.selectedCol = -1;
+        this.gridPlayer2.selectedRow = -1;
+
+        if (this.gameMode === "tutorial") this.tutorial.verifyTurn();
+
+        if (this.p1.hp > 0 && this.p2.hp > 0) {
+            this.isResolving = false;
+            this.currentTick++;
+        } else {
+            UI.showGameOver(this.myRole, this.p1, this.p2);
+            this.gameState = "end";
+        }
     }
-
     // Démarre la boucle BPM qui gère le rythme du jeu et les actions des joueurs
     startBpmLoop() {
         this.bpmBeat = 0;
@@ -387,26 +397,8 @@ export default class GameEngine {
         }
 
         this.queueSlideAnim = 1.0;
-
-        if (p1IncomingAttack) {
-            if (p1IncomingAttack.type === "attaque_normale") {
-                this.gridPlayer2.attackedCells.push({ col: p1IncomingAttack.col, row: p1IncomingAttack.row });
-                if (this.p2.col === p1IncomingAttack.col && this.p2.row === p1IncomingAttack.row) this.p2.hp--;
-            } else if (p1IncomingAttack.type === "attaque_colonne") {
-                this.gridPlayer2.flashColumn(p1IncomingAttack.col);
-                if (this.p2.col === p1IncomingAttack.col) this.p2.hp--;
-            }
-        }
-
-        if (p2IncomingAttack) {
-            if (p2IncomingAttack.type === "attaque_normale") {
-                this.gridPlayer1.attackedCells.push({ col: p2IncomingAttack.col, row: p2IncomingAttack.row });
-                if (this.p1.col === p2IncomingAttack.col && this.p1.row === p2IncomingAttack.row) this.p1.hp--;
-            } else if (p2IncomingAttack.type === "attaque_colonne") {
-                this.gridPlayer1.flashColumn(p2IncomingAttack.col);
-                if (this.p1.col === p2IncomingAttack.col) this.p1.hp--;
-            }
-        }
+        Combat.applyBpmAttack(p1IncomingAttack, this.p2, this.gridPlayer2);
+        Combat.applyBpmAttack(p2IncomingAttack, this.p1, this.gridPlayer1);
 
         setTimeout(() => {
             this.gridPlayer1.attackedCells = [];

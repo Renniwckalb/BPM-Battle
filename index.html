@@ -10,15 +10,23 @@
     <title>BPM Battle</title>
 </head>
 <body>
+    <!-- Sprite-->
+    <svg style="display: none;">
+        <defs>
+            <symbol id="icon-heart" viewBox="-1 -1 34 32">
+                <path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/>
+            </symbol>
+        </defs>
+    </svg>
     <!-- Le Terrain de Jeu -->
     <canvas id="gameCanvas"></canvas>
 
     <!-- STATS ADVERSAIRE -->
     <div id="stats-p2" class="stats-container opponent-stats">
         <div class="hearts">
-            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
-            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
-            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <svg class="heart"><use href="#icon-heart"></use></svg>
+            <svg class="heart"><use href="#icon-heart"></use></svg>
+            <svg class="heart"><use href="#icon-heart"></use></svg>
             <span class="extra-hp" style="display: none;">+0</span>
         </div>
         <div class="energy-text"><span data-i18n="energy">Énergie: </span><span id="energy-p2">0</span></div>
@@ -27,9 +35,9 @@
     <!-- STATS JOUEUR -->
     <div id="stats-p1" class="stats-container player-stats">
         <div class="hearts">
-            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
-            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
-            <svg class="heart" viewBox="-1 -1 34 32"><path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/></svg>
+            <svg class="heart"><use href="#icon-heart"></use></svg>
+            <svg class="heart"><use href="#icon-heart"></use></svg>
+            <svg class="heart"><use href="#icon-heart"></use></svg>
             <span class="extra-hp" style="display: none;">+0</span>
         </div>
         <div class="energy-text"><span data-i18n="energy">Énergie: </span><span id="energy-p1">0</span></div>
@@ -170,8 +178,6 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('./service-worker.js')
-                    .then(reg => console.log('Service Worker enregistré !'))
-                    .catch(err => console.error('Erreur Service Worker :', err));
                 });
             }
         </script>

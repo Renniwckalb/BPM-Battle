@@ -38,7 +38,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Nouveaux fichiers mis en cache');
             return cache.addAll(FILES_TO_CACHE);
         })
     );
@@ -53,7 +52,6 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 listeDesCaches.map((nomDuCache) => {
                     if (nomDuCache !== CACHE_NAME) {
-                        console.log('Ancien cache supprimé :', nomDuCache);
                         return caches.delete(nomDuCache);
                     }
                 })
@@ -69,7 +67,6 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((response) => {
             return response || fetch(event.request).catch(() => {
-                console.log("Ressource réseau indisponible (mode hors-ligne actif) :", event.request.url);
             });
         })
     );
