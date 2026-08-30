@@ -33,8 +33,8 @@ export default class GameEngine {
         this.remoteRematchReady = false;
         
         // Entités
-        this.gridPlayer1 = new Grid(0, 0, 0, "#4CAF50", LayoutPresets.squareLayout);
-        this.gridPlayer2 = new Grid(0, 0, 0, "#F44336", LayoutPresets.squareLayout);
+        this.gridPlayer1 = new Grid(0, 0, 0, "#4CAF50", LayoutPresets.classicLayout);
+        this.gridPlayer2 = new Grid(0, 0, 0, "#F44336", LayoutPresets.classicLayout);
 
         let startCol = Math.floor(this.gridPlayer1.cols / 2);
         let startRow = Math.floor(this.gridPlayer1.rows / 2);

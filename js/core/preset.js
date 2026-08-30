@@ -20,11 +20,7 @@ export const GamePresets = {
 
 // Map de jeu
 export const LayoutPresets = {
-    classicLayout : [
-        [1, 1, 1],
-        [1, 1, 1],
-        [1, 1, 1]
-    ],
+    classicLayout : generateSquareLayout(3),
     customLayout : [
         [0, 1, 1, 1, 0],
         [1, 0, 1, 0, 1],
