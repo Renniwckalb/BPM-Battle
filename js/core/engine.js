@@ -96,6 +96,11 @@ export default class GameEngine {
         this.p2.moveTo(startCol, startRow);
         this.isResolving = false;
         
+        // Variables de la pile
+        this.p1ActionQueue = Array(GameConfig.BPM_QUEUE_SIZE).fill(null);
+        this.p2ActionQueue = Array(GameConfig.BPM_QUEUE_SIZE).fill(null);
+        this.queueSlideAnim = 0;
+
         // Variables BPM
         this.currentTick = 0;
         this.p1BufferedActions.clear();
@@ -264,26 +269,53 @@ export default class GameEngine {
         if (this.tutorial) this.tutorial.advanceClick();
     }
 
+    // Déduit l'énergie appropriée en fonction du type d'attaque
+    consumeAttackEnergy(player, attack) {
+        if (!attack) return;
+        if (attack.type === "attaque_normale") player.energy -= GameConfig.COST_NORMAL_ATTACK;
+        if (attack.type === "attaque_colonne") player.energy -= GameConfig.COST_SPECIAL_ATTACK;
+    }
+
+    
     // Résout un tour de jeu en exécutant les actions des deux joueurs
     async resolveTurn(p1Action, p2Action) {
+        // Mouvement
         if (p1Action.type === "mouvement") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
         if (p2Action.type === "mouvement") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
-
         await wait(150);
 
+        // Recharge
         if (p1Action.type === "recharge") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
         if (p2Action.type === "recharge") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
-
         await wait(150);
-        
-        if (p1Action.type === "attaque_normale" || p1Action.type === "attaque_colonne") {
-            Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
-        }
-        if (p2Action.type === "attaque_normale" || p2Action.type === "attaque_colonne") {
-            Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
+
+        // Gestion de la file d'attente des attaques
+        let p1QueuedAttack = p1Action.type.startsWith("attaque") ? p1Action : null;
+        let p2QueuedAttack = p2Action.type.startsWith("attaque") ? p2Action : null;
+
+        // Déduction de l'énergie pour les attaques
+        this.consumeAttackEnergy(this.p1, p1QueuedAttack);
+        this.consumeAttackEnergy(this.p2, p2QueuedAttack);
+
+        let p1IncomingAttack = null;
+        let p2IncomingAttack = null;
+
+        if (GameConfig.BPM_QUEUE_SIZE === 0) {
+            p1IncomingAttack = p1QueuedAttack;
+            p2IncomingAttack = p2QueuedAttack;
+        } else {
+            p1IncomingAttack = this.p1ActionQueue.shift();
+            p2IncomingAttack = this.p2ActionQueue.shift();
+            this.p1ActionQueue.push(p1QueuedAttack);
+            this.p2ActionQueue.push(p2QueuedAttack);
         }
 
-        await wait(150);
+        this.queueSlideAnim = 1.0; // Déclenche l'animation de glissement
+
+        // Résolution des attaques sortantes avec la méthode BPM (qui ne déduit pas d'énergie)
+        Combat.applyBpmAttack(p1IncomingAttack, this.p2, this.gridPlayer2);
+        Combat.applyBpmAttack(p2IncomingAttack, this.p1, this.gridPlayer1);
+        await wait(300);
 
         this.gridPlayer1.selectedCol = -1;
         this.gridPlayer1.selectedRow = -1;
@@ -300,6 +332,7 @@ export default class GameEngine {
             this.gameState = "end";
         }
     }
+
     // Démarre la boucle BPM qui gère le rythme du jeu et les actions des joueurs
     startBpmLoop() {
         this.bpmBeat = 0;

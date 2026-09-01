@@ -82,44 +82,76 @@ export default class Grid {
         }
     }
 
-    getClickedCell(clickX, clickY) {
-        let col = Math.floor((clickX - this.x) / this.cellSize);
-        let row = Math.floor((clickY - this.y) / this.cellSize);
-        let tile = this.getTile(col, row);
-        
-        // Retourne la tuile uniquement si elle existe et est active
-        if (tile && tile.active) return tile; 
-        return null;
-    }
-
     // Dessin de la pile BPM (Détaillée ou Simplifiée)
     drawQueueSlot(ctx, act, queueX, boxY, miniCellSize, boxWidth, boxHeight, playerColor, showMiniGrid, alpha) {
         ctx.globalAlpha = alpha;
         
         if (showMiniGrid) {
-            for (let r = 0; r < this.rows; r++) {
-                for (let c = 0; c < this.cols; c++) {
-                    let cellX = queueX + (c * miniCellSize);
-                    let cellY = boxY + (r * miniCellSize);
-                    ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-                    ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                    ctx.strokeStyle = "#555";
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(cellX, cellY, miniCellSize, miniCellSize);
-                    if (act) {
-                        if (act.type === "attaque_normale" && act.col === c && act.row === r) {
-                            ctx.fillStyle = playerColor;
-                            ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                        } else if (act.type === "attaque_colonne" && act.col === c) {
-                            ctx.fillStyle = "red";
-                            ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                        }
+        // Fond des cases, actions et grille intérieure grise
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                let tile = this.tiles[r][c];
+                if (!tile || !tile.active) continue;
+                let cellX = queueX + (c * miniCellSize);
+                let cellY = boxY + (r * miniCellSize);
+                
+                // Fond de la case
+                ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+                ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                
+                // Contenu de la case
+                if (act) {
+                    if (act.type === "attaque_normale" && act.col === c && act.row === r) {
+                        ctx.fillStyle = playerColor;
+                        ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                    } else if (act.type === "attaque_colonne" && act.col === c) {
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
                     }
                 }
+                
+                // Grille intérieure standard
+                ctx.strokeStyle = "#555";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(cellX, cellY, miniCellSize, miniCellSize);
             }
-            ctx.strokeStyle = "#FFF";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(queueX, boxY, boxWidth, boxHeight);
+        }
+        // Dessin du contour extérieur blanc
+        ctx.strokeStyle = "#FFF";
+        ctx.lineWidth = 2;
+        
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                let tile = this.tiles[r][c];
+                if (!tile || !tile.active) continue;
+                let cellX = queueX + (c * miniCellSize);
+                let cellY = boxY + (r * miniCellSize);
+                ctx.beginPath();
+                
+                // Bord Haut
+                if (r === 0 || !this.tiles[r - 1][c].active) {
+                    ctx.moveTo(cellX, cellY);
+                    ctx.lineTo(cellX + miniCellSize, cellY);
+                }
+                // Bord Bas
+                if (r === this.rows - 1 || !this.tiles[r + 1][c].active) {
+                    ctx.moveTo(cellX, cellY + miniCellSize);
+                    ctx.lineTo(cellX + miniCellSize, cellY + miniCellSize);
+                }
+                // Bord Gauche
+                if (c === 0 || !this.tiles[r][c - 1].active) {
+                    ctx.moveTo(cellX, cellY);
+                    ctx.lineTo(cellX, cellY + miniCellSize);
+                }
+                // Bord Droit
+                if (c === this.cols - 1 || !this.tiles[r][c + 1].active) {
+                    ctx.moveTo(cellX + miniCellSize, cellY);
+                    ctx.lineTo(cellX + miniCellSize, cellY + miniCellSize);
+                }
+                
+                ctx.stroke();
+            }
+        }
         } else {
             let iconSize = Math.min(boxWidth, boxHeight);
             let offsetX = queueX + (boxWidth - iconSize) / 2;
@@ -149,8 +181,31 @@ export default class Grid {
     drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0, direction = "up", showMiniGrid = false) {
         if (!queue || queueSize === 0) return;
         
+        // Récupération des dimensions
+        const dims = this.getQueueDimensions(ctx.canvas.height, queueSize);
+        
+        let queueX = (side === "left") ? this.x - dims.boxWidth - 20 : this.x + (this.cols * this.cellSize) + 20;
+        let queueY = this.y;
+        
+        for (let i = 0; i < queueSize; i++) {
+            let act = queue[i];
+            let displayIndex = (direction === "down") ? (queueSize - 1 - i) : i;
+            let boxY = queueY + ((displayIndex + (direction === "down" ? -slideAnim : slideAnim)) * dims.slotHeight);
+            
+            let alpha = 1.0;
+            if (slideAnim > 0 && i === queueSize - 1) {
+                if (direction === "down" && i === 0) alpha = slideAnim;
+                else if (direction === "up" && i === queueSize - 1) alpha = 1.0 - slideAnim;
+            }
+            
+            this.drawQueueSlot(ctx, act, queueX, boxY, dims.miniCellSize, dims.boxWidth, dims.boxHeight, playerColor, showMiniGrid, alpha);
+        }
+    }
+
+    // Calcule et retourne les dimensions de la pile en fonction de l'écran
+    getQueueDimensions(canvasHeight, queueSize) {
         let queueSpacing = 15;
-        let maxAvailableHeight = ctx.canvas.height * 0.8;
+        let maxAvailableHeight = canvasHeight * 0.8;
         let maxSlotHeight = maxAvailableHeight / queueSize;
         let maxMiniGridHeight = maxSlotHeight - queueSpacing;
         let dynamicCellSize = maxMiniGridHeight / this.rows;
@@ -160,23 +215,7 @@ export default class Grid {
         let boxHeight = this.rows * miniCellSize;
         let slotHeight = boxHeight + queueSpacing;
         
-        let queueX = (side === "left") ? this.x - boxWidth - 20 : this.x + (this.cols * this.cellSize) + 20;
-        let queueY = this.y;
-
-        for (let i = 0; i < queueSize; i++) {
-            let act = queue[i];
-            let displayIndex = (direction === "down") ? (queueSize - 1 - i) : i;
-            let boxY = queueY + ((displayIndex + (direction === "down" ? -slideAnim : slideAnim)) * slotHeight);
-            
-            let alpha = 1.0;
-            if (slideAnim > 0 && i === queueSize - 1) {
-                if (direction === "down" && i === 0) alpha = slideAnim;
-                else if (direction === "up" && i === queueSize - 1) alpha = 1.0 - slideAnim;
-            }
-            
-            // Appel de la méthode extraite
-            this.drawQueueSlot(ctx, act, queueX, boxY, miniCellSize, boxWidth, boxHeight, playerColor, showMiniGrid, alpha);
-        }
+        return { miniCellSize, boxWidth, boxHeight, slotHeight };
     }
 
     // Détecte la case sélectionnée
@@ -192,6 +231,12 @@ export default class Grid {
         let col = Math.floor((clickX - this.x) / this.cellSize);
         let row = Math.floor((clickY - this.y) / this.cellSize);
         
-        return { col: col, row: row };
+        let tile = this.getTile(col, row);
+
+        if (tile && tile.active) {
+            return tile;
+        }
+        
+        return null;
     }
 }

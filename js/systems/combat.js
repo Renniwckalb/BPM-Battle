@@ -18,63 +18,34 @@ export function generateAIPick(p1, p2) {
     }
 }
 
-export function executeAction(attaquant, defenseur, grilleAttaquant, grilleDefenseur, action) {
+// Fonction execute les actions
+export function executeAction(attaquant, defenseur, grilleDefenseur, action) {
     if (!action) return;
+    
     if (action.type === "mouvement") attaquant.moveTo(action.col, action.row);
     if (action.type === "recharge") attaquant.energy += 1;
-         
-    // Définition de la zone d'impact et des coûts
-    let cibles = [];
     
     if (action.type === "attaque_normale") {
         attaquant.energy -= GameConfig.COST_NORMAL_ATTACK;
-        grilleDefenseur.flashCell(action.col, action.row);
-        cibles.push({ col: action.col, row: action.row });
+        resolveImpact(action, grilleDefenseur, defenseur);
     }
-         
+    
     if (action.type === "attaque_colonne") {
         attaquant.energy -= GameConfig.COST_SPECIAL_ATTACK;
-        grilleDefenseur.flashColumn(action.col);
-        for (let r = 0; r < grilleDefenseur.rows; r++) {
-            cibles.push({ col: action.col, row: r });
-        }
+        resolveImpact(action, grilleDefenseur, defenseur);
     }
-
-    // Résolution des dégâts 
-    if (cibles.length > 0) {
-        let entitesTouchees = new Set();
-
-        cibles.forEach(cible => {
-            let wCol = (cible.col % grilleDefenseur.cols + grilleDefenseur.cols) % grilleDefenseur.cols;
-            let wRow = (cible.row % grilleDefenseur.rows + grilleDefenseur.rows) % grilleDefenseur.rows;
-            
-            let targetTile = grilleDefenseur.getTile(wCol, wRow);
-            if (targetTile && targetTile.occupant) {
-                entitesTouchees.add(targetTile.occupant);
-            }
-        });
-
-        entitesTouchees.forEach(entite => {
-            if (entite === defenseur) takeDamage(entite);
-        });
-    }
-}
-
-// Fonction interne pour gérer les dégâts et l'animation
-function takeDamage(player) {
-    player.hp -= 1;
-    let oldColor = player.color;
-    player.color = "white";
-    setTimeout(() => { player.color = oldColor;}, 150);
 }
 
 // Fonction exportée pour le mode BPM
 export function applyBpmAttack(attack, targetPlayer, targetGrid) {
     if (!attack) return;
+    resolveImpact(attack, targetGrid, targetPlayer);
+}
 
+// Nouvelle fonction commune pour cibler et appliquer les dégâts
+function resolveImpact(attack, targetGrid, targetPlayer) {
     let cibles = [];
     
-    // Définition des zones d'impact
     if (attack.type === "attaque_normale") {
         cibles.push({ col: attack.col, row: attack.row });
     } else if (attack.type === "attaque_colonne") {
@@ -82,8 +53,7 @@ export function applyBpmAttack(attack, targetPlayer, targetGrid) {
             cibles.push({ col: attack.col, row: r });
         }
     }
-
-    // Résolution avec l'effet "Pac-Man"
+    
     if (cibles.length > 0) {
         let entitesTouchees = new Set();
         
@@ -98,10 +68,17 @@ export function applyBpmAttack(attack, targetPlayer, targetGrid) {
                 entitesTouchees.add(tile.occupant);
             }
         });
-
-        // Application des dégâts uniques
+        
         entitesTouchees.forEach(entite => {
-            if (entite === targetPlayer) targetPlayer.hp--;
+            if (entite === targetPlayer) takeDamage(targetPlayer);
         });
     }
+}
+
+// Fonction interne pour gérer les dégâts et l'animation
+function takeDamage(player) {
+    player.hp -= 1;
+    let oldColor = player.color;
+    player.color = "white";
+    setTimeout(() => { player.color = oldColor; }, 150);
 }

@@ -65,26 +65,50 @@ export default class Renderer {
         if (GameConfig.MODE_BPM && this.engine.gameMode !== "tutorial") {
             this.drawBpmUI(this.ctx);
         }
+
+        if (GameConfig.BPM_QUEUE_SIZE > 0 && this.engine.gameMode !== "tutorial") {
+            this.drawQueues(this.ctx);
+        }
         
         UI.updateHUD(this.engine.myRole, this.engine.p1, this.engine.p2, this.engine.isResolving);
         requestAnimationFrame(this.gameLoop);
     }
 
+    // Dessin de la pile
+    drawQueues(ctx) {
+        if (this.engine.queueSlideAnim > 0.01) {
+            this.engine.queueSlideAnim += (0 - this.engine.queueSlideAnim) * 0.15;
+        } else {
+            this.engine.queueSlideAnim = 0;
+        }
+        let p1Direction = (this.engine.myRole === "p2") ? "up" : "down";
+        let p2Direction = (this.engine.myRole === "p2") ? "down" : "up";
+
+        this.engine.gridPlayer1.drawQueue(
+            ctx, this.engine.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.engine.p2.color, 
+            "left", this.engine.queueSlideAnim, p1Direction, GameConfig.BPM_QUEUE_DETAILED
+        );
+        this.engine.gridPlayer2.drawQueue(
+            ctx, this.engine.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.engine.p1.color, 
+            "left", this.engine.queueSlideAnim, p2Direction, GameConfig.BPM_QUEUE_DETAILED
+        );
+    }
+
     // Dessine l'interface utilisateur du mode BPM, y compris les lumières et les files d'attente d'actions
+    // Dessine l'interface utilisateur du mode BPM (Lumières de rythme)
     drawBpmUI(ctx) {
         let lightSize = 15;
         let spacing = 40;
         let startX = (this.canvas.width / 2) - spacing;
         let startY = 40;
-
         let activeLights = this.engine.bpmBeat === 0 ? 3 : this.engine.bpmBeat;
-
+        
         for (let i = 0; i < 3; i++) {
             ctx.beginPath();
             ctx.arc(startX + (i * spacing), startY, lightSize, 0, Math.PI * 2);
             ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
             ctx.fill();
-            
+                         
             if (i < activeLights) {
                 ctx.fillStyle = (i === 2) ? "#4CAF50" : "#FFEB3B";
                 ctx.fill();
@@ -93,57 +117,30 @@ export default class Renderer {
                 ctx.fill();
                 ctx.shadowBlur = 0; 
             }
-
             ctx.lineWidth = 2;
             ctx.strokeStyle = "#FFF";
             ctx.stroke();
         }
-
-        if (this.engine.queueSlideAnim > 0.01) {
-            this.engine.queueSlideAnim += (0 - this.engine.queueSlideAnim) * 0.15;
-        } else {
-            this.engine.queueSlideAnim = 0;
-        }
-
-        let p1Direction = (this.engine.myRole === "p2") ? "up" : "down";
-        let p2Direction = (this.engine.myRole === "p2") ? "down" : "up";
-
-        this.engine.gridPlayer1.drawQueue(ctx, this.engine.p2ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.engine.p2.color, "left", this.engine.queueSlideAnim, p1Direction);
-        this.engine.gridPlayer2.drawQueue(ctx, this.engine.p1ActionQueue, GameConfig.BPM_QUEUE_SIZE, this.engine.p1.color, "left", this.engine.queueSlideAnim, p2Direction);
+        
         if (window.highlightBpmQueue) {
             ctx.save();
             ctx.strokeStyle = "#FFEB3B";
             ctx.lineWidth = 4;
             ctx.globalAlpha = 0.4 + Math.abs(Math.sin(Date.now() / 200)) * 0.6; // Clignotement
-
-            let targetGrid = this.engine.gridPlayer2; 
             
-            // Meme calcul que DrawQueue
-            let queueSpacing = 15;
-            let maxAvailableHeight = ctx.canvas.height * 0.8;
+            let targetGrid = this.engine.gridPlayer2;
             
-            let maxSlotHeight = maxAvailableHeight / GameConfig.BPM_QUEUE_SIZE;
-            let maxMiniGridHeight = maxSlotHeight - queueSpacing;
-            let dynamicCellSize = maxMiniGridHeight / targetGrid.rows;
+            // Utilisation de la nouvelle méthode factorisée
+            const dims = targetGrid.getQueueDimensions(ctx.canvas.height, GameConfig.BPM_QUEUE_SIZE);
             
-            let miniCellSize = Math.min(dynamicCellSize, targetGrid.cellSize / 4);
-            miniCellSize = Math.max(10, miniCellSize);
-            
-            let miniGridWidth = targetGrid.cols * miniCellSize;
-            let miniGridHeight = targetGrid.rows * miniCellSize;
-            let slotHeight = miniGridHeight + queueSpacing;
-
-            // X de depart
-            let qX = targetGrid.x - miniGridWidth - 20;
-            
-            // Y de départ
+            // Calcul des coordonnées du rectangle
+            let qX = targetGrid.x - dims.boxWidth - 20;
             let qY = targetGrid.y;
+            let totalHighlightHeight = (GameConfig.BPM_QUEUE_SIZE - 1) * dims.slotHeight + dims.boxHeight;
             
-            // La hauteur totale occupée du premier au dernier slot de la boucle
-            let totalHighlightHeight = (GameConfig.BPM_QUEUE_SIZE - 1) * slotHeight + miniGridHeight;
+            // On dessine le rectangle avec 5px de marge
+            ctx.strokeRect(qX - 5, qY - 5, dims.boxWidth + 10, totalHighlightHeight + 10);
             
-            // On dessine le rectangle avec 5px de marge pour englober proprement les bordures blanches
-            ctx.strokeRect(qX - 5, qY - 5, miniGridWidth + 10, totalHighlightHeight + 10);
             ctx.restore();
         }
     }

@@ -61,6 +61,9 @@ export const DOM = {
     bpmSettings: document.getElementById("bpm-advanced-settings"),
     bpmQueueSize: document.getElementById("setting-bpm-queue"),
     bpmCheckbox: document.getElementById("setting-bpm-mode"),
+    bpmQueueDetailed: document.getElementById("setting-queue-detailed"),
+    bpmQueueDetailedContainer: document.getElementById("setting-queue-detailed-container"),
+    
     bpmTempo: document.getElementById("setting-bpm-tempo")
 };
 

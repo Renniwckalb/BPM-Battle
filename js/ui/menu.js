@@ -21,7 +21,8 @@ function getSettingsFromUI() {
         COST_SPECIAL_ATTACK: Math.max(0, Math.min(10, speInput)),
         MODE_BPM: DOM.bpmCheckbox.checked,
         BPM_TEMPO: Math.max(300, Math.min(3000, tempoInput)),
-        BPM_QUEUE_SIZE: Math.max(0, Math.min(4, queueSizeInput))
+        BPM_QUEUE_SIZE: Math.max(0, Math.min(4, queueSizeInput)),
+        BPM_QUEUE_DETAILED: DOM.bpmQueueDetailed.checked
     };
 }
 
@@ -196,7 +197,13 @@ export function setupMenu(engine) {
         }
     });
 
-    // Afficher ou masquer les paramètres avancés BPM en fonction de l'état de la checkbox
+    // Les paramètres de taille de queue
+    DOM.bpmQueueSize.addEventListener("input", (e) => {
+        const size = parseInt(e.target.value, 10) || 0;
+        DOM.bpmQueueDetailedContainer.style.display = size > 0 ? "flex" : "none";
+    });
+
+    // Les paramètres avancés BPM en fonction de l'état de la checkbox
     DOM.bpmCheckbox.addEventListener("change", (e) => {
         DOM.bpmSettings.style.display = e.target.checked ? "block" : "none";
     });
@@ -209,9 +216,11 @@ export function setupMenu(engine) {
         DOM.bpmCheckbox.checked = preset.bpmMode;
         DOM.bpmTempo.value = preset.bpmTempo;
         DOM.bpmQueueSize.value = preset.bpmQueue;
+        DOM.bpmQueueDetailed.checked = preset.bpmQueueDetailed || false;
 
         // Déclencher un événement de changement pour mettre à jour l'affichage si nécessaire
         DOM.bpmCheckbox.dispatchEvent(new Event('change'));
+        DOM.bpmQueueSize.dispatchEvent(new Event('input'));
     }
 
     // Fonction utilitaire pour gérer l'état visuel des boutons

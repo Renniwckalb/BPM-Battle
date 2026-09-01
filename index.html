@@ -102,6 +102,14 @@
                         <label data-i18n="label_spe">Coût Spécial :</label>
                         <input type="number" id="setting-spe" class="input-code" value="3" min="0" max="10">
                     </div>
+                    <div class="setting-group">
+                        <label data-i18n="label_bpm_queue">Taille de la pile :</label>
+                        <input type="number" id="setting-bpm-queue" class="input-code" value="0" min="0" max="4">
+                    </div>
+                    <div class="setting-group" id="setting-queue-detailed-container" style="display: none;">
+                        <label data-i18n="label_bpm_queue_detailed">Pile détaillée :</label>
+                        <input type="checkbox" id="setting-queue-detailed" style="width: 25px; height: 25px;">
+                    </div>
                     
                     <!-- SECTION BPM  -->
                     <hr style="width: 100%; border-color: #555; margin: 10px 0;">
@@ -116,10 +124,6 @@
                         <div class="setting-group">
                             <label data-i18n="label_bpm_tempo">Vitesse (ms) :</label>
                             <input type="number" id="setting-bpm-tempo" class="input-code" value="750" min="300" max="3000" step="100">
-                        </div>
-                        <div class="setting-group">
-                            <label data-i18n="label_bpm_queue">Taille de la pile :</label>
-                            <input type="number" id="setting-bpm-queue" class="input-code" value="2" min="0" max="4">
                         </div>
                     </div>
                     <hr style="width: 100%; border-color: #555; margin: 10px 0;">
