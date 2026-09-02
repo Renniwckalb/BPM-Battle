@@ -280,13 +280,13 @@ export default class GameEngine {
     // Résout un tour de jeu en exécutant les actions des deux joueurs
     async resolveTurn(p1Action, p2Action) {
         // Mouvement
-        if (p1Action.type === "mouvement") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
-        if (p2Action.type === "mouvement") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
+        if (p1Action.type === "mouvement") Combat.executeAction(this.p1, this.p2, this.gridPlayer2, p1Action);
+        if (p2Action.type === "mouvement") Combat.executeAction(this.p2, this.p1, this.gridPlayer1, p2Action);
         await wait(150);
 
         // Recharge
-        if (p1Action.type === "recharge") Combat.executeAction(this.p1, this.p2, this.gridPlayer1, this.gridPlayer2, p1Action);
-        if (p2Action.type === "recharge") Combat.executeAction(this.p2, this.p1, this.gridPlayer2, this.gridPlayer1, p2Action);
+        if (p1Action.type === "recharge") Combat.executeAction(this.p1, this.p2, this.gridPlayer2, p1Action);
+        if (p2Action.type === "recharge") Combat.executeAction(this.p2, this.p1, this.gridPlayer1, p2Action);
         await wait(150);
 
         // Gestion de la file d'attente des attaques

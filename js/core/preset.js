@@ -7,7 +7,7 @@ export const GamePresets = {
         bpmMode: false,
         bpmTempo: 1000,
         bpmQueue: 0,
-        BpmQueueDetailed: false
+        bpmQueueDetailed: false
     },
     bpmRapide: {
         hp: 3,
@@ -16,7 +16,7 @@ export const GamePresets = {
         bpmMode: true,
         bpmTempo: 750,
         bpmQueue: 1,
-        BpmQueueDetailed: false
+        bpmQueueDetailed: false
     }
 };
 

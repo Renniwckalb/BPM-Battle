@@ -9,19 +9,19 @@ import { GamePresets } from '../core/preset.js';
  * @returns {Object} Objet de configuration nettoyé et borné
  */
 function getSettingsFromUI() {
-    const hpInput = parseInt(DOM.settingHp.value, 10) || 3;
-    const atkInput = parseInt(DOM.settingAtk.value, 10) || 1;
-    const speInput = parseInt(DOM.settingSpe.value, 10) || 3;
-    const queueSizeInput = parseInt(DOM.bpmQueueSize.value, 10) || 2;
-    const tempoInput = parseInt(DOM.bpmTempo.value, 10) || 1000;
+    let hpInput = parseInt(DOM.settingHp.value, 10);
+    let atkInput = parseInt(DOM.settingAtk.value, 10);
+    let speInput = parseInt(DOM.settingSpe.value, 10);
+    let queueSizeInput = parseInt(DOM.bpmQueueSize.value, 10);
+    let tempoInput = parseInt(DOM.bpmTempo.value, 10);
 
     return {
-        MAX_HP: Math.max(1, Math.min(10, hpInput)),
-        COST_NORMAL_ATTACK: Math.max(0, Math.min(5, atkInput)),
-        COST_SPECIAL_ATTACK: Math.max(0, Math.min(10, speInput)),
+        MAX_HP: Math.max(1, Math.min(10, isNaN(hpInput) ? 3 : hpInput)),
+        COST_NORMAL_ATTACK: Math.max(0, Math.min(5, isNaN(atkInput) ? 1 : atkInput)),
+        COST_SPECIAL_ATTACK: Math.max(0, Math.min(10, isNaN(speInput) ? 3 : speInput)),
         MODE_BPM: DOM.bpmCheckbox.checked,
-        BPM_TEMPO: Math.max(300, Math.min(3000, tempoInput)),
-        BPM_QUEUE_SIZE: Math.max(0, Math.min(4, queueSizeInput)),
+        BPM_TEMPO: Math.max(300, Math.min(3000, isNaN(tempoInput) ? 1000 : tempoInput)),
+        BPM_QUEUE_SIZE: Math.max(0, Math.min(4, isNaN(queueSizeInput) ? 2 : queueSizeInput)),
         BPM_QUEUE_DETAILED: DOM.bpmQueueDetailed.checked
     };
 }
