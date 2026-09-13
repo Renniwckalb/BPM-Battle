@@ -1,3 +1,15 @@
+/* Couleur */
+:root {
+    --color-p1: #2196F3;
+    --color-p2: #FF9800;
+    --color-grid-p1: #4CAF50;
+    --color-grid-p2: #F44336;
+}
+
+[hidden] {
+    display: none !important;
+}
+
 /* BASE DU JEU */
 body {
     margin: 0;
@@ -6,6 +18,12 @@ body {
 }
 
 canvas {
+    display: block;
+}
+
+.btn-icon-svg {
+    width: clamp(20px, 5vw, 30px);
+    height: clamp(20px, 5vw, 30px);
     display: block;
 }
 
@@ -20,6 +38,8 @@ canvas {
     padding: 10px;
     box-sizing: border-box;
     z-index: 10;
+    transform: translateZ(0); 
+    will-change: transform, opacity;
 }
 
 .btn-action {
@@ -382,4 +402,47 @@ canvas {
 .settings-scroll-area::-webkit-scrollbar-thumb {
     background: #888; 
     border-radius: 10px;
+}
+
+/* --- MODE PORTRAIT --- */
+.icon-portrait {
+    display: none;
+}
+
+@media (orientation: portrait) {
+    .icon-portrait {
+        display: block;
+        margin: auto;
+    }
+    
+    .text-landscape {
+        display: none;
+    }
+    
+    #btn-back-menu, 
+    #btn-back-tut {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        width: clamp(45px, 10vw, 60px);
+        height: clamp(45px, 10vw, 60px);
+        padding: 0 !important; 
+        border-radius: 50%;
+        z-index: 200;
+        margin: 0;
+        
+        /* Flexbox centre l'icône */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        transform: translateZ(0); 
+        will-change: transform, opacity;
+    }
+
+    #btn-back-menu .icon-portrait,
+    #btn-back-tut .icon-portrait {
+        width: clamp(24px, 6vw, 36px);
+        height: clamp(24px, 6vw, 36px);
+    }
 }

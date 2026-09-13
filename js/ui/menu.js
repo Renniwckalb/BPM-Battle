@@ -38,47 +38,48 @@ export function setupMenu(engine) {
     // --- NAVIGATION DES MENUS ---
     // Affiche le menu des paramètres
     DOM.btnHostMenu.addEventListener("click", () => {
-        DOM.menuBase.style.display = "none";
-        DOM.menuSettings.style.display = "flex";
-        DOM.rulesContainer.style.display = "block";
-        DOM.btnBackMenu.style.display = "block";
+        DOM.menuBase.hidden = true;
+        DOM.menuSettings.hidden = false;
+        DOM.rulesContainer.hidden = false;
+        DOM.btnBackMenu.hidden = false;
     });
 
     // Retour au menu de base
     DOM.btnBackMenu.addEventListener("click", () => {
-        DOM.menuSettings.style.display = "none";
-        DOM.menuBase.style.display = "flex";
-        DOM.btnBackMenu.style.display = "none";
-        DOM.btnHostStart.style.display = "block";
-        DOM.btnAI.style.display = "block";
-        DOM.rulesContainer.style.display = "block";
+        DOM.menuSettings.hidden = true;
+        DOM.menuBase.hidden = false;
+        DOM.btnBackMenu.hidden = true;
+        DOM.btnHostStart.hidden = false;
+        DOM.btnAI.hidden = false;
+        DOM.rulesContainer.hidden = false;
         if(DOM.codeDisplay){
             Network.closeNetwork();
-            DOM.codeDisplay.style.display = "none";
+            DOM.codeDisplay.hidden = true;
         }
     });
 
     // Bouton tutoriel de l'écran d'accueil
     DOM.btnTutorial.addEventListener("click", () => {
-        DOM.menuBase.style.display = "none";
-        DOM.menuTutorial.style.display = "flex";
+        DOM.menuBase.hidden = true;
+        DOM.menuTutorial.hidden = false;
     });
 
     // Bouton retour du sous-menu tutoriel
     DOM.btnBackTut.addEventListener("click", () => {
-        DOM.menuTutorial.style.display = "none";
-        DOM.menuBase.style.display = "flex";
+        DOM.menuTutorial.hidden = true;
+        DOM.menuBase.hidden = false;
     });
 
     // Lancement du tutoriel de base
     DOM.btnTutBase.addEventListener("click", () => {
+        updateConfig(GamePresets.classique);
         engine.resetGame();
         engine.startGame("tutorial", "p1");
     });
 
     // Lancement du tutoriel BPM
     DOM.btnTutBpm.addEventListener("click", () => {
-        updateConfig({ MODE_BPM: true, BPM_TEMPO: 1000, BPM_QUEUE_SIZE: 2 });
+        updateConfig(GamePresets.bpmTutoriel);
         engine.resetGame();
         engine.startGame("tutorial_bpm", "p1");
     });
@@ -87,7 +88,7 @@ export function setupMenu(engine) {
     // Ouvrir/Fermer la liste des langues
     DOM.btnLang.addEventListener("click", () => {
         const menu = DOM.langMenu;
-        menu.style.display = menu.style.display === "none" ? "flex" : "none";
+        menu.hidden = !menu.hidden;
     });
 
     // Choisir une langue dans la liste
@@ -96,8 +97,8 @@ export function setupMenu(engine) {
             const selectedLang = e.target.getAttribute("data-lang");
             setLanguage(selectedLang);
             DOM.btnLang.innerText = flags[selectedLang];
-            DOM.langMenu.style.display = "none";
-            if (DOM.codeDisplay.style.display === "block") {
+            DOM.langMenu.hidden = true;
+            if (!DOM.codeDisplay.hidden) {
                 const currentCode = DOM.codeDisplay.innerText.split(":")[1].trim();
                 DOM.codeDisplay.innerText = getText("code_display") + currentCode;
             }
@@ -107,7 +108,7 @@ export function setupMenu(engine) {
     // Fermer le menu langue au clic extérieur
     document.addEventListener("click", (e) => {
         if (!e.target.closest("#lang-container")) {
-            if (DOM.langMenu) DOM.langMenu.style.display = "none";
+            if (DOM.langMenu) DOM.langMenu.hidden = true;
         }
     });
 
@@ -119,12 +120,12 @@ export function setupMenu(engine) {
 
         Network.hostGame(
             (code) => {
-                DOM.codeDisplay.style.display = "block";
+                DOM.codeDisplay.hidden = false;
                 DOM.codeDisplay.innerText = getText("code_display") + code;
-                DOM.btnBackMenu.style.display = "block";
-                DOM.btnHostStart.style.display = "none";
-                DOM.btnAI.style.display = "none";
-                DOM.rulesContainer.style.display = "none";
+                DOM.btnBackMenu.hidden = false;
+                DOM.btnHostStart.hidden = true;
+                DOM.btnAI.hidden = true;
+                DOM.rulesContainer.hidden = true;
             },
             () => {
                 Network.sendData({ type: "config", settings: GameConfig });
@@ -155,8 +156,8 @@ export function setupMenu(engine) {
         } else if (engine.gameMode === "pvp") {
             engine.localRematchReady = true;
             Network.sendData({ type: "rematch" });
-            DOM.btnRestart.style.display = "none";
-            DOM.rematchWaitingMessage.style.display = "block";
+            DOM.btnRestart.hidden = true;
+            DOM.rematchWaitingMessage.hidden = false;
             if (engine.remoteRematchReady) engine.doRestartGame();
         }
     });
@@ -176,21 +177,21 @@ export function setupMenu(engine) {
     
     DOM.btnPreset1.addEventListener("click", () => {
         applyPresetToUI(GamePresets.classique);
-        DOM.customRulesContainer.style.display = "none";
+        DOM.customRulesContainer.hidden = true;
         updateMenuSelection('preset1');
     });
 
     DOM.btnPreset2.addEventListener("click", () => {
         applyPresetToUI(GamePresets.bpmRapide);
-        DOM.customRulesContainer.style.display = "none";
+        DOM.customRulesContainer.hidden = true;
         updateMenuSelection('preset2');
     });
 
     // Afficher/Masquer le menu des règles personnalisées
     DOM.btnCustomRules.addEventListener("click", () => {
-        const isHidden = DOM.customRulesContainer.style.display === "none";
-        DOM.customRulesContainer.style.display = isHidden ? "block" : "none";
-        if (isHidden) {
+        const isCurrentlyHidden = DOM.customRulesContainer.hidden;
+        DOM.customRulesContainer.hidden = !isCurrentlyHidden;
+        if (isCurrentlyHidden) {
             updateMenuSelection('custom');
         } else {
             updateMenuSelection('preset1'); 
@@ -200,24 +201,24 @@ export function setupMenu(engine) {
     // Les paramètres de taille de queue
     DOM.bpmQueueSize.addEventListener("input", (e) => {
         const size = parseInt(e.target.value, 10) || 0;
-        DOM.bpmQueueDetailedContainer.style.display = size > 0 ? "flex" : "none";
+        DOM.bpmQueueDetailedContainer.hidden = size === 0;
     });
 
     // Les paramètres avancés BPM en fonction de l'état de la checkbox
     DOM.bpmCheckbox.addEventListener("change", (e) => {
-        DOM.bpmSettings.style.display = e.target.checked ? "block" : "none";
+        DOM.bpmSettings.hidden = !e.target.checked;
     });
 
     // Fonction pour appliquer un preset aux éléments de l'UI
     function applyPresetToUI(preset) {
-        DOM.settingHp.value = preset.hp;
-        DOM.settingAtk.value = preset.atk;
-        DOM.settingSpe.value = preset.spe;
-        DOM.bpmCheckbox.checked = preset.bpmMode;
-        DOM.bpmTempo.value = preset.bpmTempo;
-        DOM.bpmQueueSize.value = preset.bpmQueue;
-        DOM.bpmQueueDetailed.checked = preset.bpmQueueDetailed || false;
-
+        DOM.settingHp.value = preset.MAX_HP;
+        DOM.settingAtk.value = preset.COST_NORMAL_ATTACK;
+        DOM.settingSpe.value = preset.COST_SPECIAL_ATTACK;
+        DOM.bpmCheckbox.checked = preset.MODE_BPM;
+        DOM.bpmTempo.value = preset.BPM_TEMPO;
+        DOM.bpmQueueSize.value = preset.BPM_QUEUE_SIZE;
+        DOM.bpmQueueDetailed.checked = preset.BPM_QUEUE_DETAILED || false;
+        
         // Déclencher un événement de changement pour mettre à jour l'affichage si nécessaire
         DOM.bpmCheckbox.dispatchEvent(new Event('change'));
         DOM.bpmQueueSize.dispatchEvent(new Event('input'));

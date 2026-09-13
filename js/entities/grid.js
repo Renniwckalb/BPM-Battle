@@ -24,6 +24,10 @@ export default class Grid {
         
         this.selectedCol = -1;
         this.selectedRow = -1;
+
+        this.offscreenCanvas = document.createElement('canvas');
+        this.offscreenCtx = this.offscreenCanvas.getContext('2d');
+        this.needsRedraw = true;
     }
 
     // Récupère le pointeur de la tuile
@@ -48,24 +52,61 @@ export default class Grid {
         }
     }
 
-    draw(ctx) {
+    cacheStaticGrid() {
+        const margin = 2;
+        const w = Math.ceil(this.cols * this.cellSize) + (margin * 2);
+        const h = Math.ceil(this.rows * this.cellSize) + (margin * 2);
+
+        if (w <= 0 || h <= 0) return; 
+
+        this.offscreenCanvas.width = w;
+        this.offscreenCanvas.height = h;
+        this.offscreenCtx.clearRect(0, 0, w, h);
+
         for (let r = 0; r < this.rows; r++) {
             for (let c = 0; c < this.cols; c++) {
                 let tile = this.tiles[r][c];
-                
-                // On ne dessine pas les tuiles désactivées (trous)
                 if (!tile.active) continue;
+                
+                let caseX = (c * this.cellSize) + margin;
+                let caseY = (r * this.cellSize) + margin;
 
+                // Fond
+                this.offscreenCtx.fillStyle = this.color;
+                this.offscreenCtx.globalAlpha = 0.15;
+                this.offscreenCtx.fillRect(caseX, caseY, this.cellSize, this.cellSize);
+                this.offscreenCtx.globalAlpha = 1.0;
+
+                // Bordures
+                this.offscreenCtx.strokeStyle = this.color;
+                this.offscreenCtx.lineWidth = 3;
+                this.offscreenCtx.strokeRect(caseX, caseY, this.cellSize, this.cellSize);
+            }
+        }
+        this.needsRedraw = false;
+    }
+
+    draw(ctx) {
+        if (this.needsRedraw) this.cacheStaticGrid();
+        
+        // Dessiner le calque statique en un seul appel
+        ctx.drawImage(this.offscreenCanvas, this.x, this.y);
+
+        const margin = 2;
+
+        if (this.offscreenCanvas.width > 0 && this.offscreenCanvas.height > 0) {
+            ctx.drawImage(this.offscreenCanvas, this.x - margin, this.y - margin);
+        }
+        
+        // Dessiner uniquement les états dynamiques (surbrillance/attaques)
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                let tile = this.tiles[r][c];
+                if (!tile.active) continue;
+                
                 let caseX = this.x + (c * this.cellSize);
                 let caseY = this.y + (r * this.cellSize);
 
-                // Fond
-                ctx.fillStyle = this.color;
-                ctx.globalAlpha = 0.15;
-                ctx.fillRect(caseX, caseY, this.cellSize, this.cellSize);
-                ctx.globalAlpha = 1.0;
-
-                // Surbriallance
                 if (tile.isAttacked) {
                     ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
                     ctx.fillRect(caseX, caseY, this.cellSize, this.cellSize);
@@ -73,11 +114,6 @@ export default class Grid {
                     ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
                     ctx.fillRect(caseX, caseY, this.cellSize, this.cellSize);
                 }
-
-                // Bordures
-                ctx.strokeStyle = this.color;
-                ctx.lineWidth = 3;
-                ctx.strokeRect(caseX, caseY, this.cellSize, this.cellSize);
             }
         }
     }

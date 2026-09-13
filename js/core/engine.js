@@ -13,6 +13,12 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export default class GameEngine {
     constructor() {
+        const rootStyles = getComputedStyle(document.documentElement);
+        const colorGridP1 = rootStyles.getPropertyValue('--color-grid-p1').trim();
+        const colorGridP2 = rootStyles.getPropertyValue('--color-grid-p2').trim();
+        const colorP1 = rootStyles.getPropertyValue('--color-p1').trim();
+        const colorP2 = rootStyles.getPropertyValue('--color-p2').trim();
+
         this.canvas = document.getElementById("gameCanvas");
         this.ctx = this.canvas.getContext("2d");
         
@@ -33,14 +39,14 @@ export default class GameEngine {
         this.remoteRematchReady = false;
         
         // Entités
-        this.gridPlayer1 = new Grid(0, 0, 0, "#4CAF50", LayoutPresets.classicLayout);
-        this.gridPlayer2 = new Grid(0, 0, 0, "#F44336", LayoutPresets.classicLayout);
+        this.gridPlayer1 = new Grid(0, 0, 0, colorGridP1, LayoutPresets.classicLayout);
+        this.gridPlayer2 = new Grid(0, 0, 0, colorGridP2, LayoutPresets.classicLayout);
 
         let startCol = Math.floor(this.gridPlayer1.cols / 2);
         let startRow = Math.floor(this.gridPlayer1.rows / 2);
 
-        this.p1 = new Player(this.gridPlayer1, startCol, startRow, "#2196F3");
-        this.p2 = new Player(this.gridPlayer2, startCol, startRow, "#FF9800");
+        this.p1 = new Player(this.gridPlayer1, startCol, startRow, colorP1);
+        this.p2 = new Player(this.gridPlayer2, startCol, startRow, colorP2);
         
         // Tutoriel
         this.tutorial = new TutorialManager(this);

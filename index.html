@@ -11,10 +11,14 @@
 </head>
 <body>
     <!-- Sprite-->
-    <svg style="display: none;">
+    <svg style="display: none;" aria-hidden="true">
         <defs>
             <symbol id="icon-heart" viewBox="-1 -1 34 32">
                 <path d="M23.5,0C20.9,0,18.4,1.6,17,4.1C15.6,1.6,13.1,0,10.4,0C4.6,0,0,4.6,0,10.4c0,8.1,12.9,15.2,16,18.5,c3.1-3.3,16-10.4,16-18.5C32,4.6,27.4,0,23.6,0z" stroke="red" stroke-width="1" fill="red"/>
+            </symbol>
+
+            <symbol id="icon-return" viewBox="0 0 24 24">
+                <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z" fill="white"/>
             </symbol>
         </defs>
     </svg>
@@ -27,7 +31,7 @@
             <svg class="heart"><use href="#icon-heart"></use></svg>
             <svg class="heart"><use href="#icon-heart"></use></svg>
             <svg class="heart"><use href="#icon-heart"></use></svg>
-            <span class="extra-hp" style="display: none;">+0</span>
+            <span class="extra-hp" hidden>+0</span>
         </div>
         <div class="energy-text"><span data-i18n="energy">Énergie: </span><span id="energy-p2">0</span></div>
     </div>
@@ -38,7 +42,7 @@
             <svg class="heart"><use href="#icon-heart"></use></svg>
             <svg class="heart"><use href="#icon-heart"></use></svg>
             <svg class="heart"><use href="#icon-heart"></use></svg>
-            <span class="extra-hp" style="display: none;">+0</span>
+            <span class="extra-hp" hidden>+0</span>
         </div>
         <div class="energy-text"><span data-i18n="energy">Énergie: </span><span id="energy-p1">0</span></div>
     </div>
@@ -66,7 +70,7 @@
 
             <!-- MENU DE LANGUES -->
             <div id="lang-container">
-                <div id="lang-menu" style="display: none;">
+                <div id="lang-menu" hidden>
                     <button class="lang-option" data-lang="fr">🇫🇷 Français</button>
                     <button class="lang-option" data-lang="en">🇬🇧 English</button>
                     <button class="lang-option" data-lang="zh">🇨🇳 中文</button>
@@ -76,7 +80,7 @@
         </div>
 
         <!-- MENU DE CRÉATION DE PARTIE -->
-        <div id="menu-settings" class="menu-actions" style="display: none;">
+        <div id="menu-settings" class="menu-actions" hidden>
             
             <!-- ZONE PARAMÈTRES -->
             <div id="rules-container" class="settings-scroll-area">
@@ -88,7 +92,7 @@
                     <button id="btn-custom-rules" class="btn-menu btn-green inactive" style="width: 100%; padding: 10px;" data-i18n="btn_custom_rules">Personnaliser</button>
                 </div>
 
-                <div id="custom-rules-container" style="display: none; width: 100%;">
+                <div id="custom-rules-container" hidden style="width: 100%;">
                     <!-- Paramètres de base -->
                     <div class="setting-group">
                         <label data-i18n="label_hp">Points de vie :</label>
@@ -106,7 +110,7 @@
                         <label data-i18n="label_bpm_queue">Taille de la pile :</label>
                         <input type="number" id="setting-bpm-queue" class="input-code" value="0" min="0" max="4">
                     </div>
-                    <div class="setting-group" id="setting-queue-detailed-container" style="display: none;">
+                    <div class="setting-group" id="setting-queue-detailed-container" hidden>
                         <label data-i18n="label_bpm_queue_detailed">Pile détaillée :</label>
                         <input type="checkbox" id="setting-queue-detailed" style="width: 25px; height: 25px;">
                     </div>
@@ -120,7 +124,7 @@
                     </div>
                     
                     <!-- Paramètres BPM -->
-                    <div id="bpm-advanced-settings" style="display: none;">
+                    <div id="bpm-advanced-settings" hidden>
                         <div class="setting-group">
                             <label data-i18n="label_bpm_tempo">Vitesse (ms) :</label>
                             <input type="number" id="setting-bpm-tempo" class="input-code" value="750" min="300" max="3000" step="100">
@@ -135,14 +139,19 @@
                 <button id="btn-ai" class="btn-menu btn-purple" data-i18n="btn_ai">Jouer contre l'IA</button>
                 <button id="btn-host-start" class="btn-menu btn-green" data-i18n="btn_host_start">Générer le code PvP</button>
                 <p id="room-code-display" class="room-info" style="display:none;"></p>
-                <button id="btn-back-menu" class="btn-menu btn-blue" data-i18n="btn_back">Retour</button>
+                <button id="btn-back-menu" class="btn-menu btn-blue">
+                    <!-- icône -->
+                    <svg class="btn-icon-svg icon-portrait"><use href="#icon-return"></use></svg>
+                    <!-- texte -->
+                    <span class="text-landscape" data-i18n="btn_back">Retour</span>
+                </button>
                 
             </div>
             
         </div>
         
         <!-- MENU DES TUTORIELS -->
-        <div id="menu-tutorial" class="menu-actions" style="display: none;">
+        <div id="menu-tutorial" class="menu-actions" hidden>
             <h2 style="margin: 0 0 15px 0;" data-i18n="tutorial_title">Tutoriels</h2>
             
             <div class="settings-buttons-area">
@@ -151,7 +160,12 @@
                 
                 <hr style="width: 100%; border-color: #555; margin: 10px 0;">
                 
-                <button id="btn-back-tut" class="btn-menu btn-blue" data-i18n="btn_back">Retour</button>
+                <button id="btn-back-tut" class="btn-menu btn-blue">
+                    <!-- icône -->
+                    <svg class="btn-icon-svg icon-portrait"><use href="#icon-return"></use></svg>
+                    <!-- texte -->
+                    <span class="text-landscape" data-i18n="btn_back">Retour</span>
+                </button>
             </div>
         </div>
         
@@ -159,9 +173,9 @@
     </div>
 
     <!-- ÉCRAN DE FIN -->
-    <div id="end-screen" class="screen-overlay" style="display: none;">
+    <div id="end-screen" class="screen-overlay" hidden>
         <h1 id="end-message">Victoire !</h1>
-        <p id="rematch-waiting-message" style="display: none;" data-i18n="waiting_rematch">En attente de l'autre joueur...</p>
+        <p id="rematch-waiting-message" hidden data-i18n="waiting_rematch">En attente de l'autre joueur...</p>
         <div id="end-buttons" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px;">
             <button id="btn-restart" class="btn-menu btn-green" data-i18n="btn_rematch">Rejouer</button>
             <button id="btn-menu-principal" class="btn-menu btn-blue" data-i18n="btn_main_menu">Menu Principal</button>
@@ -169,7 +183,7 @@
     </div>
     
     <!-- ÉCRAN DE TUTORIEL -->
-     <div id="tutorial-box" class="tutorial-box" style="display: none;">
+     <div id="tutorial-box" class="tutorial-box" hidden>
         <p id="tutorial-message">Texte du tuto</p>
     </div>
 
@@ -182,10 +196,10 @@
     <script src="./version.js"></script>
     
     <script>
-        // 1. Mise à jour de l'affichage HTML
+        // Mise à jour de l'affichage HTML
         document.getElementById('version-text').innerText = GAME_VERSION;
     
-        // 2. Enregistrement du Service Worker
+        // Enregistrement du Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')

@@ -1,4 +1,6 @@
 import * as UI from '../ui/ui.js';
+import { updateConfig } from '../core/config.js';
+import { GamePresets } from '../core/preset.js';
 
 export default class TutorialManager {
     constructor(engine) {
@@ -11,14 +13,14 @@ export default class TutorialManager {
     // Lance le tutoriel
     start(mode) {
         this.mode = mode;
-        this.step = (mode === "tutorial_bpm") ? 20 : 1; // Démarre à 20 pour le BPM
+        this.step = (mode === "tutorial_bpm") ? 20 : 1; // 20 pour le tuto BPM
         this.fail = false;
         this.engine.p2.hp = 99;
-        UI.DOM.tutorialBox.style.display = "block";
+        UI.DOM.tutorialBox.hidden = false;
         UI.updateTutorialStep(this.step, this.engine.p1.energy, false);
     }
 
-    // Fait avancer les textes lors de la présentation visuelle (clics)
+    // Fait avancer les textes lors de la présentation visuelle
     advanceClick() {
         if (this.mode === "tutorial_bpm") {
             if (this.step < 21) {
@@ -118,8 +120,10 @@ export default class TutorialManager {
                 window.highlightBpmQueue = false;
                 this.step = 26;
                 setTimeout(() => {
-                    if(typeof this.engine.returnToMainMenu === "function") this.engine.returnToMainMenu();
-                    else UI.showMainMenu();
+                    UI.DOM.tutorialBox.hidden = true;
+                    updateConfig(GamePresets.bpmTutoriel);
+                    this.engine.resetGame();
+                    this.engine.startGame("ai", "p1");
                 }, 3000); 
             }
         } else {
@@ -133,44 +137,50 @@ export default class TutorialManager {
         let previousFail = this.fail;
         this.fail = false;
 
-        if (this.step === 9) {
-            if (p1Action.type === "mouvement") this.step++;
-            else this.fail = true;
-        }
-        else if (this.step === 10) {
-            if (p1Action.type === "recharge") this.step++;
-            else this.fail = true;
-        }
-        else if (this.step === 11) {
-            if (p1Action.type === "attaque_normale") {
-                if (this.validTarget) this.step++; 
-                else { this.fail = true; p1.energy++; }
-            } else this.fail = true;
-        }
-        else if (this.step === 12) {
-            if (p1Action.type === "recharge") this.step++; 
-            else this.fail = true;
-        }
-        else if (this.step === 13) {
-            if (p1Action.type === "attaque_normale") {
-                if (p1Action.col === p2.col && p1Action.row === p2.row) this.step++; 
-                else { this.fail = true; p1.energy++; }
-            } else this.fail = true;
-        }
-        else if (this.step === 14) {
-            if (p1Action.type === "attaque_colonne") {
-                if (p1Action.col === p2.col) {
-                    this.fail = false; 
-                    this.step = 15;    
+        // Dictionnaire des conditions de reussite
+        const stepsConfig = {
+            9: () => p1Action.type === "mouvement",
+            10: () => p1Action.type === "recharge",
+            11: () => {
+                if (p1Action.type === "attaque_normale" && this.validTarget) return true;
+                p1.energy++; return false;
+            },
+            12: () => p1Action.type === "recharge",
+            13: () => {
+                if (p1Action.type === "attaque_normale" && p1Action.col === p2.col && p1Action.row === p2.row) return true;
+                p1.energy++; return false;
+            },
+            14: () => {
+                if (p1Action.type === "attaque_colonne" && p1Action.col === p2.col) {
                     setTimeout(() => {
-                        if(typeof this.engine.returnToMainMenu === "function") this.engine.returnToMainMenu();
-                        else UI.showMainMenu(); 
-                    }, 4000); 
-                } else { this.fail = true; p1.energy += 3; }
-            } 
-            else if (p1Action.type === "recharge") this.fail = previousFail; 
-            else this.fail = true;
+                        UI.DOM.tutorialBox.hidden = true;
+                        updateConfig(GamePresets.classique);
+                        this.engine.resetGame();
+                        this.engine.startGame("ai", "p1");
+                    }, 4000);
+                    return true;
+                }
+                if (p1Action.type === "recharge") {
+                    this.fail = previousFail;
+                    return null;
+                }
+                p1.energy += 3; return false;
+            }
+        };
+
+        // Exécution d'etape
+        if (stepsConfig[this.step]) {
+            const result = stepsConfig[this.step]();
+            if (result === true) {
+                this.step++;
+                if (this.step === 15) this.fail = false; // Transition final
+            } else if (result === false) {
+                this.fail = true;
+            }
+        } else {
+            this.fail = true;
         }
+
         UI.updateTutorialStep(this.step, p1.energy, this.fail);
     }
 

@@ -47,6 +47,8 @@ export default class Renderer {
         } else {
             oppGrid.y = idealOppY;
         }
+        this.engine.gridPlayer1.needsRedraw = true;
+        this.engine.gridPlayer2.needsRedraw = true;
     }
 
     gameLoop() {

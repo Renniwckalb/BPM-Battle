@@ -1,22 +1,31 @@
 // Regles de jeu
 export const GamePresets = {
     classique: {
-        hp: 3,
-        atk: 1,
-        spe: 3,
-        bpmMode: false,
-        bpmTempo: 1000,
-        bpmQueue: 0,
-        bpmQueueDetailed: false
+        MAX_HP: 3,
+        COST_NORMAL_ATTACK: 1,
+        COST_SPECIAL_ATTACK: 3,
+        MODE_BPM: false,
+        BPM_TEMPO: 1000,
+        BPM_QUEUE_SIZE: 0,
+        BPM_QUEUE_DETAILED: false
     },
     bpmRapide: {
-        hp: 3,
-        atk: 0,
-        spe: 1,
-        bpmMode: true,
-        bpmTempo: 750,
-        bpmQueue: 1,
-        bpmQueueDetailed: false
+        MAX_HP: 3,
+        COST_NORMAL_ATTACK: 0,
+        COST_SPECIAL_ATTACK: 1,
+        MODE_BPM: true,
+        BPM_TEMPO: 750,
+        BPM_QUEUE_SIZE: 1,
+        BPM_QUEUE_DETAILED: false
+    },
+    bpmTutoriel: {
+        MAX_HP: 3,
+        COST_NORMAL_ATTACK: 1,
+        COST_SPECIAL_ATTACK: 3,
+        MODE_BPM: true,
+        BPM_TEMPO: 1000,
+        BPM_QUEUE_SIZE: 2,
+        BPM_QUEUE_DETAILED: false
     }
 };
 

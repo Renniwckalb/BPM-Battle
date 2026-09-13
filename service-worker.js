@@ -1,4 +1,4 @@
-import { GAME_VERSION } from './version.js';
+importScripts('./version.js');
 
 const CACHE_NAME = 'bpm-battle-' + GAME_VERSION;
 
@@ -20,7 +20,6 @@ const FILES_TO_CACHE = [
     './js/entities/grid.js',
     './js/entities/player.js',
     
-
     // Systems
     './js/systems/combat.js',
     './js/systems/input.js',
@@ -49,7 +48,6 @@ self.addEventListener('install', (event) => {
 // ACTIVATION
 self.addEventListener('activate', (event) => {
     event.waitUntil(clients.claim());
-
     event.waitUntil(
         caches.keys().then((listeDesCaches) => {
             return Promise.all(
@@ -66,7 +64,6 @@ self.addEventListener('activate', (event) => {
 // LECTURE
 self.addEventListener('fetch', (event) => {
     if (!event.request.url.startsWith('http')) return;
-
     event.respondWith(
         caches.match(event.request).then((response) => {
             return response || fetch(event.request).catch(() => {
