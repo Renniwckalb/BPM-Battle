@@ -4,7 +4,11 @@ export function generateAIPick(p1, p2) {
     let randomPick = Math.random();
     // L'IA lit la configuration pour savoir si elle peut lancer son attaque spéciale
     if (p2.energy >= GameConfig.COST_SPECIAL_ATTACK && randomPick > 0.6) {
-        return { type: "attaque_colonne", col: p1.col };
+        if (p2.specialAttack === "ligne") {
+            return { type: "attaque_ligne", row: p1.row };
+        } else {
+            return { type: "attaque_colonne", col: p1.col };
+        }
     } else if (p2.energy >= GameConfig.COST_NORMAL_ATTACK && randomPick > 0.3) {
         let targetCol = Math.random() > 0.3 ? p1.col : Math.floor(Math.random() * p1.grid.cols);
         let targetRow = Math.random() > 0.3 ? p1.row : Math.floor(Math.random() * p1.grid.rows);
@@ -30,7 +34,7 @@ export function executeAction(attaquant, defenseur, grilleDefenseur, action) {
         resolveImpact(action, grilleDefenseur, defenseur);
     }
     
-    if (action.type === "attaque_colonne") {
+    if (action.type === "attaque_colonne" || action.type === "attaque_ligne") {
         attaquant.energy -= GameConfig.COST_SPECIAL_ATTACK;
         resolveImpact(action, grilleDefenseur, defenseur);
     }
@@ -51,6 +55,10 @@ function resolveImpact(attack, targetGrid, targetPlayer) {
     } else if (attack.type === "attaque_colonne") {
         for (let r = 0; r < targetGrid.rows; r++) {
             cibles.push({ col: attack.col, row: r });
+        }
+    } else if (attack.type === "attaque_ligne") {
+        for (let c = 0; c < targetGrid.cols; c++) {
+            cibles.push({ col: c, row: attack.row });
         }
     }
     

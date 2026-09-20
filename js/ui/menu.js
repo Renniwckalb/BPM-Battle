@@ -35,24 +35,40 @@ export function setupMenu(engine) {
         engine.startGame("ai", "p1");
     });
 
-    // --- NAVIGATION DES MENUS ---
-    // Affiche le menu des paramètres
-    DOM.btnHostMenu.addEventListener("click", () => {
+    /// --- NAVIGATION DES MENUS ---
+    // Accès Multijoueur
+    // Accès Multijoueur
+    DOM.btnMultiplayer.addEventListener("click", () => {
         DOM.menuBase.hidden = true;
+        DOM.menuMultiplayer.hidden = false;
+        if(DOM.codeDisplay && !DOM.codeDisplay.hidden){
+            Network.closeNetwork();
+            DOM.codeDisplay.hidden = true;
+        }
+    });
+
+    // Retour du Multijoueur vers Racine
+    DOM.btnBackMultiplayer.addEventListener("click", () => {
+        DOM.menuMultiplayer.hidden = true;
+        DOM.menuBase.hidden = false;
+    });
+
+    // Accès aux Paramètres de salle
+    DOM.btnHostMenu.addEventListener("click", () => {
+        DOM.menuMultiplayer.hidden = true;
         DOM.menuSettings.hidden = false;
         DOM.rulesContainer.hidden = false;
         DOM.btnBackMenu.hidden = false;
-    });
-
-    // Retour au menu de base
-    DOM.btnBackMenu.addEventListener("click", () => {
-        DOM.menuSettings.hidden = true;
-        DOM.menuBase.hidden = false;
-        DOM.btnBackMenu.hidden = true;
         DOM.btnHostStart.hidden = false;
         DOM.btnAI.hidden = false;
-        DOM.rulesContainer.hidden = false;
-        if(DOM.codeDisplay){
+    });
+
+    // Retour des Paramètres vers Multijoueur
+    DOM.btnBackMenu.addEventListener("click", () => {
+        DOM.menuSettings.hidden = true;
+        DOM.menuMultiplayer.hidden = false;
+        DOM.btnBackMenu.hidden = true;
+        if(DOM.codeDisplay && !DOM.codeDisplay.hidden){
             Network.closeNetwork();
             DOM.codeDisplay.hidden = true;
         }
@@ -87,8 +103,7 @@ export function setupMenu(engine) {
     // --- GESTION DE LA LANGUE ---
     // Ouvrir/Fermer la liste des langues
     DOM.btnLang.addEventListener("click", () => {
-        const menu = DOM.langMenu;
-        menu.hidden = !menu.hidden;
+        DOM.langMenu.hidden = !DOM.langMenu.hidden;
     });
 
     // Choisir une langue dans la liste
@@ -98,9 +113,8 @@ export function setupMenu(engine) {
             setLanguage(selectedLang);
             DOM.btnLang.innerText = flags[selectedLang];
             DOM.langMenu.hidden = true;
-            if (!DOM.codeDisplay.hidden) {
-                const currentCode = DOM.codeDisplay.innerText.split(":")[1].trim();
-                DOM.codeDisplay.innerText = getText("code_display") + currentCode;
+            if (!DOM.codeDisplay.hidden && DOM.codeDisplay.dataset.code) {
+                DOM.codeDisplay.innerText = getText("code_display") + DOM.codeDisplay.dataset.code;
             }
         });
     });
@@ -117,10 +131,11 @@ export function setupMenu(engine) {
     DOM.btnHostStart.addEventListener("click", () => {
         const settings = getSettingsFromUI();
         updateConfig(settings);
-
+        
         Network.hostGame(
             (code) => {
                 DOM.codeDisplay.hidden = false;
+                DOM.codeDisplay.dataset.code = code;
                 DOM.codeDisplay.innerText = getText("code_display") + code;
                 DOM.btnBackMenu.hidden = false;
                 DOM.btnHostStart.hidden = true;
@@ -128,7 +143,24 @@ export function setupMenu(engine) {
                 DOM.rulesContainer.hidden = true;
             },
             () => {
-                Network.sendData({ type: "config", settings: GameConfig });
+                // Initialisation sécurisée
+                let p1Special = "colonne";
+                let saved = localStorage.getItem("bpm_custom_data");
+                
+                if (saved) {
+                    try { 
+                        p1Special = JSON.parse(saved).attack || "colonne"; 
+                    } catch (e) { 
+                        console.warn("Données corrompues.", e); 
+                    }
+                }
+                
+                Network.sendData({ 
+                    type: "config", 
+                    settings: GameConfig,
+                    p1Special: p1Special 
+                });
+                
                 engine.resetGame();
                 engine.startGame("pvp", "p1");
             },
@@ -166,11 +198,73 @@ export function setupMenu(engine) {
         if (engine.gameMode === "pvp") {
             Network.sendData({ type: "menu" });
             setTimeout(() => {
-                engine.returnToMainMenu();
+                engine.returnToMainMenu("multiplayer");
             }, 100);
         } else {
-            engine.returnToMainMenu();
+            engine.returnToMainMenu("base");
         }
+    });
+
+    // --- LOGIQUE DE PERSONNALISATION ---
+    let selectedAttack = "colonne";
+    
+    function updatePersoGrid() {
+        if(!DOM.persoGridCells) return;
+        DOM.persoGridCells.forEach(c => c.classList.remove('active-atk'));
+        
+        if (selectedAttack === "colonne") {
+            DOM.persoGridCells[1].classList.add('active-atk'); // Haut milieu
+            DOM.persoGridCells[4].classList.add('active-atk'); // Centre
+            DOM.persoGridCells[7].classList.add('active-atk'); // Bas milieu
+            DOM.btnAtkCol.classList.remove('inactive');
+            DOM.btnAtkRow.classList.add('inactive');
+        } else {
+            DOM.persoGridCells[3].classList.add('active-atk'); // Gauche
+            DOM.persoGridCells[4].classList.add('active-atk'); // Centre
+            DOM.persoGridCells[5].classList.add('active-atk'); // Droite
+            DOM.btnAtkCol.classList.add('inactive');
+            DOM.btnAtkRow.classList.remove('inactive');
+        }
+    }
+
+    DOM.btnPersoMenu.addEventListener("click", () => {
+        DOM.menuMultiplayer.hidden = true;
+        DOM.menuPersonalization.hidden = false;
+        
+        let saved = localStorage.getItem("bpm_custom_data");
+        if (saved) {
+            try {
+                selectedAttack = JSON.parse(saved).attack || "colonne";
+            } catch (e) {
+                console.warn("Données de personnalisation illisibles, utilisation par défaut.", e);
+                selectedAttack = "colonne";
+            }
+        }
+        updatePersoGrid();
+    });
+
+    const closePersoMenu = () => {
+        DOM.menuPersonalization.hidden = true;
+        DOM.menuMultiplayer.hidden = false;
+    };
+    
+    DOM.btnBackPersoPortrait.addEventListener("click", closePersoMenu);
+    DOM.btnBackPersoLandscape.addEventListener("click", closePersoMenu);
+
+    DOM.btnAtkCol.addEventListener("click", () => {
+        selectedAttack = "colonne";
+        updatePersoGrid();
+    });
+
+    DOM.btnAtkRow.addEventListener("click", () => {
+        selectedAttack = "ligne";
+        updatePersoGrid();
+    });
+
+    DOM.btnSavePerso.addEventListener("click", () => {
+        const customData = { attack: selectedAttack };
+        localStorage.setItem("bpm_custom_data", JSON.stringify(customData));
+        closePersoMenu();
     });
 
     // --- GESTION DES PRÉRÉGLAGES DE RÈGLES ---

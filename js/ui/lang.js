@@ -7,6 +7,7 @@ export const translations = {
         divider: "--- OU ---",
         placeholder_join: "Code (ex: 1234)",
         btn_join: "Rejoindre",
+        btn_campaign: "Campagne / Solo",
 
         // Menu de création de partie
         btn_preset_1: "Classique",
@@ -20,6 +21,13 @@ export const translations = {
         btn_host_start: "Générer le code PvP",
         btn_back: "Retour",
         code_display: "Code : ",
+
+        // Menu Personnalisation
+        btn_perso: "Personnalisation",
+        title_perso: "Personnalisation",
+        btn_atk_col: "Colonne",
+        btn_atk_row: "Ligne",
+        btn_save: "Sauvegarder",
 
         // Ecran de combat
         energy: "Énergie : ",
@@ -83,6 +91,7 @@ export const translations = {
     },
     en: {
         // Ecran Titre
+        btn_campaign: "Campaign / Solo",
         btn_ai: "Play vs AI",
         btn_host: "Create Game",
         divider: "--- OR ---",
@@ -102,6 +111,13 @@ export const translations = {
         btn_back: "Back",
         code_display: "Code: ",
         
+        // Menu Personnalisation
+        btn_perso: "Customization",
+        title_perso: "Customization",
+        btn_atk_col: "Column",
+        btn_atk_row: "Row",
+        btn_save: "Save",
+
         // Ecran de combat
         energy: "Energy: ",
         action_move: "Move",
@@ -169,6 +185,7 @@ export const translations = {
         divider: "--- 或 ---",
         placeholder_join: "房间号 (例: 1234)",
         btn_join: "加入",
+        btn_campaign: "战役 / 单人",
 
         // Menu de création de partie
         btn_preset_1: "经典",
@@ -182,6 +199,13 @@ export const translations = {
         btn_host_start: "生成对战房间号",
         btn_back: "返回",
         code_display: "房间号：",
+
+        // Menu Personnalisation
+        btn_perso: "个性化",
+        title_perso: "个性化",
+        btn_atk_col: "列",
+        btn_atk_row: "行",
+        btn_save: "保存",
 
         // Ecran de combat
         energy: "能量：",

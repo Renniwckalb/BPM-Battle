@@ -99,6 +99,7 @@ export default class Renderer {
     // Dessine l'interface utilisateur du mode BPM, y compris les lumières et les files d'attente d'actions
     // Dessine l'interface utilisateur du mode BPM (Lumières de rythme)
     drawBpmUI(ctx) {
+        ctx.save();
         let lightSize = 15;
         let spacing = 40;
         let startX = (this.canvas.width / 2) - spacing;
@@ -125,7 +126,6 @@ export default class Renderer {
         }
         
         if (window.highlightBpmQueue) {
-            ctx.save();
             ctx.strokeStyle = "#FFEB3B";
             ctx.lineWidth = 4;
             ctx.globalAlpha = 0.4 + Math.abs(Math.sin(Date.now() / 200)) * 0.6; // Clignotement
@@ -143,7 +143,7 @@ export default class Renderer {
             // On dessine le rectangle avec 5px de marge
             ctx.strokeRect(qX - 5, qY - 5, dims.boxWidth + 10, totalHighlightHeight + 10);
             
-            ctx.restore();
         }
+        ctx.restore();
     }
 }

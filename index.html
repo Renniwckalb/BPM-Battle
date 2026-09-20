@@ -52,7 +52,7 @@
         <button class="btn-action" data-action="mouvement" data-i18n="action_move">Déplacement</button>
         <button class="btn-action" data-action="recharge" data-i18n="action_charge">Recharge</button>
         <button class="btn-action" data-action="attaque_normale" data-i18n="action_attack">Attaque</button>
-        <button class="btn-action" data-action="attaque_colonne" data-i18n="action_special">Spécial</button>
+        <button class="btn-action" data-action="attaque_special" data-i18n="action_special">Spécial</button>
     </div>
 
     <!-- ÉCRAN TITRE -->
@@ -61,13 +61,10 @@
         
         <!-- MENU PRINCIPAL -->
         <div id="menu-base" class="menu-actions">
-            <button id="btn-host-menu" class="btn-menu btn-green" data-i18n="btn_host">Créer une partie</button>
-            <div class="menu-divider" data-i18n="divider">--- OU ---</div>
-            <input type="text" id="input-join-code" class="input-code" data-i18n="placeholder_join" placeholder="Code (ex: 1234)">
-            <button id="btn-join" class="btn-menu btn-blue" data-i18n="btn_join">Rejoindre</button>
+            <button id="btn-campaign" class="btn-menu btn-purple inactive" data-i18n="btn_campaign">Campagne / Solo</button>
+            <button id="btn-multiplayer" class="btn-menu btn-green" data-i18n="btn_multiplayer">Multijoueur</button>
+            <button id="btn-tutorial" class="btn-menu btn-blue" data-i18n="btn_tutorial">Tutoriel</button>
             
-            <button id="btn-tutorial" class="btn-menu btn-purple" data-i18n="btn_tutorial">Tutoriel</button>
-
             <!-- MENU DE LANGUES -->
             <div id="lang-container">
                 <div id="lang-menu" hidden>
@@ -76,6 +73,54 @@
                     <button class="lang-option" data-lang="zh">🇨🇳 中文</button>
                 </div>
                 <button id="btn-lang" class="lang-toggle">🇫🇷</button>
+            </div>
+        </div>
+
+        <!-- MENU MULTIJOUEUR -->
+        <div id="menu-multiplayer" class="menu-actions" hidden>
+            <button id="btn-host-menu" class="btn-menu btn-green" data-i18n="btn_host">Créer une partie</button>
+            <div class="menu-divider" data-i18n="divider">--- OU ---</div>
+            <input type="text" id="input-join-code" class="input-code" data-i18n="placeholder_join" placeholder="Code (ex: 1234)">
+            <button id="btn-join" class="btn-menu btn-blue" data-i18n="btn_join">Rejoindre</button>
+            <div class="menu-divider"></div>
+            <button id="btn-perso-menu" class="btn-menu btn-purple" data-i18n="btn_perso">Personnalisation</button>
+            
+            <button id="btn-back-multiplayer" class="btn-menu btn-blue">
+                <svg class="btn-icon-svg icon-portrait" viewBox="0 0 24 24"><use href="#icon-return"></use></svg>
+                <span class="text-landscape-only" data-i18n="btn_back">Retour</span>
+            </button>
+        </div>
+
+        <!-- MENU PERSONNALISATION -->
+        <div id="menu-personalization" class="menu-actions" hidden>
+            <button id="btn-back-perso-portrait" class="btn-menu btn-blue icon-portrait-only">
+                <svg class="btn-icon-svg icon-portrait" viewBox="0 0 24 24"><use href="#icon-return"></use></svg>
+            </button>
+            
+            <h2 data-i18n="title_perso" style="margin: 0 0 15px 0;">Personnalisation</h2>
+            
+            <!-- Boule du joueur -->
+            <div class="player-avatar-preview"></div>
+            
+            <!-- Types d'attaques -->
+            <div class="perso-attack-types">
+                <button id="btn-atk-col" class="btn-menu btn-green" data-i18n="btn_atk_col">Colonne</button>
+                <button id="btn-atk-row" class="btn-menu btn-green inactive" data-i18n="btn_atk_row">Ligne</button>
+            </div>
+            
+            <!-- Grille 3x3 -->
+            <div id="perso-grid-preview" class="grid-preview-3x3">
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+                <div class="grid-cell"></div><div class="grid-cell"></div><div class="grid-cell"></div>
+            </div>
+            
+            <!-- Boutons du bas -->
+            <div class="perso-bottom-actions">
+                <button id="btn-back-perso-landscape" class="btn-menu btn-blue text-landscape-only">
+                    <span data-i18n="btn_back">Retour</span>
+                </button>
+                <button id="btn-save-perso" class="btn-menu btn-green" data-i18n="btn_save">Sauvegarder</button>
             </div>
         </div>
 
@@ -138,12 +183,10 @@
             <div class="settings-buttons-area">
                 <button id="btn-ai" class="btn-menu btn-purple" data-i18n="btn_ai">Jouer contre l'IA</button>
                 <button id="btn-host-start" class="btn-menu btn-green" data-i18n="btn_host_start">Générer le code PvP</button>
-                <p id="room-code-display" class="room-info" style="display:none;"></p>
+                <p id="room-code-display" class="room-info" hidden></p>
                 <button id="btn-back-menu" class="btn-menu btn-blue">
-                    <!-- icône -->
                     <svg class="btn-icon-svg icon-portrait"><use href="#icon-return"></use></svg>
-                    <!-- texte -->
-                    <span class="text-landscape" data-i18n="btn_back">Retour</span>
+                    <span class="text-landscape-only" data-i18n="btn_back">Retour</span>
                 </button>
                 
             </div>
@@ -161,10 +204,8 @@
                 <hr style="width: 100%; border-color: #555; margin: 10px 0;">
                 
                 <button id="btn-back-tut" class="btn-menu btn-blue">
-                    <!-- icône -->
                     <svg class="btn-icon-svg icon-portrait"><use href="#icon-return"></use></svg>
-                    <!-- texte -->
-                    <span class="text-landscape" data-i18n="btn_back">Retour</span>
+                    <span class="text-landscape-only" data-i18n="btn_back">Retour</span>
                 </button>
             </div>
         </div>

@@ -2,10 +2,14 @@ import { GameConfig } from '../core/config.js';
 import * as UI from '../ui/ui.js';
 
 export function setupControls(engine) {
-    // Choix de l'action
-    UI.DOM.boutons.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            // Sécurité
+    const uiContainer = document.getElementById("ui-container");
+    
+    if (uiContainer) {
+        uiContainer.addEventListener("click", (e) => {
+            const btn = e.target.closest(".btn-action");
+            if (!btn) return;
+
+            // Sécurité Tutoriel
             if (engine.gameMode && engine.gameMode.startsWith("tutorial")) {
                 let tut = engine.tutorial;
                 if ((tut.mode === "tutorial" && tut.step < 9) || (tut.mode === "tutorial_bpm" && tut.step < 22)) {
@@ -14,17 +18,15 @@ export function setupControls(engine) {
                 }
             }
             
-            // Empêche de cliquer si le bouton est déjà désactivé
+            // Empêche de cliquer si le bouton est désactivé
             if (btn.classList.contains("disabled")) return; 
-
-            const action = e.target.getAttribute("data-action");
+            
+            const action = btn.getAttribute("data-action");
             engine.setAction(action);
-
             UI.resetActionButtons();
             btn.classList.add("actif");
-            UI.lockAllActions();
         });
-    });
+    }
 
     // Clic sur l'écran
     window.addEventListener("pointerdown", (event) => {
@@ -58,10 +60,13 @@ export function setupControls(engine) {
         if (engine.actionActuelle === "attaque_normale" && me.energy >= GameConfig.COST_NORMAL_ATTACK && clickedOpp) {
             myActionChoice = { type: "attaque_normale", col: clickedOpp.col, row: clickedOpp.row };
         }
-        if (engine.actionActuelle === "attaque_colonne" && me.energy >= GameConfig.COST_SPECIAL_ATTACK && clickedOpp) {
-            myActionChoice = { type: "attaque_colonne", col: clickedOpp.col };
+        if (engine.actionActuelle === "attaque_special" && me.energy >= GameConfig.COST_SPECIAL_ATTACK && clickedOpp) {
+            if (me.specialAttack === "ligne") {
+                myActionChoice = { type: "attaque_ligne", row: clickedOpp.row };
+            } else {
+                myActionChoice = { type: "attaque_colonne", col: clickedOpp.col };
+            }
         }
-
         // Envoie de l'action si valide
         if (myActionChoice) {
             engine.submitAction(myActionChoice);

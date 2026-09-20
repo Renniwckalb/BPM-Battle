@@ -5,5 +5,6 @@ export default class Tile {
         this.active = active;     // Si false case bloquer
         this.occupant = null;     // Pointeur player
         this.isAttacked = false;  // Annimation d'attaque
+        this.flashTimer = null;
     }
 }

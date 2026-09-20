@@ -66,8 +66,7 @@ self.addEventListener('fetch', (event) => {
     if (!event.request.url.startsWith('http')) return;
     event.respondWith(
         caches.match(event.request).then((response) => {
-            return response || fetch(event.request).catch(() => {
-            });
+            return response || fetch(event.request);
         })
     );
 });

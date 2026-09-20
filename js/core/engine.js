@@ -14,10 +14,10 @@ const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 export default class GameEngine {
     constructor() {
         const rootStyles = getComputedStyle(document.documentElement);
-        const colorGridP1 = rootStyles.getPropertyValue('--color-grid-p1').trim();
-        const colorGridP2 = rootStyles.getPropertyValue('--color-grid-p2').trim();
-        const colorP1 = rootStyles.getPropertyValue('--color-p1').trim();
-        const colorP2 = rootStyles.getPropertyValue('--color-p2').trim();
+        const colorGridP1 = rootStyles.getPropertyValue('--color-grid-p1').trim() || '#4CAF50';
+        const colorGridP2 = rootStyles.getPropertyValue('--color-grid-p2').trim() || '#F44336';
+        const colorP1 = rootStyles.getPropertyValue('--color-p1').trim() || '#2196F3';
+        const colorP2 = rootStyles.getPropertyValue('--color-p2').trim() || '#FF9800';
 
         this.canvas = document.getElementById("gameCanvas");
         this.ctx = this.canvas.getContext("2d");
@@ -30,7 +30,7 @@ export default class GameEngine {
         
         // --- SYNCHRONISATION DÉTERMINISTE ---
         this.currentTick = 0;
-        this.p1BufferedActions = new Map(); // Stocke les actions indexées par numéro de tick
+        this.p1BufferedActions = new Map();
         this.p2BufferedActions = new Map();
         
         // Réseau
@@ -52,6 +52,8 @@ export default class GameEngine {
         this.tutorial = new TutorialManager(this);
         
         // Mode BPM
+        this.bpmRafId = null;
+        this.lastBpmTime = 0;
         this.audio = new AudioManager();
         this.bpmTimer = null;
         this.bpmBeat = 0;
@@ -69,6 +71,20 @@ export default class GameEngine {
         this.audio.init();
         this.gameMode = mode;
         this.myRole = role;
+
+        if (role === "p1") {
+            let saved = localStorage.getItem("bpm_custom_data");
+            if (saved) {
+                try {
+                    this.p1.specialAttack = JSON.parse(saved).attack || "colonne";
+                } catch (e) {
+                    this.p1.specialAttack = "colonne";
+                }
+            }
+            if (mode !== "pvp") {
+                this.p2.specialAttack = "colonne";
+            }
+        }
         
         // Réinitialisation des Ticks de synchronisation
         this.currentTick = 0;
@@ -116,6 +132,7 @@ export default class GameEngine {
         this.actionActuelle = null;
         this.stopBpmLoop();
         UI.resetActionButtons();
+        UI.resetHUDState();
     }
 
     // Redémarre le jeu après un match terminé
@@ -132,10 +149,10 @@ export default class GameEngine {
     }
 
     // Retourne au menu principal après un match terminé
-    returnToMainMenu() {
+    returnToMainMenu(targetMenu = "base") {
         this.resetGame();
         Network.closeNetwork();
-        UI.showMainMenu();
+        UI.showMainMenu(targetMenu);
         this.localRematchReady = false;
         this.remoteRematchReady = false;
         this.gameState = "menu";
@@ -166,8 +183,13 @@ export default class GameEngine {
         if (this.actionActuelle === "mouvement" && clickedMy) myActionChoice = { type: "mouvement", col: clickedMy.col, row: clickedMy.row };
         if (this.actionActuelle === "recharge" && clickedMy) myActionChoice = { type: "recharge" };
         if (this.actionActuelle === "attaque_normale" && me.energy >= 1 && clickedOpp) myActionChoice = { type: "attaque_normale", col: clickedOpp.col, row: clickedOpp.row };
-        if (this.actionActuelle === "attaque_colonne" && me.energy >= 3 && clickedOpp) myActionChoice = { type: "attaque_colonne", col: clickedOpp.col };
-
+        if (this.actionActuelle === "attaque_special" && me.energy >= GameConfig.COST_SPECIAL_ATTACK && clickedOpp) {
+            if (me.specialAttack === "ligne") {
+                myActionChoice = { type: "attaque_ligne", row: clickedOpp.row };
+            } else {
+                myActionChoice = { type: "attaque_colonne", col: clickedOpp.col };
+            }
+        }
         if (myActionChoice) {
             this.submitAction(myActionChoice);
         }
@@ -181,7 +203,7 @@ export default class GameEngine {
         
         if (this.gameMode === "tutorial") { 
             this.tutorial.interceptAction(myActionChoice);
-            this.resolveTurn(myActionChoice, this.p2Action);
+            this.resolveTurn(myActionChoice, this.p2Action).catch(console.error);
             return;
         }
 
@@ -203,7 +225,7 @@ export default class GameEngine {
         if (this.gameMode === "ai") { 
             const p1Act = myActionChoice;
             const p2Act = Combat.generateAIPick(this.p1, this.p2);
-            this.resolveTurn(p1Act, p2Act);
+            this.resolveTurn(p1Act, p2Act).catch(console.error);
         } else {
             // Tamponner l'action locale
             if (this.myRole === "p1") {
@@ -227,9 +249,28 @@ export default class GameEngine {
     handleNetworkData(data) {
         if (data.type === "config") {
             updateConfig(data.settings);
+            
+            this.p1.specialAttack = data.p1Special || "colonne";
+            
+            let saved = localStorage.getItem("bpm_custom_data");
+            let mySpecial = "colonne";
+            if (saved) {
+                try { mySpecial = JSON.parse(saved).attack || "colonne"; }
+                catch (e) { console.warn(e); }
+            }
+            this.p2.specialAttack = mySpecial;
+            Network.sendData({
+                type: "player_info",
+                p2Special: mySpecial
+            });
+            
             this.resetGame();
             this.startGame("pvp", "p2");
-        } 
+        }
+        else if (data.type === "player_info") {
+            // Le J1 reçoit et valide l'attaque choisie par le J2
+            this.p2.specialAttack = data.p2Special;
+        }
         else if (data.type === "rematch") {
             this.remoteRematchReady = true;
             if (this.localRematchReady) this.doRestartGame();
@@ -259,7 +300,7 @@ export default class GameEngine {
         if (tick === this.currentTick && this.p1BufferedActions.has(tick) && this.p2BufferedActions.has(tick)) {
             const p1Act = this.p1BufferedActions.get(tick);
             const p2Act = this.p2BufferedActions.get(tick);
-            this.resolveTurn(p1Act, p2Act);
+            this.resolveTurn(p1Act, p2Act).catch(console.error);
         }
     }
 
@@ -279,7 +320,7 @@ export default class GameEngine {
     consumeAttackEnergy(player, attack) {
         if (!attack) return;
         if (attack.type === "attaque_normale") player.energy -= GameConfig.COST_NORMAL_ATTACK;
-        if (attack.type === "attaque_colonne") player.energy -= GameConfig.COST_SPECIAL_ATTACK;
+        if (attack.type === "attaque_colonne" || attack.type === "attaque_ligne") player.energy -= GameConfig.COST_SPECIAL_ATTACK;
     }
 
     
@@ -339,24 +380,39 @@ export default class GameEngine {
         }
     }
 
-    // Démarre la boucle BPM qui gère le rythme du jeu et les actions des joueurs
     startBpmLoop() {
         this.bpmBeat = 0;
         this.p1ActionQueue = Array(GameConfig.BPM_QUEUE_SIZE).fill(null);
         this.p2ActionQueue = Array(GameConfig.BPM_QUEUE_SIZE).fill(null);
         this.currentP1Action = null;
         this.currentP2Action = null;
-
-        if (this.bpmTimer) clearInterval(this.bpmTimer);
-        this.bpmTimer = setInterval(() => this.bpmTick(), GameConfig.BPM_TEMPO);
+        
+        this.stopBpmLoop();
+        
+        this.lastBpmTime = performance.now();
+        this.bpmRafId = requestAnimationFrame((time) => this.bpmTickRaf(time));
     }
 
-    // Arrête la boucle BPM
     stopBpmLoop() {
-        if (this.bpmTimer) {
-            clearInterval(this.bpmTimer);
-            this.bpmTimer = null;
+        if (this.bpmRafId) {
+            cancelAnimationFrame(this.bpmRafId);
+            this.bpmRafId = null;
         }
+    }
+
+    bpmTickRaf(currentTime) {
+        if (!this.bpmRafId) return; // Stoppe la boucle si annulée
+
+        let elapsed = currentTime - this.lastBpmTime;
+        
+        // Exécute autant de ticks que nécessaire si l'onglet était inactif
+        while (elapsed >= GameConfig.BPM_TEMPO) {
+            this.bpmTick();
+            this.lastBpmTime += GameConfig.BPM_TEMPO;
+            elapsed = currentTime - this.lastBpmTime;
+        }
+        
+        this.bpmRafId = requestAnimationFrame((time) => this.bpmTickRaf(time));
     }
 
     // Gère le tick BPM, jouant les sons et résolvant les actions des joueurs lorsque nécessaire

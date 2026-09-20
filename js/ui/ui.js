@@ -10,16 +10,41 @@ let lastState = {
     isResolving: null
 };
 
+export function resetHUDState() {
+    lastState = {
+        p1Energy: -1,
+        p2Energy: -1,
+        p1Hp: -1,
+        p2Hp: -1,
+        isResolving: null
+    };
+}
+
 // Récupération de tous les éléments du DOM
 export const DOM = {
     // Écran titre
     mainMenu: document.getElementById("main-menu"),
     menuBase: document.getElementById("menu-base"),
-    btnAI: document.getElementById("btn-ai"),
+    btnCampaign: document.getElementById("btn-campaign"),
+    
+    // Menu multijoueur
+    menuMultiplayer: document.getElementById("menu-multiplayer"),
+    btnMultiplayer: document.getElementById("btn-multiplayer"),
     btnHost: document.getElementById("btn-host"),
     btnJoin: document.getElementById("btn-join"),
+    btnPersoMenu: document.getElementById("btn-perso-menu"),
+    btnBackMultiplayer: document.getElementById("btn-back-multiplayer"),
     codeDisplay: document.getElementById("room-code-display"),
     inputJoin: document.getElementById("input-join-code"),
+    
+    // Menu de personnalisation
+    menuPersonalization: document.getElementById("menu-personalization"),
+    btnBackPersoPortrait: document.getElementById("btn-back-perso-portrait"),
+    btnBackPersoLandscape: document.getElementById("btn-back-perso-landscape"),
+    btnAtkCol: document.getElementById("btn-atk-col"),
+    btnAtkRow: document.getElementById("btn-atk-row"),
+    btnSavePerso: document.getElementById("btn-save-perso"),
+    persoGridCells: document.querySelectorAll("#perso-grid-preview .grid-cell"),
     
     // Menu de création de partie
     menuSettings: document.getElementById("menu-settings"),
@@ -28,6 +53,7 @@ export const DOM = {
     btnPreset2: document.getElementById("btn-preset-2"),
     btnCustomRules: document.getElementById("btn-custom-rules"),
     customRulesContainer: document.getElementById("custom-rules-container"),
+    btnAI: document.getElementById("btn-ai"),
 
     // Menu des paramètres de partie
     btnHostMenu: document.getElementById("btn-host-menu"),
@@ -54,7 +80,7 @@ export const DOM = {
     btnMove: document.querySelector('[data-action="mouvement"]'),
     btnRecharge: document.querySelector('[data-action="recharge"]'),
     btnAttack: document.querySelector('[data-action="attaque_normale"]'),
-    btnSpecial: document.querySelector('[data-action="attaque_colonne"]'),
+    btnSpecial: document.querySelector('[data-action="attaque_special"]'),
 
     // Menu de langues
     langMenu: document.getElementById("lang-menu"),
@@ -76,7 +102,6 @@ export const DOM = {
     bpmCheckbox: document.getElementById("setting-bpm-mode"),
     bpmSettings: document.getElementById("bpm-advanced-settings"),
     bpmQueueSize: document.getElementById("setting-bpm-queue"),
-    bpmCheckbox: document.getElementById("setting-bpm-mode"),
     bpmQueueDetailed: document.getElementById("setting-queue-detailed"),
     bpmQueueDetailedContainer: document.getElementById("setting-queue-detailed-container"),
     
@@ -102,23 +127,29 @@ function updatePlayerHearts(playerId, hp) {
 
 // Met à jour l'interface des joueurs
 export function updateHUD(myRole, p1, p2, isResolving) {
-    // Mise à jour de l'énergie 
+    // Mise à jour de l'énergie
+    let energyChanged = false;
+    
+    if (lastState.p1Energy !== p1.energy) {
+        DOM.energyP1Text.innerText = p1.energy;
+        lastState.p1Energy = p1.energy;
+        energyChanged = true;
+    }
+    if (lastState.p2Energy !== p2.energy) {
+        DOM.energyP2Text.innerText = p2.energy;
+        lastState.p2Energy = p2.energy;
+        energyChanged = true;
+    }
+
+    // Affichage des containers selon le rôle
     if (myRole === "p2") {
-        if (lastState.p2Energy !== p2.energy) {
-            DOM.energyP2Text.innerText = p2.energy;
-            lastState.p2Energy = p2.energy;
-        }
         DOM.energyP2Container.hidden = false;
         DOM.energyP1Container.hidden = true;
     } else {
-        if (lastState.p1Energy !== p1.energy) {
-            DOM.energyP1Text.innerText = p1.energy;
-            lastState.p1Energy = p1.energy;
-        }
         DOM.energyP1Container.hidden = false;
         DOM.energyP2Container.hidden = true;
     }
-    
+
     // Mise à jour des cœurs
     if (lastState.p1Hp !== p1.hp) {
         updatePlayerHearts("p1", p1.hp);
@@ -138,7 +169,7 @@ export function updateHUD(myRole, p1, p2, isResolving) {
             lastState.isResolving = true;
         }
     } else {
-        if (lastState.isResolving !== false || lastState.p1Energy !== p1.energy || lastState.p2Energy !== p2.energy) {
+        if (lastState.isResolving !== false || energyChanged) {
             DOM.btnMove.classList.remove("disabled");
             DOM.btnRecharge.classList.remove("disabled");
             
@@ -182,21 +213,32 @@ export function showGameOver(myRole, p1, p2) {
 }
 
 // Affiche l'ecran titre
-export function showMainMenu() {
+export function showMainMenu(targetMenu = "base") {
     DOM.endScreen.hidden = true;
     DOM.mainMenu.hidden = false;
-    DOM.menuBase.hidden = false;
+    
+    // Cacher
+    DOM.menuBase.hidden = true;
+    DOM.menuMultiplayer.hidden = true;
     DOM.menuSettings.hidden = true;
     DOM.menuTutorial.hidden = true;
+    if (DOM.menuPersonalization) DOM.menuPersonalization.hidden = true;
+    
+    // Afficher
+    if (targetMenu === "multiplayer") {
+        DOM.menuMultiplayer.hidden = false;
+    } else {
+        DOM.menuBase.hidden = false;
+    }
+    
     DOM.codeDisplay.hidden = true;
     DOM.btnHostStart.hidden = false;
     DOM.btnAI.hidden = false;
-    DOM.btnBackMenu.hidden = false;
+    DOM.btnBackMenu.hidden = true;
     DOM.inputJoin.value = "";
     DOM.tutorialBox.hidden = true;
     updateTutorialStep(0, 0);
 }
-
 // Prépare les éléments pour la début de partie
 export function prepareStartGame(myRole) {
     DOM.mainMenu.hidden = true;
@@ -246,7 +288,7 @@ export function updateTutorialStep(stepNumber, p1Energy = 0, isFail = false) {
             break;
         case 14:
             if (p1Energy < 3) document.querySelector('[data-action="recharge"]').classList.add("btn-tutorial-highlight");
-            else document.querySelector('[data-action="attaque_colonne"]').classList.add("btn-tutorial-highlight");
+            else document.querySelector('[data-action="attaque_special"]').classList.add("btn-tutorial-highlight");
             document.querySelectorAll('.energy-text').forEach(el => el.classList.add("highlight-ui"));
             break;
         case 24:

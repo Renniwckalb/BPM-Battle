@@ -42,7 +42,15 @@ export default class Grid {
         let tile = this.getTile(col, row);
         if (tile && tile.active) {
             tile.isAttacked = true;
-            setTimeout(() => { tile.isAttacked = false; }, 300);
+            
+            if (tile.flashTimer) {
+                clearTimeout(tile.flashTimer);
+            }
+            
+            tile.flashTimer = setTimeout(() => { 
+                tile.isAttacked = false; 
+                tile.flashTimer = null;
+            }, 300);
         }
     }
 
@@ -88,10 +96,6 @@ export default class Grid {
 
     draw(ctx) {
         if (this.needsRedraw) this.cacheStaticGrid();
-        
-        // Dessiner le calque statique en un seul appel
-        ctx.drawImage(this.offscreenCanvas, this.x, this.y);
-
         const margin = 2;
 
         if (this.offscreenCanvas.width > 0 && this.offscreenCanvas.height > 0) {
@@ -120,6 +124,7 @@ export default class Grid {
 
     // Dessin de la pile BPM (Détaillée ou Simplifiée)
     drawQueueSlot(ctx, act, queueX, boxY, miniCellSize, boxWidth, boxHeight, playerColor, showMiniGrid, alpha) {
+        ctx.save();
         ctx.globalAlpha = alpha;
         
         if (showMiniGrid) {
@@ -141,6 +146,9 @@ export default class Grid {
                         ctx.fillStyle = playerColor;
                         ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
                     } else if (act.type === "attaque_colonne" && act.col === c) {
+                        ctx.fillStyle = "red";
+                        ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                    } else if (act.type === "attaque_ligne" && act.row === r) { // <-- NOUVELLE CONDITION
                         ctx.fillStyle = "red";
                         ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
                     }
@@ -205,13 +213,13 @@ export default class Grid {
                     ctx.beginPath();
                     ctx.arc(offsetX + iconSize/2, offsetY + iconSize/2, iconSize/3, 0, Math.PI*2);
                     ctx.fill();
-                } else if (act.type === "attaque_colonne") {
+                } else if (act.type === "attaque_colonne" || act.type === "attaque_ligne") {
                     ctx.fillStyle = "red";
                     ctx.fillRect(offsetX + 4, offsetY + 4, iconSize - 8, iconSize - 8);
                 }
             }
         }
-        ctx.globalAlpha = 1.0;
+        ctx.restore();
     }
 
     drawQueue(ctx, queue, queueSize, playerColor, side, slideAnim = 0, direction = "up", showMiniGrid = false) {
