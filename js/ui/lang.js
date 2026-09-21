@@ -30,6 +30,8 @@ export const translations = {
         title_perso: "Personnalisation",
         btn_atk_col: "Colonne",
         btn_atk_row: "Ligne",
+        btn_atk_diag1: "Diagonale 1",
+        btn_atk_diag2: "Diagonale 2",
         btn_save: "Sauvegarder",
 
         // Ecran de combat
@@ -122,6 +124,8 @@ export const translations = {
         title_perso: "Customization",
         btn_atk_col: "Column",
         btn_atk_row: "Row",
+        btn_atk_diag1: "Diagonal 1",
+        btn_atk_diag2: "Diagonal 2",
         btn_save: "Save",
 
         // Ecran de combat
@@ -214,6 +218,8 @@ export const translations = {
         title_perso: "个性化",
         btn_atk_col: "列",
         btn_atk_row: "行",
+        btn_atk_diag1: "对角 1",
+        btn_atk_diag2: "对角 2",
         btn_save: "保存",
 
         // Ecran de combat

@@ -417,17 +417,26 @@ canvas {
 
 .perso-attack-types {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
     width: 100%;
     margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.perso-attack-types::-webkit-scrollbar {
+    height: 6px;
 }
 
 .perso-attack-types .btn-menu {
-    padding: 10px;
+    padding: 10px 15px;
     font-size: clamp(14px, 3.5vw, 18px);
+    flex-shrink: 0;
+    width: auto;
+    white-space: nowrap;
 }
-
 .grid-preview-3x3 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

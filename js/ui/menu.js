@@ -3,6 +3,7 @@ import * as Network from '../systems/network.js';
 import { GameConfig, updateConfig } from '../core/config.js';
 import { setLanguage, getText, flags } from './lang.js';
 import { GamePresets } from '../core/preset.js';
+import { SpecialAttacks } from '../core/attack.js';
 
 /**
  * Récupère et valide l'ensemble des paramètres saisis par l'utilisateur
@@ -36,7 +37,6 @@ export function setupMenu(engine) {
     });
 
     /// --- NAVIGATION DES MENUS ---
-    // Accès Multijoueur
     // Accès Multijoueur
     DOM.btnMultiplayer.addEventListener("click", () => {
         DOM.menuBase.hidden = true;
@@ -206,26 +206,75 @@ export function setupMenu(engine) {
     });
 
     // --- LOGIQUE DE PERSONNALISATION ---
-    let selectedAttack = "colonne";
+    let defaultAttackId = Object.keys(SpecialAttacks)[0];
+    let selectedAttack = defaultAttackId;
+
+    // Génération automatique des boutons
+    function generateAttackButtons() {
+        DOM.attackTypesContainer.innerHTML = "";
     
-    function updatePersoGrid() {
-        if(!DOM.persoGridCells) return;
-        DOM.persoGridCells.forEach(c => c.classList.remove('active-atk'));
-        
-        if (selectedAttack === "colonne") {
-            DOM.persoGridCells[1].classList.add('active-atk'); // Haut milieu
-            DOM.persoGridCells[4].classList.add('active-atk'); // Centre
-            DOM.persoGridCells[7].classList.add('active-atk'); // Bas milieu
-            DOM.btnAtkCol.classList.remove('inactive');
-            DOM.btnAtkRow.classList.add('inactive');
-        } else {
-            DOM.persoGridCells[3].classList.add('active-atk'); // Gauche
-            DOM.persoGridCells[4].classList.add('active-atk'); // Centre
-            DOM.persoGridCells[5].classList.add('active-atk'); // Droite
-            DOM.btnAtkCol.classList.add('inactive');
-            DOM.btnAtkRow.classList.remove('inactive');
+        for (const key in SpecialAttacks) {
+            const attack = SpecialAttacks[key];
+            const btn = document.createElement("button");
+            btn.className = "btn-menu btn-green inactive";
+
+            btn.dataset.attackId = key; 
+            const i18nKey = "btn_atk_" + key; 
+
+            btn.setAttribute("data-i18n", i18nKey);
+            btn.innerText = getText(i18nKey) || attack.name;
+
+            btn.addEventListener("click", () => {
+                selectedAttack = key;
+                updatePersoGrid();
+            });
+
+            DOM.attackTypesContainer.appendChild(btn);
         }
     }
+
+    // Mise à jour de l'aperçu 3x3 dynamique
+    function updatePersoGrid() {
+        if (!DOM.persoGridCells) return;
+        
+        // Netoyage
+        DOM.persoGridCells.forEach(c => c.classList.remove('active-atk'));
+        
+        // Preview 3x3
+        const gridCols = 3;
+        const gridRows = 3;
+        const centerCol = 1;
+        const centerRow = 1;
+        
+        // Determine les cases colorier grâce au registre
+        const attackDef = SpecialAttacks[selectedAttack];
+        if (attackDef) {
+            const targets = attackDef.getTargets(centerCol, centerRow, gridCols, gridRows);
+            
+            targets.forEach(target => {
+                let wCol = (target.col % gridCols + gridCols) % gridCols;
+                let wRow = (target.row % gridRows + gridRows) % gridRows;
+                
+                const index = wRow * gridCols + wCol;
+                if (DOM.persoGridCells[index]) {
+                    DOM.persoGridCells[index].classList.add('active-atk');
+                }
+            });
+        }
+
+        // Mise à jour visuelle des boutons
+        const allButtons = DOM.attackTypesContainer.querySelectorAll('.btn-menu');
+        allButtons.forEach(btn => {
+            if (btn.dataset.attackId === selectedAttack) {
+                btn.classList.remove('inactive');
+            } else {
+                btn.classList.add('inactive');
+            }
+        });
+    }
+
+    // On génère les boutons une seule fois au chargement du menu
+    generateAttackButtons();
 
     DOM.btnPersoMenu.addEventListener("click", () => {
         DOM.menuMultiplayer.hidden = true;
@@ -234,10 +283,10 @@ export function setupMenu(engine) {
         let saved = localStorage.getItem("bpm_custom_data");
         if (saved) {
             try {
-                selectedAttack = JSON.parse(saved).attack || "colonne";
+                selectedAttack = JSON.parse(saved).attack || defaultAttackId;
             } catch (e) {
-                console.warn("Données de personnalisation illisibles, utilisation par défaut.", e);
-                selectedAttack = "colonne";
+                console.warn("Données de personnalisation illisibles.", e);
+                selectedAttack = defaultAttackId;
             }
         }
         updatePersoGrid();
@@ -250,17 +299,7 @@ export function setupMenu(engine) {
     
     DOM.btnBackPersoPortrait.addEventListener("click", closePersoMenu);
     DOM.btnBackPersoLandscape.addEventListener("click", closePersoMenu);
-
-    DOM.btnAtkCol.addEventListener("click", () => {
-        selectedAttack = "colonne";
-        updatePersoGrid();
-    });
-
-    DOM.btnAtkRow.addEventListener("click", () => {
-        selectedAttack = "ligne";
-        updatePersoGrid();
-    });
-
+    
     DOM.btnSavePerso.addEventListener("click", () => {
         const customData = { attack: selectedAttack };
         localStorage.setItem("bpm_custom_data", JSON.stringify(customData));

@@ -41,10 +41,9 @@ export const DOM = {
     menuPersonalization: document.getElementById("menu-personalization"),
     btnBackPersoPortrait: document.getElementById("btn-back-perso-portrait"),
     btnBackPersoLandscape: document.getElementById("btn-back-perso-landscape"),
-    btnAtkCol: document.getElementById("btn-atk-col"),
-    btnAtkRow: document.getElementById("btn-atk-row"),
     btnSavePerso: document.getElementById("btn-save-perso"),
     persoGridCells: document.querySelectorAll("#perso-grid-preview .grid-cell"),
+    attackTypesContainer: document.getElementById("attack-types-container"),
     
     // Menu de création de partie
     menuSettings: document.getElementById("menu-settings"),
