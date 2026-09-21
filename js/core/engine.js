@@ -76,13 +76,13 @@ export default class GameEngine {
             let saved = localStorage.getItem("bpm_custom_data");
             if (saved) {
                 try {
-                    this.p1.specialAttack = JSON.parse(saved).attack || "colonne";
+                    this.p1.specialAttack = JSON.parse(saved).attack || "col";
                 } catch (e) {
-                    this.p1.specialAttack = "colonne";
+                    this.p1.specialAttack = "col";
                 }
             }
             if (mode !== "pvp") {
-                this.p2.specialAttack = "colonne";
+                this.p2.specialAttack = "col";
             }
         }
         
@@ -184,11 +184,12 @@ export default class GameEngine {
         if (this.actionActuelle === "recharge" && clickedMy) myActionChoice = { type: "recharge" };
         if (this.actionActuelle === "attaque_normale" && me.energy >= 1 && clickedOpp) myActionChoice = { type: "attaque_normale", col: clickedOpp.col, row: clickedOpp.row };
         if (this.actionActuelle === "attaque_special" && me.energy >= GameConfig.COST_SPECIAL_ATTACK && clickedOpp) {
-            if (me.specialAttack === "ligne") {
-                myActionChoice = { type: "attaque_ligne", row: clickedOpp.row };
-            } else {
-                myActionChoice = { type: "attaque_colonne", col: clickedOpp.col };
-            }
+            myActionChoice = { 
+                type: "attaque_special", 
+                id: me.specialAttack,
+                col: clickedOpp.col, 
+                row: clickedOpp.row 
+            };
         }
         if (myActionChoice) {
             this.submitAction(myActionChoice);
@@ -250,12 +251,12 @@ export default class GameEngine {
         if (data.type === "config") {
             updateConfig(data.settings);
             
-            this.p1.specialAttack = data.p1Special || "colonne";
+            this.p1.specialAttack = data.p1Special || "col";
             
             let saved = localStorage.getItem("bpm_custom_data");
-            let mySpecial = "colonne";
+            let mySpecial = "col";
             if (saved) {
-                try { mySpecial = JSON.parse(saved).attack || "colonne"; }
+                try { mySpecial = JSON.parse(saved).attack || "col"; }
                 catch (e) { console.warn(e); }
             }
             this.p2.specialAttack = mySpecial;

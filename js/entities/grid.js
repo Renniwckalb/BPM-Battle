@@ -149,10 +149,15 @@ export default class Grid {
                     } else if (act.type === "attaque_special") {
                         const attackDef = SpecialAttacks[act.id];
                         if (attackDef) {
-                        // On calcule les cibles pour la case en cours
-                        let targets = attackDef.getTargets(act.col, act.row, this.cols, this.rows);
-                        let isTarget = targets.some(t => t.col === c && t.row === r);
-            
+                            // On calcule les cibles pour la case en cours
+                            let targets = attackDef.getTargets(act.col, act.row, this.cols, this.rows);
+                            
+                            let isTarget = targets.some(t => {
+                                let wCol = (t.col % this.cols + this.cols) % this.cols;
+                                let wRow = (t.row % this.rows + this.rows) % this.rows;
+                                return wCol === c && wRow === r;
+                            });
+                                             
                             if (isTarget) {
                                 ctx.fillStyle = "red";
                                 ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);

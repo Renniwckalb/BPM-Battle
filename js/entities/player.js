@@ -7,7 +7,7 @@ export default class Player {
         this.color = color;
         this.hp = GameConfig.MAX_HP;
         this.energy = 0;
-        this.specialAttack = "colonne";
+        this.specialAttack = "col";
 
         this.width = width;
         this.height = height;

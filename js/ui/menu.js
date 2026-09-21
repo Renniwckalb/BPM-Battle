@@ -144,12 +144,12 @@ export function setupMenu(engine) {
             },
             () => {
                 // Initialisation sécurisée
-                let p1Special = "colonne";
+                let p1Special = "col";
                 let saved = localStorage.getItem("bpm_custom_data");
                 
                 if (saved) {
                     try { 
-                        p1Special = JSON.parse(saved).attack || "colonne"; 
+                        p1Special = JSON.parse(saved).attack || "col"; 
                     } catch (e) { 
                         console.warn("Données corrompues.", e); 
                     }
