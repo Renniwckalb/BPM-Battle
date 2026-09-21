@@ -1,14 +1,12 @@
 import { GameConfig } from '../core/config.js';
+import { SpecialAttacks } from '../core/attack.js';
 
 export function generateAIPick(p1, p2) {
     let randomPick = Math.random();
     // L'IA lit la configuration pour savoir si elle peut lancer son attaque spéciale
     if (p2.energy >= GameConfig.COST_SPECIAL_ATTACK && randomPick > 0.6) {
-        if (p2.specialAttack === "ligne") {
-            return { type: "attaque_ligne", row: p1.row };
-        } else {
-            return { type: "attaque_colonne", col: p1.col };
-        }
+        // L'IA utilise dynamiquement l'attaque qu'elle a d'équipée
+        return { type: "attaque_special", id: p2.specialAttack, col: p1.col, row: p1.row };
     } else if (p2.energy >= GameConfig.COST_NORMAL_ATTACK && randomPick > 0.3) {
         let targetCol = Math.random() > 0.3 ? p1.col : Math.floor(Math.random() * p1.grid.cols);
         let targetRow = Math.random() > 0.3 ? p1.row : Math.floor(Math.random() * p1.grid.rows);
@@ -34,7 +32,7 @@ export function executeAction(attaquant, defenseur, grilleDefenseur, action) {
         resolveImpact(action, grilleDefenseur, defenseur);
     }
     
-    if (action.type === "attaque_colonne" || action.type === "attaque_ligne") {
+    if (action.type === "attaque_special") {
         attaquant.energy -= GameConfig.COST_SPECIAL_ATTACK;
         resolveImpact(action, grilleDefenseur, defenseur);
     }
@@ -52,13 +50,10 @@ function resolveImpact(attack, targetGrid, targetPlayer) {
     
     if (attack.type === "attaque_normale") {
         cibles.push({ col: attack.col, row: attack.row });
-    } else if (attack.type === "attaque_colonne") {
-        for (let r = 0; r < targetGrid.rows; r++) {
-            cibles.push({ col: attack.col, row: r });
-        }
-    } else if (attack.type === "attaque_ligne") {
-        for (let c = 0; c < targetGrid.cols; c++) {
-            cibles.push({ col: c, row: attack.row });
+    } else if (attack.type === "attaque_special") {
+        const attackDef = SpecialAttacks[attack.id];
+        if (attackDef) {
+            cibles = attackDef.getTargets(attack.col, attack.row, targetGrid.cols, targetGrid.rows);
         }
     }
     

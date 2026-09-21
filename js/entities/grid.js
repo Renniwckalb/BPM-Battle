@@ -1,4 +1,5 @@
 import Tile from './tile.js';
+import { SpecialAttacks } from '../core/attack.js';
 
 export default class Grid {
     constructor(x, y, cellSize, color, layout) {
@@ -145,12 +146,18 @@ export default class Grid {
                     if (act.type === "attaque_normale" && act.col === c && act.row === r) {
                         ctx.fillStyle = playerColor;
                         ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                    } else if (act.type === "attaque_colonne" && act.col === c) {
-                        ctx.fillStyle = "red";
-                        ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
-                    } else if (act.type === "attaque_ligne" && act.row === r) { // <-- NOUVELLE CONDITION
-                        ctx.fillStyle = "red";
-                        ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                    } else if (act.type === "attaque_special") {
+                        const attackDef = SpecialAttacks[act.id];
+                        if (attackDef) {
+                        // On calcule les cibles pour la case en cours
+                        let targets = attackDef.getTargets(act.col, act.row, this.cols, this.rows);
+                        let isTarget = targets.some(t => t.col === c && t.row === r);
+            
+                            if (isTarget) {
+                                ctx.fillStyle = "red";
+                                ctx.fillRect(cellX, cellY, miniCellSize, miniCellSize);
+                            }
+                        }
                     }
                 }
                 
@@ -213,7 +220,7 @@ export default class Grid {
                     ctx.beginPath();
                     ctx.arc(offsetX + iconSize/2, offsetY + iconSize/2, iconSize/3, 0, Math.PI*2);
                     ctx.fill();
-                } else if (act.type === "attaque_colonne" || act.type === "attaque_ligne") {
+                } else if (act.type === "attaque_special") {
                     ctx.fillStyle = "red";
                     ctx.fillRect(offsetX + 4, offsetY + 4, iconSize - 8, iconSize - 8);
                 }

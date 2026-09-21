@@ -320,7 +320,7 @@ export default class GameEngine {
     consumeAttackEnergy(player, attack) {
         if (!attack) return;
         if (attack.type === "attaque_normale") player.energy -= GameConfig.COST_NORMAL_ATTACK;
-        if (attack.type === "attaque_colonne" || attack.type === "attaque_ligne") player.energy -= GameConfig.COST_SPECIAL_ATTACK;
+        if (attack.type === "attaque_special") player.energy -= GameConfig.COST_SPECIAL_ATTACK;
     }
 
     
@@ -473,9 +473,10 @@ export default class GameEngine {
         let p2QueuedAttack = p2Act.type.startsWith("attaque") ? p2Act : null;
         
         if (p1QueuedAttack && p1QueuedAttack.type === "attaque_normale") this.p1.energy -= GameConfig.COST_NORMAL_ATTACK;
-        if (p1QueuedAttack && p1QueuedAttack.type === "attaque_colonne") this.p1.energy -= GameConfig.COST_SPECIAL_ATTACK;
         if (p2QueuedAttack && p2QueuedAttack.type === "attaque_normale") this.p2.energy -= GameConfig.COST_NORMAL_ATTACK;
-        if (p2QueuedAttack && p2QueuedAttack.type === "attaque_colonne") this.p2.energy -= GameConfig.COST_SPECIAL_ATTACK;
+        
+        if (p1QueuedAttack && p1QueuedAttack.type === "attaque_special") this.p1.energy -= GameConfig.COST_SPECIAL_ATTACK;
+        if (p2QueuedAttack && p2QueuedAttack.type === "attaque_special") this.p2.energy -= GameConfig.COST_SPECIAL_ATTACK;
 
         let p1IncomingAttack = null;
         let p2IncomingAttack = null;

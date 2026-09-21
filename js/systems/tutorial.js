@@ -151,8 +151,7 @@ export default class TutorialManager {
                 p1.energy++; return false;
             },
             14: () => {
-                if ((p1Action.type === "attaque_colonne" && p1Action.col === p2.col) ||
-                    (p1Action.type === "attaque_ligne" && p1Action.row === p2.row)) {
+                if (p1Action.type === "attaque_special") {
                     setTimeout(() => {
                         UI.DOM.tutorialBox.hidden = true;
                         updateConfig(GamePresets.classique);

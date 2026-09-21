@@ -10,6 +10,10 @@
     display: none !important;
 }
 
+.btn-purple { background-color: #9C27B0;}
+.btn-green  { background-color: #4CAF50;}
+.btn-blue   { background-color: #2196F3;}
+
 /* BASE DU JEU */
 body {
     margin: 0;
@@ -238,10 +242,6 @@ canvas {
 
 .btn-menu:active { transform: scale(0.95);}
 .btn-menu:hover { filter: brightness(1.1);}
-
-.btn-purple { background-color: #9C27B0;}
-.btn-green  { background-color: #4CAF50;}
-.btn-blue   { background-color: #2196F3;}
 
 .menu-divider {
     margin: 10px 0;

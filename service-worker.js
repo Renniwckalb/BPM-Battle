@@ -15,6 +15,7 @@ const FILES_TO_CACHE = [
     // Core
     './js/core/config.js',
     './js/core/engine.js',
+    './js/core/attack.js',
     
     // Entities
     './js/entities/grid.js',

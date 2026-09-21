@@ -61,11 +61,12 @@ export function setupControls(engine) {
             myActionChoice = { type: "attaque_normale", col: clickedOpp.col, row: clickedOpp.row };
         }
         if (engine.actionActuelle === "attaque_special" && me.energy >= GameConfig.COST_SPECIAL_ATTACK && clickedOpp) {
-            if (me.specialAttack === "ligne") {
-                myActionChoice = { type: "attaque_ligne", row: clickedOpp.row };
-            } else {
-                myActionChoice = { type: "attaque_colonne", col: clickedOpp.col };
-            }
+            myActionChoice = { 
+                type: "attaque_special", 
+                id: me.specialAttack,
+                col: clickedOpp.col, 
+                row: clickedOpp.row 
+            };
         }
         // Envoie de l'action si valide
         if (myActionChoice) {
