@@ -2,12 +2,15 @@
 export const translations = {
     fr: {
         // Ecran Titre
+        btn_campaign: "Campagne / Solo",
+        btn_multiplayer: "Multijoueur",
+
+        // Menu Multijoueur
         btn_ai: "Jouer contre l'IA",
         btn_host: "Créer une partie",
         divider: "--- OU ---",
         placeholder_join: "Code (ex: 1234)",
         btn_join: "Rejoindre",
-        btn_campaign: "Campagne / Solo",
 
         // Menu de création de partie
         btn_preset_1: "Classique",
@@ -92,6 +95,9 @@ export const translations = {
     en: {
         // Ecran Titre
         btn_campaign: "Campaign / Solo",
+        btn_multiplayer: "Multiplayer",
+
+        // Menu Multijoueur
         btn_ai: "Play vs AI",
         btn_host: "Create Game",
         divider: "--- OR ---",
@@ -180,12 +186,15 @@ export const translations = {
     },
     zh: {
         // Ecran Titre
+        btn_campaign: "战役 / 单人",
+        btn_multiplayer: "多人游戏",
+
+        // Menu Multijoueur
         btn_ai: "与AI对战",
         btn_host: "创建游戏",
         divider: "--- 或 ---",
         placeholder_join: "房间号 (例: 1234)",
         btn_join: "加入",
-        btn_campaign: "战役 / 单人",
 
         // Menu de création de partie
         btn_preset_1: "经典",
